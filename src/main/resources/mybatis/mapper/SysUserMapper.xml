@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zero.user.mapper.SysUserMapper">
+    <resultMap id="resultSysUserVO" type="SysUserVO">
+        <id column="id" property="id"/>
+        <result column="user_name" property="userName"/>
+        <result column="user_amount" property="userAmount"/>
+        <result column="user_pwd" property="userPwd"/>
+    </resultMap>
+    <sql id="list_fields">
+        id, user_name,user_amount,user_pwd
+    </sql>
+    <sql id="list_sql">
+        <where>
+
+        </where>
+    </sql>
+    <select id="getSysUserList" resultMap="resultSysUserVO">
+        select
+        <include refid="list_fields"/>
+        from sys_user
+        <include refid="list_sql"/>
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <select id="getSysUserCount" resultType="int">
+        select count(1) from sys_user
+        <include refid="list_sql"/>
+    </select>
+    <insert id="save">
+        insert into sys_user(id,user_name,user_amount,user_pwd)
+        values (#{id},#{userName},#{userAmount},#{userPwd})
+    </insert>
+</mapper>
