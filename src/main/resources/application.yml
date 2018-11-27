@@ -23,6 +23,15 @@ spring:
     testOnReturn: false
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
+#配置日志
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        web:DEBUG
+      hibernate: ERROR
+  file: log/log.log
 
 #  resources:
 #    static-locations: classpath:/public/ # 设置web访问html文件

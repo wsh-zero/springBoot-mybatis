@@ -15,7 +15,7 @@
 
         </where>
     </sql>
-    <select id="getSysUserList" resultMap="resultSysUserVO">
+    <select id="getList" resultMap="resultSysUserVO">
         select
         <include refid="list_fields"/>
         from sys_user
@@ -23,7 +23,7 @@
         limit #{pageNum},#{pageSize}
     </select>
 
-    <select id="getSysUserCount" resultType="int">
+    <select id="getCount" resultType="int">
         select count(1) from sys_user
         <include refid="list_sql"/>
     </select>
