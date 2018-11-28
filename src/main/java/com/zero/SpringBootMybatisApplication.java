@@ -5,10 +5,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @MapperScan("com.zero.*.mapper")
-@EnableTransactionManagement
+@ComponentScan({"com.zero.*.controller", "com.zero.*.service"})
+@EnableTransactionManagement//事务管理
+@EnableSwagger2
 public class SpringBootMybatisApplication {
 
     public static void main(String[] args) {
