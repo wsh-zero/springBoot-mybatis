@@ -128,7 +128,7 @@ public class ExcelUtil<T> {
             response.setContentType("application/x-download");
             response.setCharacterEncoding("utf-8");
             //设置浏览器响应头对应的Content-disposition
-            response.setHeader("Content-disposition", "attachment;filename=" + new String(fileName.getBytes("gbk"), "iso8859-1") + ".xls");
+            response.setHeader("Content-disposition", "attachment;filename=" + new String(fileName.getBytes("gbk"), "iso8859-1") + ".xlsx");
             workbook.write(output);
         } catch (Exception e) {
             e.printStackTrace();
