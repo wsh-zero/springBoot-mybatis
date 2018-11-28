@@ -1,8 +1,11 @@
 package com.zero.user.controller;
 
 import com.zero.user.entity.SysUserEntity;
+import com.zero.user.mapper.SysUserMapper;
 import com.zero.user.query.SysUserQuery;
 import com.zero.user.service.SysUserService;
+import com.zero.user.vo.SysUserVO;
+import com.zero.util.ExcelUtil;
 import com.zero.util.LayuiTableUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -11,12 +14,17 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+
 @Api(tags = "用户")
 @RestController
 @RequestMapping("/sys/user/")
 public class SysUserController {
     @Autowired
     SysUserService service;
+    @Autowired
+    SysUserMapper mapper;
 
     @GetMapping("list")
     @ApiOperation(value = "列表", notes = "获取用户列表")
@@ -30,6 +38,14 @@ public class SysUserController {
     @ApiOperation(value = "保存/修改", notes = "保存/修改用户信息")
     public void save(SysUserEntity entity) {
         service.save(entity);
+    }
+
+    @GetMapping("export")
+    @ApiOperation(value = "导出", notes = "导出用户信息")
+    public void export(HttpServletResponse response) {
+        String[] heart = {"ID", "用户名", "账号", "密码"};
+        List<SysUserVO> list = mapper.getList(null, 0, 165534);
+        new ExcelUtil<>(response, heart, list, "第一次导出");
     }
 
 }

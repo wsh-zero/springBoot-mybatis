@@ -20,7 +20,9 @@
         <include refid="list_fields"/>
         from sys_user
         <include refid="list_sql"/>
-        limit #{pageNum},#{pageSize}
+        <if test="pageNum !=-1 and pageSize!=-1">
+            limit #{pageNum},#{pageSize}
+        </if>
     </select>
 
     <select id="getCount" resultType="int">

@@ -1,6 +1,11 @@
 package com.zero.util;
 
-import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
@@ -15,6 +20,12 @@ public class ExcelUtil<T> {
      * https://www.cnblogs.com/hanfeihanfei/p/7079210.html
      * https://www.cnblogs.com/zou90512/p/3989450.html
      */
+//
+//    protected final int MAX_SIZE = 1000;//超过这个数值就会把内存里面的数据往磁盘里面写
+//    private SXSSFWorkbook workbook;
+//    static {
+//        workbook=new HSSFWorkbook(MAX_SIZE);
+//    }
 
     /**
      * @param response 请求
@@ -23,9 +34,11 @@ public class ExcelUtil<T> {
      * @param data     数据
      * @param fileName 导出表名
      */
-    public void exportExcel(HttpServletResponse response,
-                            String[] headers, String[] contents, Collection<T> data,
-                            String fileName) {
+
+    public ExcelUtil(HttpServletResponse response,
+                     String[] headers, String[] contents, Collection<T> data,
+                     String fileName) {
+
         if (null == headers) {
             throw new RuntimeException("获取表格头信息失败");
         }
@@ -43,31 +56,31 @@ public class ExcelUtil<T> {
      * @param data     数据
      * @param fileName 导出表名
      */
-    public void exportExcel(HttpServletResponse response, String[] headers, Collection<T> data, String fileName) {
+    public ExcelUtil(HttpServletResponse response, String[] headers, Collection<T> data, String fileName) {
         if (null == headers) {
             throw new RuntimeException("获取表格头信息失败");
         }
         commonExcel(response, headers, null, data, fileName);
     }
 
-    public void commonExcel(HttpServletResponse response, String[] headers, String[] contents, Collection<T> data, String fileName) {
+    private void commonExcel(HttpServletResponse response, String[] headers, String[] contents, Collection<T> data, String fileName) {
         try (
                 // 声明一个工作薄
-                HSSFWorkbook workbook = new HSSFWorkbook();
+                SXSSFWorkbook workbook = new SXSSFWorkbook();
                 OutputStream output = response.getOutputStream()) {
             // 生成一个表格(可以设置sheetName)
-            HSSFSheet sheet = workbook.createSheet();
+            SXSSFSheet sheet = workbook.createSheet();
             // 设置表格默认列宽度为15个字节
             sheet.setDefaultColumnWidth((short) 15);
-            HSSFCellStyle style = workbook.createCellStyle();
-            HSSFFont font = workbook.createFont();
+            CellStyle style = workbook.createCellStyle();
+            Font font = workbook.createFont();
             font.setFontHeightInPoints((short) 12);
             // 把字体应用到当前的样式
             style.setFont(font);
             // 产生表格标题行
-            HSSFRow row = sheet.createRow(0);
+            SXSSFRow row = sheet.createRow(0);
             for (short i = 0; i < headers.length; i++) {
-                HSSFCell cell = row.createCell(i);
+                SXSSFCell cell = row.createCell(i);
                 cell.setCellStyle(style);
                 cell.setCellValue(headers[i]);
             }
@@ -82,7 +95,7 @@ public class ExcelUtil<T> {
                     T t = it.next();
                     if (null != contents && contents.length > 0) {
                         for (short i = 0; i < contents.length; i++) {
-                            HSSFCell cell = row.createCell(i);
+                            SXSSFCell cell = row.createCell(i);
                             String getMethodName = contents[i];
                             Method getMethod = t.getClass().getMethod(getMethodName);
                             Object value = getMethod.invoke(t);
@@ -96,7 +109,7 @@ public class ExcelUtil<T> {
                             throw new RuntimeException(String.format("表格参数不一致 headers=%s contents=%s", headers.length, fields.length));
                         }
                         for (short i = 0; i < fields.length; i++) {
-                            HSSFCell cell = row.createCell(i);
+                            SXSSFCell cell = row.createCell(i);
                             Field field = fields[i];
                             String fieldName = field.getName();
                             String getMethodName = "get"
@@ -122,7 +135,7 @@ public class ExcelUtil<T> {
         }
     }
 
-    private void typeConversion(HSSFCell cell, Object value) {
+    private void typeConversion(SXSSFCell cell, Object value) {
         if (value instanceof Integer) {
             cell.setCellValue((Integer) value);
         } else if (value instanceof Long) {
