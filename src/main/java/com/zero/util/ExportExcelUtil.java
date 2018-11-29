@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class ExcelUtil<T> {
+public class ExportExcelUtil<T> {
     /**
      * https://www.cnblogs.com/dawnheaven/p/4462572.html
      * https://www.cnblogs.com/hanfeihanfei/p/7079210.html
@@ -26,6 +26,8 @@ public class ExcelUtil<T> {
 //    static {
 //        workbook=new HSSFWorkbook(MAX_SIZE);
 //    }
+    public ExportExcelUtil() {
+    }
 
     /**
      * @param response 请求
@@ -35,9 +37,9 @@ public class ExcelUtil<T> {
      * @param fileName 导出表名
      */
 
-    public ExcelUtil(HttpServletResponse response,
-                     String[] headers, String[] contents, Collection<T> data,
-                     String fileName) {
+    public ExportExcelUtil(HttpServletResponse response,
+                           String[] headers, String[] contents, Collection<T> data,
+                           String fileName) {
 
         if (null == headers) {
             throw new RuntimeException("获取表格头信息失败");
@@ -56,7 +58,7 @@ public class ExcelUtil<T> {
      * @param data     数据
      * @param fileName 导出表名
      */
-    public ExcelUtil(HttpServletResponse response, String[] headers, Collection<T> data, String fileName) {
+    public ExportExcelUtil(HttpServletResponse response, String[] headers, Collection<T> data, String fileName) {
         if (null == headers) {
             throw new RuntimeException("获取表格头信息失败");
         }
