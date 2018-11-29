@@ -49,7 +49,7 @@ public class SysUserController {
     public void exportExcel(HttpServletResponse response) {
         String[] heart = {"ID", "用户名", "账号", "密码"};
         List<SysUserVO> list = mapper.getList(null, 0, 165534);
-        new ExportExcelUtil<>(response, heart, list, "第一次导出");
+        new ExportExcelUtil<>(response, heart, list, "第一次导出", "zero");
     }
 
     @RequestMapping("import")

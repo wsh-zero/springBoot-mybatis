@@ -1,18 +1,16 @@
 package com.zero.util;
 
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.xssf.streaming.SXSSFCell;
-import org.apache.poi.xssf.streaming.SXSSFRow;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collection;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
+import java.util.List;
 
 public class ExportExcelUtil<T> {
     /**
@@ -20,12 +18,8 @@ public class ExportExcelUtil<T> {
      * https://www.cnblogs.com/hanfeihanfei/p/7079210.html
      * https://www.cnblogs.com/zou90512/p/3989450.html
      */
-//
-//    protected final int MAX_SIZE = 1000;//超过这个数值就会把内存里面的数据往磁盘里面写
-//    private SXSSFWorkbook workbook;
-//    static {
-//        workbook=new HSSFWorkbook(MAX_SIZE);
-//    }
+    private static final int SHEET_SIZE = 10000;//表格最大行
+
     public ExportExcelUtil() {
     }
 
@@ -38,8 +32,8 @@ public class ExportExcelUtil<T> {
      */
 
     public ExportExcelUtil(HttpServletResponse response,
-                           String[] headers, String[] contents, Collection<T> data,
-                           String fileName) {
+                           String[] headers, String[] contents, List<T> data,
+                           String fileName, String sheetName) {
 
         if (null == headers) {
             throw new RuntimeException("获取表格头信息失败");
@@ -47,7 +41,30 @@ public class ExportExcelUtil<T> {
         if (null != contents && headers.length != contents.length) {
             throw new RuntimeException(String.format("表格参数不一致 headers=%s contents=%s", headers.length, contents.length));
         }
-        commonExcel(response, headers, contents, data, fileName);
+        try (SXSSFWorkbook workbook = new SXSSFWorkbook();// 声明一个工作薄
+             OutputStream output = response.getOutputStream()) {
+            if (data.size() > SHEET_SIZE) {
+                int k = (data.size() + SHEET_SIZE) / SHEET_SIZE;
+                for (int i = 1; i <= k; i++) {
+                    if (i < k) {
+                        commonExcel(workbook, headers, contents, data.subList((i - 1) * SHEET_SIZE, i * SHEET_SIZE), sheetName, i);
+                    } else {
+                        commonExcel(workbook, headers, contents, data.subList((i - 1) * SHEET_SIZE, data.size()), sheetName, i);
+                    }
+                }
+            } else {
+                commonExcel(workbook, headers, contents, data, sheetName, 0);
+            }
+            response.reset();
+            //设置响应的编码
+            response.setContentType("application/x-download");
+            response.setCharacterEncoding("utf-8");
+            //设置浏览器响应头对应的Content-disposition
+            response.setHeader("Content-disposition", "attachment;filename=" + new String(fileName.getBytes("gbk"), "iso8859-1") + ".xlsx");
+            workbook.write(output);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -58,20 +75,47 @@ public class ExportExcelUtil<T> {
      * @param data     数据
      * @param fileName 导出表名
      */
-    public ExportExcelUtil(HttpServletResponse response, String[] headers, Collection<T> data, String fileName) {
+    public ExportExcelUtil(HttpServletResponse response, String[] headers, List<T> data, String fileName, String sheetName) {
         if (null == headers) {
             throw new RuntimeException("获取表格头信息失败");
         }
-        commonExcel(response, headers, null, data, fileName);
+        try (Workbook workbook = new SXSSFWorkbook();// 声明一个工作薄
+             OutputStream output = response.getOutputStream()) {
+            if (data.size() > SHEET_SIZE) {
+                int k = (data.size() + SHEET_SIZE) / SHEET_SIZE;
+                for (int i = 1; i <= k; i++) {
+                    if (i < k) {
+                        commonExcel(workbook, headers, null, data.subList((i - 1) * SHEET_SIZE, i * SHEET_SIZE), sheetName, i);
+                    } else {
+                        commonExcel(workbook, headers, null, data.subList((i - 1) * SHEET_SIZE, data.size()), sheetName, i);
+                    }
+                }
+            } else {
+                commonExcel(workbook, headers, null, data, sheetName, 0);
+            }
+            response.reset();
+            //设置响应的编码
+            response.setContentType("application/x-download");
+            response.setCharacterEncoding("utf-8");
+            //设置浏览器响应头对应的Content-disposition
+            response.setHeader("Content-disposition", "attachment;filename=" + new String(fileName.getBytes("gbk"), "iso8859-1") + ".xlsx");
+            workbook.write(output);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
-    private void commonExcel(HttpServletResponse response, String[] headers, String[] contents, Collection<T> data, String fileName) {
-        try (
-                // 声明一个工作薄
-                SXSSFWorkbook workbook = new SXSSFWorkbook();
-                OutputStream output = response.getOutputStream()) {
+    private void commonExcel(Workbook workbook, String[] headers, String[] contents, List<T> data, String sheetName, int num) {
+        try {
             // 生成一个表格(可以设置sheetName)
-            SXSSFSheet sheet = workbook.createSheet();
+            Sheet sheet;
+            if (num != 0) {
+                sheet = workbook.createSheet(sheetName + num);
+            } else {
+                sheet = workbook.createSheet(sheetName);
+            }
             // 设置表格默认列宽度为15个字节
             sheet.setDefaultColumnWidth((short) 15);
             CellStyle style = workbook.createCellStyle();
@@ -80,9 +124,9 @@ public class ExportExcelUtil<T> {
             // 把字体应用到当前的样式
             style.setFont(font);
             // 产生表格标题行
-            SXSSFRow row = sheet.createRow(0);
+            Row row = sheet.createRow(0);
             for (short i = 0; i < headers.length; i++) {
-                SXSSFCell cell = row.createCell(i);
+                Cell cell = row.createCell(i);
                 cell.setCellStyle(style);
                 cell.setCellValue(headers[i]);
             }
@@ -97,7 +141,7 @@ public class ExportExcelUtil<T> {
                     T t = it.next();
                     if (null != contents && contents.length > 0) {
                         for (short i = 0; i < contents.length; i++) {
-                            SXSSFCell cell = row.createCell(i);
+                            Cell cell = row.createCell(i);
                             String getMethodName = contents[i];
                             Method getMethod = t.getClass().getMethod(getMethodName);
                             Object value = getMethod.invoke(t);
@@ -111,7 +155,7 @@ public class ExportExcelUtil<T> {
                             throw new RuntimeException(String.format("表格参数不一致 headers=%s contents=%s", headers.length, fields.length));
                         }
                         for (short i = 0; i < fields.length; i++) {
-                            SXSSFCell cell = row.createCell(i);
+                            Cell cell = row.createCell(i);
                             Field field = fields[i];
                             String fieldName = field.getName();
                             String getMethodName = "get"
@@ -125,23 +169,18 @@ public class ExportExcelUtil<T> {
                     }
                 }
             }
-            response.reset();
-            //设置响应的编码
-            response.setContentType("application/x-download");
-            response.setCharacterEncoding("utf-8");
-            //设置浏览器响应头对应的Content-disposition
-            response.setHeader("Content-disposition", "attachment;filename=" + new String(fileName.getBytes("gbk"), "iso8859-1") + ".xlsx");
-            workbook.write(output);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void typeConversion(SXSSFCell cell, Object value) {
+    private void typeConversion(Cell cell, Object value) {
         if (value instanceof Integer) {
             cell.setCellValue((Integer) value);
         } else if (value instanceof Long) {
             cell.setCellValue((Long) value);
+        } else if (value instanceof Timestamp) {
+            cell.setCellValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format((Timestamp) value));
         } else {
             cell.setCellValue(value.toString());
 
