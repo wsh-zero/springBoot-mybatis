@@ -29,7 +29,7 @@ logging:
     root: INFO
     org:
       springframework:
-        web:DEBUG
+        web: DEBUG
       hibernate: ERROR
   file: log/log.log
 

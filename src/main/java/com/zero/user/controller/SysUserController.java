@@ -48,7 +48,7 @@ public class SysUserController {
     @ApiOperation(value = "导出", notes = "导出用户信息")
     public void exportExcel(HttpServletResponse response) {
         String[] heart = {"ID", "用户名", "账号", "密码"};
-        List<SysUserVO> list = mapper.getList(null, 0, 165534);
+        List<SysUserVO> list = mapper.getList(null, 0, 10);
         new ExportExcelUtil<>(response, heart, list, "第一次导出", "zero");
     }
 
