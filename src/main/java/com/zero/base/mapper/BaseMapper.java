@@ -5,9 +5,10 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * @param <E>
- * @param <Q>
- * @param <V>
+ * @param <E>  实体类
+ * @param <Q>  查询条件类
+ * @param <V>  返回页面类
+ * @param <ID> 主键
  */
 public interface BaseMapper<E, Q, V, ID> {
     /**
