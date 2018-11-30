@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class ExportExcelUtil<T> {
     /**
@@ -175,7 +176,9 @@ public class ExportExcelUtil<T> {
     }
 
     private void typeConversion(Cell cell, Object value) {
-        if (value instanceof Integer) {
+        if (Objects.isNull(value)) {
+            cell.setCellValue("");
+        } else if (value instanceof Integer) {
             cell.setCellValue((Integer) value);
         } else if (value instanceof Long) {
             cell.setCellValue((Long) value);
