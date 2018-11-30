@@ -5,10 +5,9 @@
 <configuration>
     <typeAliases>
         <!--直接设置到包-->
-        <package name="com.zero.user.vo"/>
-        <package name="com.zero.role.vo"/>
-        <package name="com.zero.*.entity"/>
+        <package name="com.wsh.zero.vo"/>
+        <package name="com.wsh.zero.entity"/>
         <!--单个设置-->
-        <!--<typeAlias alias="SysUserVO" type="com.zero.user.vo.SysUserVO"/>-->
+        <!--<typeAlias alias="SysUserVO" type="com.wsh.zero.vo.SysUserVO"/>-->
     </typeAliases>
 </configuration>
