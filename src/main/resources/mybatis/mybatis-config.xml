@@ -4,6 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <typeAliases>
-        <typeAlias alias="SysUserVO" type="com.zero.user.vo.SysUserVO"/>
+        <!--直接设置到包-->
+        <package name="com.zero.user.vo"/>
+        <package name="com.zero.user.entity"/>
+        <!--单个设置-->
+        <!--<typeAlias alias="SysUserVO" type="com.zero.user.vo.SysUserVO"/>-->
     </typeAliases>
 </configuration>
