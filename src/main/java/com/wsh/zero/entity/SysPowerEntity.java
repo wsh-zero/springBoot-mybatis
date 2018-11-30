@@ -6,4 +6,5 @@ import lombok.Data;
 public class SysPowerEntity {
     private String id;
     private String powerName;
+    private String powerPath;
 }

@@ -1,10 +1,11 @@
 package com.wsh.zero.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.wsh.util.ResultUtil;
 import com.wsh.zero.controller.base.BaseController;
 import com.wsh.zero.entity.SysUserEntity;
 import com.wsh.zero.query.SysUserQuery;
 import com.wsh.zero.service.SysUserService;
-import com.wsh.util.ResultUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,13 @@ public class SysUserController extends BaseController<SysUserService, SysUserQue
     @PostMapping("import")
     public ResultUtil importExcel(@RequestParam MultipartFile file) {
         return sysUserService.importExcel(file);
+
+    }
+
+    @PostMapping("test")
+    public void importExcel() {
+        SysUserEntity userInfoByUserName = sysUserService.getUserInfoByUserName();
+        System.err.println(JSON.toJSONString(userInfoByUserName));
 
     }
 

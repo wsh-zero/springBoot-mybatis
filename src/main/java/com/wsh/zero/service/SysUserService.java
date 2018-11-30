@@ -35,5 +35,9 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
         return new ResultUtil<>("导入成功");
 
     }
+    public SysUserEntity getUserInfoByUserName() {
+        return sysUserMapper.getUserInfoByUserName("");
+
+    }
 
 }
