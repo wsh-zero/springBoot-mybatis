@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
+// Swagger2访问 http://localhost:8888/swagger-ui.html
 @SpringBootApplication
 @MapperScan("com.zero.*.mapper")
 @ComponentScan({"com.zero.*.controller", "com.zero.*.service"})
