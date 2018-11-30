@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wsh.zero.mapper.SysPowerMapper">
+    <resultMap id="resultSysPowerVO" type="SysPowerVO">
+        <id column="id" property="id"/>
+        <result column="power_name" property="powerName"/>
+    </resultMap>
+    <sql id="list_fields">
+        id, power_name
+    </sql>
+    <sql id="list_sql">
+        <where>
+
+        </where>
+    </sql>
+    <select id="getList" resultMap="resultSysPowerVO">
+        select
+        <include refid="list_fields"/>
+        from sys_power
+        <include refid="list_sql"/>
+        <if test="pageNum !=-1 and pageSize!=-1">
+            limit #{pageNum},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(1) from sys_power
+        <include refid="list_sql"/>
+    </select>
+    <insert id="save">
+        insert into sys_power (id, power_name)
+        values (#{id}, #{powerName})
+    </insert>
+</mapper>
