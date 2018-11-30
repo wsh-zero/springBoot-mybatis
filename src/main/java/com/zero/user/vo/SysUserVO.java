@@ -2,8 +2,8 @@ package com.zero.user.vo;
 
 import lombok.Data;
 
-/*
-传输到页面的实体类
+/**
+ * 传输到页面的实体类
  */
 @Data
 public class SysUserVO {
