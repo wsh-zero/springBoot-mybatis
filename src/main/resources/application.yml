@@ -23,7 +23,7 @@ spring:
     testOnReturn: false
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
-#thymeleaf的配置是为了去掉html的校验
+  #thymeleaf的配置是为了去掉html的校验
   thymeleaf:
     mode: LEGACYHTML5
     cache: false
@@ -34,8 +34,11 @@ logging:
     org:
       springframework:
         web: DEBUG
-      hibernate: ERROR
+    #      hibernate: ERROR
+    #    配置打印sql(暂时没找到通配符方法)
+    com.zero: debug
   file: log/log.log
+
 
 #  resources:
 #    static-locations: classpath:/public/ # 设置web访问html文件
