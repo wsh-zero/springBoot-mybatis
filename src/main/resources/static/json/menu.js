@@ -16,7 +16,24 @@
       ,"title": "主页二"
       ,"jump": "home/homepage2"
     }]
-  }, {
+  },{
+    "name": "sys"
+    ,"title": "系统设置"
+    ,"icon": "layui-icon-set-fill"
+    ,"list": [{
+        "name": "user"
+        ,"title": "系统用户"
+        ,"jump": "sys/user"
+    },{
+        "name": "role"
+        ,"title": "系统角色"
+        ,"jump": "sys/role"
+    },{
+        "name": "power"
+        ,"title": "系统角色"
+        ,"jump": "sys/power"
+    }]
+}, {
     "name": "component"
     ,"title": "组件"
     ,"icon": "layui-icon-component"
