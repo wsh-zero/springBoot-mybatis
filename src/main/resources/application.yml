@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     name: test
-    url: jdbc:mysql:///zero?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql:///test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
     username: root
     password: 1111
     # 使用druid数据源
@@ -23,10 +23,12 @@ spring:
     testOnReturn: false
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
-  #thymeleaf的配置是为了去掉html的校验
+  #thymeleaf的配置是为了去掉html的校验(+ nekohtml包,自动处理未闭合标签)
   thymeleaf:
     mode: LEGACYHTML5
     cache: false
+#  resources:
+#    static-locations: classpath:/public/ # 设置web访问html文件
 #配置日志
 logging:
   level:
@@ -39,9 +41,6 @@ logging:
     com.wsh.zero.mapper: debug
   file: log/log.log
 
-
-#  resources:
-#    static-locations: classpath:/public/ # 设置web访问html文件
 
 ## 该配置节点为独立的节点，有很多同学容易将这个配置放在spring的节点下，导致配置无法被识别
 mybatis:
