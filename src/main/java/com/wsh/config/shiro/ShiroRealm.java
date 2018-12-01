@@ -15,6 +15,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ShiroRealm extends AuthorizingRealm {
+    //参考 https://blog.csdn.net/weixin_38132621/article/details/80216056
     @Autowired
     private SysUserMapper sysUserMapper;
 
