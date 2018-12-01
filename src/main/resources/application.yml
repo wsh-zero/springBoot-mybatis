@@ -1,10 +1,10 @@
 server:
-  port: 8888
+  port: 80
 
 spring:
   datasource:
     name: test
-    url: jdbc:mysql:///test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql:///zero?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
     username: root
     password: 1111
     # 使用druid数据源
@@ -29,6 +29,11 @@ spring:
     cache: false
 #  resources:
 #    static-locations: classpath:/public/ # 设置web访问html文件
+  auto:
+    openurl: true
+  web:
+    loginurl: http://localhost:80
+    googleexcute: C:\Users\25435\AppData\Local\Google\Chrome\Application\chrome.exe
 #配置日志
 logging:
   level:

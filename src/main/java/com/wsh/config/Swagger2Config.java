@@ -20,13 +20,13 @@ public class Swagger2Config {
     public Docket controllerApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(new ApiInfoBuilder()
-                        .title("标题：某公司_用户信息管理系统_接口文档")
-                        .description("描述：用于管理集团旗下公司的人员信息,具体包括XXX,XXX模块...")
-                        .contact(new Contact("Socks", null, null))
+                        .title("SpringBoot使用swagger构建API文档")
+                        .description("RESTful API")
+                        .contact(new Contact(null, null, null))
                         .version("版本号:1.0")
                         .build())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.wsh.*.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.wsh.zero.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
