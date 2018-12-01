@@ -1,4 +1,4 @@
-package com.wsh.util;
+package com.wsh.config.shiro;
 
 import com.wsh.zero.entity.SysPowerEntity;
 import com.wsh.zero.entity.SysRoleEntity;
@@ -48,11 +48,10 @@ public class ShiroRealm extends AuthorizingRealm {
         //从数据库查询出User信息及用户关联的角色，权限信息，以备权限分配时使用
         SysUserEntity entity = sysUserMapper.getUserInfoByUserName(userName);
         if (null == entity) return null;
-        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
+        return new SimpleAuthenticationInfo(
                 entity.getUserName(), //用户名
                 entity.getUserPwd(), //密码
                 getName()  //realm name
         );
-        return authenticationInfo;
     }
 }
