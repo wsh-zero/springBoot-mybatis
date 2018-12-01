@@ -1,6 +1,5 @@
 package com.wsh.zero.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.wsh.util.ResultUtil;
 import com.wsh.zero.controller.base.BaseController;
 import com.wsh.zero.entity.SysUserEntity;
@@ -30,14 +29,11 @@ public class SysUserController extends BaseController<SysUserService, SysUserQue
     @PostMapping("import")
     public ResultUtil importExcel(@RequestParam MultipartFile file) {
         return sysUserService.importExcel(file);
-
     }
 
-    @PostMapping("test")
-    public void importExcel() {
-        SysUserEntity userInfoByUserName = sysUserService.getUserInfoByUserName();
-        System.err.println(JSON.toJSONString(userInfoByUserName));
-
+    @PostMapping("login")
+    public ResultUtil login(@RequestParam String userName, @RequestParam String userPwd) {
+       return sysUserService.loginDataBaseCheck(userName, userPwd);
     }
 
 }

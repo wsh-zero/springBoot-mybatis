@@ -10,4 +10,8 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface SysUserMapper extends BaseMapper<SysUserEntity, SysUserQuery, SysUserVO, String> {
     SysUserEntity getUserInfoByUserName(@Param("userName") String userName);
+
+    boolean isExistUserName(@Param("userName") String userName);
+
+    boolean isExistUser(@Param("userName") String userName, @Param("userPwd") String userPwd);
 }

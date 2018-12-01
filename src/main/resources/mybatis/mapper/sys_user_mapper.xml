@@ -56,4 +56,12 @@
         WHERE su.id=sur.user_id AND sur.role_id=sr.id AND sr.id=srp.role_id and srp.power_id=sp.id
         and su.user_name=#{userName}
     </select>
+
+    <select id="isExistUserName" resultType="boolean">
+        select count(1) from sys_user where user_name=#{userName}
+    </select>
+
+    <select id="isExistUser" resultType="boolean">
+        select count(1) from sys_user where user_name=#{userName} and user_pwd=#{userPwd}
+    </select>
 </mapper>

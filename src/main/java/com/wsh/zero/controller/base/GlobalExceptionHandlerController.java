@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandlerController {
+
     // 捕捉shiro的异常
     @ExceptionHandler(ShiroException.class)
     public ResultUtil handle401() {
@@ -26,7 +27,7 @@ public class GlobalExceptionHandlerController {
 
     private <T extends Throwable> ResultUtil resultFormat(T ex) {
         ex.printStackTrace();
-        return ResultUtil.failed(404, ex.getMessage());
+        return ResultUtil.failed(500, ex.getMessage());
     }
 
 }
