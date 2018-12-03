@@ -102,8 +102,8 @@
             //请求登入接口
             admin.req({
                 // url: './json/user/login.js' //实际使用请改成服务端真实接口
-                url: '/sys/user/login' //实际使用请改成服务端真实接口
-                , type: 'post'
+                url: '/login' //实际使用请改成服务端真实接口
+                , type: 'get'
                 , data: data
                 , done: function (res) {
                     //请求成功后，写入 access_token
