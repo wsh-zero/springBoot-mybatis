@@ -4,9 +4,9 @@ server:
 spring:
   datasource:
     name: test
-    url: jdbc:mysql:///zero?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
-    username: root
-    password: 1111
+    url: jdbc:mysql://180.76.111.215:3306/zero?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    username: wsh_zero
+    password: Zero15397608105
     # 使用druid数据源
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -30,7 +30,7 @@ spring:
   resources:
     static-locations: classpath:/templates/ # 设置web访问html文件
   auto:
-    openurl: true
+    openurl: false
   web:
     loginurl: http://localhost:80
     googleexcute: C:\Users\25435\AppData\Local\Google\Chrome\Application\chrome.exe

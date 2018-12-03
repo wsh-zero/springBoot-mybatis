@@ -13,6 +13,7 @@ import java.util.Map;
 @Configuration
 public class ShiroConfig {
     //https://blog.csdn.net/qq_35659877/article/details/83379009
+    //https://blog.csdn.net/Joe_Wang1/article/details/81635353
     //将自己的验证方式加入容器
     @Bean
     public ShiroRealm shiroRealm() {
@@ -34,7 +35,7 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         shiroFilterFactoryBean.setLoginUrl("/notLogin");//登录连接
 //        shiroFilterFactoryBean.setSuccessUrl("/index");//登录成功后跳转的连接
-        shiroFilterFactoryBean.setUnauthorizedUrl("/error1"); //未授权跳转页面
+        shiroFilterFactoryBean.setUnauthorizedUrl("/403"); //未授权跳转页面
 
         Map<String, String> map = new LinkedHashMap<>();
         //登出
@@ -50,8 +51,11 @@ public class ShiroConfig {
         map.put("/src/lib/**", "anon");
         map.put("/src/style/**", "anon");
         map.put("/src/views/user/*.html", "anon");
+        map.put("/sys/*/**", "roles[sys]");
+        //登录、重置密码、注册接口可以匿名访问
         map.put("/login", "anon");
         map.put("/register", "anon");
+        map.put("/reset/pwd", "anon");
         map.put("/**", "authc");
 //        //全部放行
 //        map.put("/**", "anon");
