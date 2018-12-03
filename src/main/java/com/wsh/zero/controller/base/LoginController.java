@@ -6,22 +6,23 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 public class LoginController {
     @Autowired
     SysUserService sysUserService;
 
     @RequestMapping(value = "/notLogin")
-    public ResultUtil notLogin() {
-        return new ResultUtil<>(1, "您尚未登陆！");
+    public String notLogin() {
+        return "index";
     }
 
-    @RequestMapping(value = "/403")
+    @RequestMapping(value = "/error1")
     public ResultUtil notRole() {
         return new ResultUtil<>(1, "您没有权限！");
     }

@@ -7,11 +7,12 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Configuration
 public class ShiroConfig {
+    //https://blog.csdn.net/qq_35659877/article/details/83379009
     //将自己的验证方式加入容器
     @Bean
     public ShiroRealm shiroRealm() {
@@ -33,16 +34,22 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         shiroFilterFactoryBean.setLoginUrl("/notLogin");//登录连接
 //        shiroFilterFactoryBean.setSuccessUrl("/index");//登录成功后跳转的连接
-        shiroFilterFactoryBean.setUnauthorizedUrl("/403"); //未授权跳转页面
+        shiroFilterFactoryBean.setUnauthorizedUrl("/error1"); //未授权跳转页面
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         //登出
         map.put("/logout", "logout");
         /**
          * 过滤链定义，从上向下顺序执行，/**放在最下面，过滤链的最后一关，表示除去以上各环节，剩余url的都需要验证
          * authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问
          */
-        map.put("/static/**", "anon");
+        map.put("/json/**", "anon");
+        map.put("/layui/**", "anon");
+        map.put("/src/*.js*", "anon");
+        map.put("/src/controller/**", "anon");
+        map.put("/src/lib/**", "anon");
+        map.put("/src/style/**", "anon");
+        map.put("/src/views/user/*.html", "anon");
         map.put("/login", "anon");
         map.put("/register", "anon");
         map.put("/**", "authc");
