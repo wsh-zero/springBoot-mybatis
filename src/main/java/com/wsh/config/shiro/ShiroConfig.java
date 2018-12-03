@@ -31,22 +31,23 @@ public class ShiroConfig {
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
+        shiroFilterFactoryBean.setLoginUrl("/notLogin");//登录连接
+//        shiroFilterFactoryBean.setSuccessUrl("/index");//登录成功后跳转的连接
+        shiroFilterFactoryBean.setUnauthorizedUrl("/403"); //未授权跳转页面
+
         Map<String, String> map = new HashMap<>();
         //登出
         map.put("/logout", "logout");
-        // 配置不会被拦截的链接 顺序判断
+        /**
+         * 过滤链定义，从上向下顺序执行，/**放在最下面，过滤链的最后一关，表示除去以上各环节，剩余url的都需要验证
+         * authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问
+         */
         map.put("/static/**", "anon");
-//        map.put("/ajaxLogin", "anon");
         map.put("/login", "anon");
-        //对所有用户认证
-//        map.put("/**", "anon");
+        map.put("/register", "anon");
         map.put("/**", "authc");
-        //登录
-        shiroFilterFactoryBean.setLoginUrl("/notLogin");
-        //首页
-        shiroFilterFactoryBean.setSuccessUrl("/login");
-        //错误页面，认证不通过跳转
-        shiroFilterFactoryBean.setUnauthorizedUrl("/403");
+//        //全部放行
+//        map.put("/**", "anon");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
         return shiroFilterFactoryBean;
     }
