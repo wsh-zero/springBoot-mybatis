@@ -35,18 +35,18 @@ public class ShiroConfig {
         //登出
         map.put("/logout", "logout");
         // 配置不会被拦截的链接 顺序判断
-//        map.put("/static/**", "anon");
+        map.put("/static/**", "anon");
 //        map.put("/ajaxLogin", "anon");
-//        map.put("/login", "anon");
+        map.put("/login", "anon");
         //对所有用户认证
-        map.put("/**", "anon");
-//        map.put("/**", "authc");
+//        map.put("/**", "anon");
+        map.put("/**", "authc");
         //登录
-        shiroFilterFactoryBean.setLoginUrl("/login");
+        shiroFilterFactoryBean.setLoginUrl("/notLogin");
         //首页
-        shiroFilterFactoryBean.setSuccessUrl("/sys/user/index");
+        shiroFilterFactoryBean.setSuccessUrl("/login");
         //错误页面，认证不通过跳转
-        shiroFilterFactoryBean.setUnauthorizedUrl("/sys/user/error");
+        shiroFilterFactoryBean.setUnauthorizedUrl("/403");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
         return shiroFilterFactoryBean;
     }

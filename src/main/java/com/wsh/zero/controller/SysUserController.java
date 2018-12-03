@@ -31,9 +31,4 @@ public class SysUserController extends BaseController<SysUserService, SysUserQue
         return sysUserService.importExcel(file);
     }
 
-    @PostMapping("login")
-    public ResultUtil login(@RequestParam String userName, @RequestParam String userPwd) {
-       return sysUserService.loginDataBaseCheck(userName, userPwd);
-    }
-
 }
