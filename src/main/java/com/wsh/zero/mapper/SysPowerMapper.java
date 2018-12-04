@@ -8,4 +8,5 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface SysPowerMapper extends BaseMapper<SysPowerEntity, SysPowerQuery, SysPowerVO, String> {
+    String[] getPowerPathAll();
 }

@@ -4,9 +4,10 @@
     <resultMap id="resultSysPowerVO" type="SysPowerVO">
         <id column="id" property="id"/>
         <result column="power_name" property="powerName"/>
+        <result column="power_path" property="powerPath"/>
     </resultMap>
     <sql id="list_fields">
-        id, power_name
+        id, power_name,power_path
     </sql>
     <sql id="list_sql">
         <where>
@@ -26,6 +27,10 @@
     <select id="getCount" resultType="int">
         select count(1) from sys_power
         <include refid="list_sql"/>
+    </select>
+
+    <select id="getPowerPathAll" resultType="String">
+        select power_path from sys_power
     </select>
     <insert id="save">
         insert into sys_power (id, power_name)
