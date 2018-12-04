@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 @RestController
 public class LoginController {
     @Autowired
@@ -62,6 +65,8 @@ public class LoginController {
         UsernamePasswordToken token = new UsernamePasswordToken(userName, userPwd);
         // 执行认证登陆
         subject.login(token);
-        return new ResultUtil<>(0, "登录成功！");
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("access_token", "111111");
+        return new ResultUtil<>(0, "登录成功！", map);
     }
 }
