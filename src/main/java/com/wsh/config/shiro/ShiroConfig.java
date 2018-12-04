@@ -18,6 +18,7 @@ public class ShiroConfig {
     //https://blog.csdn.net/qq_35659877/article/details/83379009
     //https://blog.csdn.net/Joe_Wang1/article/details/81635353
     //https://blog.csdn.net/pingdouble/article/details/79165545
+    //https://www.jianshu.com/p/9bfa22b0e905
     //将自己的验证方式加入容器
     @Autowired
     private SysPowerMapper sysPowerMapper;
