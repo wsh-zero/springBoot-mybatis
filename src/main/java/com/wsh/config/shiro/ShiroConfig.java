@@ -1,7 +1,6 @@
 package com.wsh.config.shiro;
 
 import com.google.common.base.Strings;
-import com.wsh.zero.controller.base.URLPathMatchingFilter;
 import com.wsh.zero.mapper.SysPowerMapper;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -43,7 +42,7 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         shiroFilterFactoryBean.setLoginUrl("/notLogin");//登录连接
 //        shiroFilterFactoryBean.setSuccessUrl("/index");//登录成功后跳转的连接
-        shiroFilterFactoryBean.setUnauthorizedUrl("/403"); //未授权跳转页面
+//        shiroFilterFactoryBean.setUnauthorizedUrl("/401"); //未授权跳转页面
         //拦截器
         Map<String, String> map = new LinkedHashMap<>();
         //登出
@@ -52,13 +51,14 @@ public class ShiroConfig {
          * 过滤链定义，从上向下顺序执行，/**放在最下面，过滤链的最后一关，表示除去以上各环节，剩余url的都需要验证
          * authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问
          */
-//        map.put("/json/**", "anon");
-//        map.put("/layui/**", "anon");
-//        map.put("/src/*.js*", "anon");
-//        map.put("/src/controller/**", "anon");
-//        map.put("/src/lib/**", "anon");
-//        map.put("/src/style/**", "anon");
-//        map.put("/src/views/user/*.html", "anon");
+        map.put("/*.ico", "anon");
+        map.put("/json/**", "anon");
+        map.put("/layui/**", "anon");
+        map.put("/src/*.js*", "anon");
+        map.put("/src/controller/**", "anon");
+        map.put("/src/lib/**", "anon");
+        map.put("/src/style/**", "anon");
+        map.put("/src/views/user/*.html", "anon");
         //登录、重置密码、注册接口可以匿名访问
         map.put("/login", "anon");
         map.put("/register", "anon");
@@ -84,15 +84,6 @@ public class ShiroConfig {
         AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
         authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
         return authorizationAttributeSourceAdvisor;
-    }
-
-    /**
-     * 访问 权限 拦截器
-     *
-     * @return
-     */
-    public URLPathMatchingFilter getURLPathMatchingFilter() {
-        return new URLPathMatchingFilter();
     }
 
 //    /**

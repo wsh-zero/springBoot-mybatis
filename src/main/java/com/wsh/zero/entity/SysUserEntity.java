@@ -10,5 +10,6 @@ public class SysUserEntity {
     private String userName;
     private String userAmount;
     private String userPwd;
+    private Integer frozen;
     private List<SysRoleEntity> roleList;
 }

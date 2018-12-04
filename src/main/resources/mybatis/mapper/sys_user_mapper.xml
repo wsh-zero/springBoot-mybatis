@@ -6,6 +6,7 @@
         <result column="user_name" property="userName"/>
         <result column="user_amount" property="userAmount"/>
         <result column="user_pwd" property="userPwd"/>
+        <result column="frozen" property="frozen"/>
     </resultMap>
     <resultMap id="resultSysUserEntity" type="SysUserEntity">
         <id column="id" property="id"/>
@@ -49,12 +50,15 @@
         values (#{id},#{userName},#{userAmount},#{userPwd})
     </insert>
     <select id="getUserInfoByUserName" resultMap="resultSysUserEntity">
-        SELECT su.id,su.user_amount,su.user_name,su.user_pwd,
+        SELECT su.id,su.user_amount,su.user_name,su.user_pwd,su.frozen,
         sr.id as sid,sr.role_name,
         sp.id as pid,sp.power_name,sp.power_path
-        FROM sys_user su,sys_user_role sur,sys_role sr,sys_role_power srp,sys_power sp
-        WHERE su.id=sur.user_id AND sur.role_id=sr.id AND sr.id=srp.role_id and srp.power_id=sp.id
-        and su.user_name=#{userName}
+        FROM sys_user su
+        left join sys_user_role sur on su.id=sur.user_id
+        left join sys_role sr on sur.role_id=sr.id
+        left join sys_role_power srp on sr.id=srp.role_id
+        left join sys_power sp on srp.power_id=sp.id
+        WHERE su.user_name=#{userName}
     </select>
 
     <select id="isExistUserName" resultType="boolean">
