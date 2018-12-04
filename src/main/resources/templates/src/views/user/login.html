@@ -120,6 +120,10 @@
                     }, function () {
                         location.hash = search.redirect ? decodeURIComponent(search.redirect) : '/';
                     });
+                    //写入cookie
+                    var exp = new Date();
+                    exp.setTime(exp.getTime() + 1000 * 60 ); //这里表示保存1分钟
+                    document.cookie ="zero"+ ";expires=" + exp.toGMTString();
                 }
             });
 
