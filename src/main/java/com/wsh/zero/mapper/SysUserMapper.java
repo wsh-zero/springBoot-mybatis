@@ -14,4 +14,6 @@ public interface SysUserMapper extends BaseMapper<SysUserEntity, SysUserQuery, S
     boolean isExistUserName(@Param("userName") String userName);
 
     boolean isExistUser(@Param("userName") String userName, @Param("userPwd") String userPwd);
+
+    boolean getFrozenValueByUserName(@Param("userName") String userName);
 }

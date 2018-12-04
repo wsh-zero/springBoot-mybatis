@@ -64,6 +64,9 @@
     <select id="isExistUserName" resultType="boolean">
         select count(1) from sys_user where user_name=#{userName}
     </select>
+    <select id="getFrozenValueByUserName" resultType="boolean">
+        select frozen from sys_user where user_name=#{userName}
+    </select>
 
     <select id="isExistUser" resultType="boolean">
         select count(1) from sys_user where user_name=#{userName} and user_pwd=#{userPwd}

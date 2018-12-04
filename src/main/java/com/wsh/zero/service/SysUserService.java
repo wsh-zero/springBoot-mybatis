@@ -42,14 +42,15 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
         if (existUserName) {
             boolean existUser = sysUserMapper.isExistUser(userName, userPwd);
             if (existUser) {
-                //登录成功
-                return new ResultUtil<>("验证成功!");
+                boolean frozen = sysUserMapper.getFrozenValueByUserName(userName);
+                if (frozen) {
+                    return new ResultUtil<>(1,"账号已经被冻结，请联系管理员!");
+                }
+                return new ResultUtil<>("登录成功!");
             }
-            //用户密码错误
             return new ResultUtil<>(1, "用户密码错误!");
         }
-        //登录用户不存在
-        return new ResultUtil<>(1, "登录用户不存在!");
+        return new ResultUtil<>(1, "用户不存在!");
     }
 
 }
