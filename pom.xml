@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.winter</groupId>
-    <artifactId>springboot-mybatis-demo</artifactId>
+    <artifactId>springboot-mybatis</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>springboot-mybatis-demo</name>
+    <name>springboot-mybatis</name>
     <description>Demo project for Spring Boot</description>
 
     <parent>
@@ -127,6 +127,12 @@
             <groupId>io.swagger</groupId>
             <artifactId>swagger-models</artifactId>
             <version>1.5.21</version>
+        </dependency>
+        <!--JWT-->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>3.4.0</version>
         </dependency>
     </dependencies>
 
