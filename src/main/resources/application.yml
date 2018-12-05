@@ -27,8 +27,8 @@ spring:
   thymeleaf:
     mode: LEGACYHTML5
     cache: false
-  resources:
-    static-locations: classpath:/templates/ # 设置web访问html文件
+#  resources:
+#    static-locations: classpath:/templates/ # 设置web访问html文件
   auto:
     openurl: false
   web:

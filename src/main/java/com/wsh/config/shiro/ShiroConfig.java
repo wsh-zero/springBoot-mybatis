@@ -46,20 +46,20 @@ public class ShiroConfig {
 //        shiroFilterFactoryBean.setUnauthorizedUrl("/401"); //未授权跳转页面
         //拦截器
         Map<String, String> map = new LinkedHashMap<>();
-        //登出
-        map.put("/logout", "logout");
         /**
          * 过滤链定义，从上向下顺序执行，/**放在最下面，过滤链的最后一关，表示除去以上各环节，剩余url的都需要验证
          * authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问
          */
-        map.put("/*.ico", "anon");
-        map.put("/json/**", "anon");
-        map.put("/layui/**", "anon");
-        map.put("/src/*.js*", "anon");
-        map.put("/src/controller/**", "anon");
-        map.put("/src/lib/**", "anon");
-        map.put("/src/style/**", "anon");
-        map.put("/src/views/user/*.html", "anon");
+        map.put("/logout", "logout");
+        map.put("/static/**", "anon");
+        /**
+         * swagger-ui 接口放行
+         */
+//        map.put("/swagger-ui.html/**", "anon");
+//        map.put("/swagger-resources/**", "anon");
+//        map.put("/v2/api-docs/**", "anon");
+//        map.put("/webjars/springfox-swagger-ui/**", "anon");
+//        map.put("/data:image**", "anon");
         //登录、重置密码、注册接口可以匿名访问
         map.put("/login", "anon");
         map.put("/register", "anon");
@@ -86,28 +86,5 @@ public class ShiroConfig {
         authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
         return authorizationAttributeSourceAdvisor;
     }
-
-//    /**
-//     * 限制同一账号登录同时登录人数控制
-//     *
-//     * @return
-//     */
-//    public KickoutSessionControlFilter kickoutSessionControlFilter() {
-//        KickoutSessionControlFilter kickoutSessionControlFilter = new KickoutSessionControlFilter();
-//        //使用cacheManager获取相应的cache来缓存用户登录的会话；用于保存用户—会话之间的关系的；
-//        //这里我们还是用之前shiro使用的redisManager()实现的cacheManager()缓存管理
-//        //也可以重新另写一个，重新配置缓存时间之类的自定义缓存属性
-//        kickoutSessionControlFilter.setCacheManager(cacheManager());
-//        //用于根据会话ID，获取会话进行踢出操作的；
-//        kickoutSessionControlFilter.setSessionManager(sessionManager());
-//        //是否踢出后来登录的，默认是false；即后者登录的用户踢出前者登录的用户；踢出顺序。
-//        kickoutSessionControlFilter.setKickoutAfter(false);
-//        //同一个用户最大的会话数，默认1；比如2的意思是同一个用户允许最多同时两个人登录；
-//        kickoutSessionControlFilter.setMaxSession(1);
-//        //被踢出后重定向到的地址；
-//        kickoutSessionControlFilter.setKickoutUrl("kickout");
-//        return kickoutSessionControlFilter;
-//    }
-
 
 }

@@ -8,7 +8,7 @@ import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(tags = "用户")
+@Api(tags = "角色")
 @RestController
 @RequestMapping("/sys/role/")
 public class SysRoleController extends BaseController<SysRoleService, SysRoleQuery, SysRoleEntity> {
