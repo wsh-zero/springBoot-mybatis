@@ -41,7 +41,7 @@ public class ShiroConfig {
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
-        shiroFilterFactoryBean.setLoginUrl("/notLogin");//登录连接
+        shiroFilterFactoryBean.setLoginUrl("/notLogin");//没登录跳转接口
 //        shiroFilterFactoryBean.setSuccessUrl("/index");//登录成功后跳转的连接
 //        shiroFilterFactoryBean.setUnauthorizedUrl("/401"); //未授权跳转页面
         //拦截器
@@ -52,14 +52,6 @@ public class ShiroConfig {
          */
         map.put("/logout", "logout");
         map.put("/static/**", "anon");
-        /**
-         * swagger-ui 接口放行
-         */
-//        map.put("/swagger-ui.html/**", "anon");
-//        map.put("/swagger-resources/**", "anon");
-//        map.put("/v2/api-docs/**", "anon");
-//        map.put("/webjars/springfox-swagger-ui/**", "anon");
-//        map.put("/data:image**", "anon");
         //登录、重置密码、注册接口可以匿名访问
         map.put("/login", "anon");
         map.put("/register", "anon");
