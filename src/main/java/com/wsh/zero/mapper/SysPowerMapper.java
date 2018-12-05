@@ -7,6 +7,6 @@ import com.wsh.zero.vo.SysPowerVO;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface SysPowerMapper extends BaseMapper<SysPowerEntity, SysPowerQuery, SysPowerVO, String> {
+public interface SysPowerMapper extends BaseMapper<SysPowerEntity, SysPowerQuery, SysPowerVO> {
     String[] getPowerPathAll();
 }

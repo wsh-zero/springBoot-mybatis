@@ -5,12 +5,11 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * @param <E>  实体类
- * @param <Q>  查询条件类
- * @param <V>  返回页面类
- * @param <ID> 主键
+ * @param <E> 实体类
+ * @param <Q> 查询条件类
+ * @param <V> 返回页面类
  */
-public interface BaseMapper<E, Q, V, ID> {
+public interface BaseMapper<E, Q, V> {
     /**
      * @param q        通过条件获取count数量
      * @param pageNum
@@ -31,7 +30,7 @@ public interface BaseMapper<E, Q, V, ID> {
      * @param id 通过主键获取一条数据
      * @return
      */
-    E getByPrimarykey(ID id);
+    E getByPrimarykey(String id);
 
     /**
      * @param e 保存数据
@@ -43,7 +42,7 @@ public interface BaseMapper<E, Q, V, ID> {
      * @param id 通过主键删除一条数据
      * @return
      */
-    int delByPrimarykey(ID id);
+    int delByPrimarykey(String id);
 
     /**
      * @param e 修改数据

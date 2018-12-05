@@ -7,5 +7,5 @@ import com.wsh.zero.vo.SysRoleVO;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface SysRoleMapper extends BaseMapper<SysRoleEntity, SysRoleQuery, SysRoleVO, String> {
+public interface SysRoleMapper extends BaseMapper<SysRoleEntity, SysRoleQuery, SysRoleVO> {
 }

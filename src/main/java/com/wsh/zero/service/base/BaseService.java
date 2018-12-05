@@ -1,8 +1,8 @@
 package com.wsh.zero.service.base;
 
-import com.wsh.zero.mapper.base.BaseMapper;
 import com.wsh.util.ResultUtil;
 import com.wsh.util.TableUtil;
+import com.wsh.zero.mapper.base.BaseMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +26,22 @@ public class BaseService<M extends BaseMapper, Q, V, E> {
     public ResultUtil save(E e) {
         baseMapper.save(e);
         return new ResultUtil<>("保存成功");
+    }
+
+    @Transactional
+    public ResultUtil update(E e) {
+        baseMapper.update(e);
+        return new ResultUtil<>("保存成功");
+    }
+
+    @Transactional
+    public ResultUtil del(String[] ids) {
+        if (null != ids && ids.length > 0) {
+            for (String id : ids) {
+                baseMapper.delByPrimarykey(id);
+            }
+        }
+        return new ResultUtil<>("删除成功");
     }
 
 }

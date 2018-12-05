@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
-public interface SysUserMapper extends BaseMapper<SysUserEntity, SysUserQuery, SysUserVO, String> {
+public interface SysUserMapper extends BaseMapper<SysUserEntity, SysUserQuery, SysUserVO> {
     SysUserEntity getUserInfoByUserName(@Param("userName") String userName);
 
     boolean isExistUserName(@Param("userName") String userName);

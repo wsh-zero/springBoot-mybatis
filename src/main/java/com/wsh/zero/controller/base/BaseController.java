@@ -1,8 +1,8 @@
 package com.wsh.zero.controller.base;
 
-import com.wsh.zero.service.base.BaseService;
 import com.wsh.util.ResultUtil;
 import com.wsh.util.TableUtil;
+import com.wsh.zero.service.base.BaseService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -24,9 +24,21 @@ public class BaseController<S extends BaseService, Q, E> {
     }
 
     @PostMapping("save")
-    @ApiOperation(value = "保存/修改", notes = "保存/修改信息")
+    @ApiOperation(value = "添加", notes = "添加信息")
     public ResultUtil save(E e) {
         return baseService.save(e);
+    }
+
+    @PostMapping("update")
+    @ApiOperation(value = "修改", notes = "修改信息")
+    public ResultUtil update(E e) {
+        return baseService.update(e);
+    }
+
+    @PostMapping("del")
+    @ApiOperation(value = "删除", notes = "删除信息")
+    public ResultUtil del(String[] ids) {
+        return baseService.del(ids);
     }
 
 }
