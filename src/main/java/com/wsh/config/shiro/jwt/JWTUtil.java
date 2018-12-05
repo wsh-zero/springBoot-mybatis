@@ -1,5 +1,4 @@
-package com.wsh.config.shiro;
-
+package com.wsh.config.shiro.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -8,9 +7,10 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.util.Date;
-//https://blog.csdn.net/qq_23250633/article/details/81063762
-public class JwtUtil {
 
+public class JWTUtil {
+
+    // 过期时间5分钟
     private static final long EXPIRE_TIME = 5 * 60 * 1000;
 
     /**
@@ -22,12 +22,10 @@ public class JwtUtil {
      */
     public static boolean verify(String token, String userName, String secret) {
         try {
-            //根据密码生成JWT效验器
             Algorithm algorithm = Algorithm.HMAC256(secret);
             JWTVerifier verifier = JWT.require(algorithm)
                     .withClaim("userName", userName)
                     .build();
-            //效验TOKEN
             DecodedJWT jwt = verifier.verify(token);
             return true;
         } catch (Exception exception) {
@@ -57,13 +55,16 @@ public class JwtUtil {
      * @return 加密的token
      */
     public static String sign(String userName, String secret) {
-        Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
-        Algorithm algorithm = Algorithm.HMAC256(secret);
-        // 附带username信息
-        return JWT.create()
-                .withClaim("userName", userName)
-                .withExpiresAt(date)
-                .sign(algorithm);
-
+        try {
+            Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            // 附带username信息
+            return JWT.create()
+                    .withClaim("userName", userName)
+                    .withExpiresAt(date)
+                    .sign(algorithm);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

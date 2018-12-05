@@ -1,5 +1,7 @@
 package com.wsh.config.shiro;
 
+import com.wsh.config.shiro.jwt.JWTToken;
+import com.wsh.config.shiro.jwt.JWTUtil;
 import com.wsh.zero.entity.SysPowerEntity;
 import com.wsh.zero.entity.SysRoleEntity;
 import com.wsh.zero.entity.SysUserEntity;
@@ -22,11 +24,17 @@ public class ShiroRealm extends AuthorizingRealm {
     @Autowired
     private SysUserMapper sysUserMapper;
 
+    /**
+     * 大坑！，必须重写此方法，不然Shiro会报错
+     */
+    @Override
+    public boolean supports(AuthenticationToken token) {
+        return token instanceof JWTToken;
+    }
+
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        //访问@RequirePermission注解的url时触发
-        //获取登录用户名
-        String userName = (String) principals.getPrimaryPrincipal();
+        String userName = JWTUtil.getUsername(principals.toString());
         SysUserEntity entity = sysUserMapper.getUserInfoByUserName(userName);
         //用户的角色，及权限进行绑定
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
@@ -43,20 +51,24 @@ public class ShiroRealm extends AuthorizingRealm {
 
     //验证用户登录信息
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        //加这一步的目的是在Post请求的时候会先进认证，然后在到请求
-        if (token.getPrincipal() == null) {
-            return null;
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
+        String token = (String) auth.getCredentials();
+        // 解密获得username，用于和数据库进行对比
+        String userName = JWTUtil.getUsername(token);
+        if (userName == null) {
+            throw new AuthenticationException("token invalid");
         }
-        String userName = (String) token.getPrincipal();
-        //从数据库查询出User信息及用户关联的角色，权限信息，以备权限分配时使用
-        SysUserEntity entity = sysUserMapper.getUserInfoByUserName(userName);
-        if (null == entity) return null;
-        return new SimpleAuthenticationInfo(
-                entity.getUserName(), //用户名
-                entity.getUserPwd(), //密码
-                getName()  //realm name
-        );
+
+        SysUserEntity userBean = sysUserMapper.getUserInfoByUserName(userName);
+        if (userBean == null) {
+            throw new AuthenticationException("User didn't existed!");
+        }
+
+        if (!JWTUtil.verify(token, userName, userBean.getUserPwd())) {
+            throw new AuthenticationException("Username or password error");
+        }
+
+        return new SimpleAuthenticationInfo(token, token, "my_realm");
     }
 
     /**

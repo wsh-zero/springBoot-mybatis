@@ -1,14 +1,17 @@
 package com.wsh.zero.controller.base;
 
-import com.wsh.zero.service.base.BaseService;
 import com.wsh.util.ResultUtil;
 import com.wsh.util.TableUtil;
+import com.wsh.zero.service.base.BaseService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public class BaseController<S extends BaseService, Q, E> {
@@ -27,6 +30,12 @@ public class BaseController<S extends BaseService, Q, E> {
     @ApiOperation(value = "保存/修改", notes = "保存/修改信息")
     public ResultUtil save(E e) {
         return baseService.save(e);
+    }
+
+    @RequestMapping("test")
+    @RequiresRoles("zzzzz")
+    public String test() {
+        return "返回成功";
     }
 
 }

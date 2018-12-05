@@ -1,12 +1,13 @@
-package com.wsh.config.shiro;
+package com.wsh.config.shiro.jwt;
 
 import org.apache.shiro.authc.AuthenticationToken;
 
-public class JwtToken implements AuthenticationToken {
+public class JWTToken implements AuthenticationToken {
 
+    // 密钥
     private String token;
 
-    public JwtToken(String token) {
+    public JWTToken(String token) {
         this.token = token;
     }
 
