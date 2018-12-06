@@ -21,27 +21,27 @@ public class LoginController {
 
     @GetMapping(value = "/notLogin")
     public ResultUtil notLogin() {
-        return new ResultUtil<>(1001, "您还没有登录！");
+        return ResultUtil.failed(1001, "您还没有登录！");
     }
 
     @GetMapping(value = "/400")
     public ResultUtil error400() {
-        return new ResultUtil<>(HttpStatus.BAD_REQUEST.value(), "错误的请求地址！");
+        return ResultUtil.failed(HttpStatus.BAD_REQUEST.value(), "错误的请求地址！");
     }
 
     @GetMapping(value = "/401")
     public ResultUtil error401() {
-        return new ResultUtil<>(HttpStatus.UNAUTHORIZED.value(), "你没有权限！");
+        return ResultUtil.failed(HttpStatus.UNAUTHORIZED.value(), "你没有权限！");
     }
 
     @GetMapping(value = "/500")
     public ResultUtil error500() {
-        return new ResultUtil<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "访问异常！");
+        return ResultUtil.failed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "访问异常！");
     }
 
     @GetMapping(value = "/404")
     public ResultUtil error404() {
-        return new ResultUtil<>(HttpStatus.NOT_FOUND.value(), "访问的URL不存在！");
+        return ResultUtil.failed(HttpStatus.NOT_FOUND.value(), "访问的URL不存在！");
     }
 
     /**
@@ -67,6 +67,6 @@ public class LoginController {
         subject.login(token);
         Map<String, String> map = new LinkedHashMap<>();
         map.put("access_token", "111111");
-        return new ResultUtil<>(0, "登录成功！", map);
+        return ResultUtil.success( "登录成功！", map);
     }
 }

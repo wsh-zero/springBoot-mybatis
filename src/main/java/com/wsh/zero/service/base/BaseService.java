@@ -25,13 +25,13 @@ public class BaseService<M extends BaseMapper, Q, V, E> {
     @Transactional
     public ResultUtil save(E e) {
         baseMapper.save(e);
-        return new ResultUtil<>("保存成功");
+        return ResultUtil.success("保存成功");
     }
 
     @Transactional
     public ResultUtil update(E e) {
         baseMapper.update(e);
-        return new ResultUtil<>("保存成功");
+        return ResultUtil.success("保存成功");
     }
 
     @Transactional
@@ -41,7 +41,7 @@ public class BaseService<M extends BaseMapper, Q, V, E> {
                 baseMapper.delByPrimarykey(id);
             }
         }
-        return new ResultUtil<>("删除成功");
+        return ResultUtil.success("删除成功");
     }
 
 }

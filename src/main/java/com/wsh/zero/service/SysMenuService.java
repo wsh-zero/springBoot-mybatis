@@ -20,16 +20,16 @@ public class SysMenuService {
     public ResultUtil getMenuList() {
         List<SysMenuVO> menuList = sysMenuMapper.getMenuList(Consot.DEFAULT_UUID);
         handleData(menuList);
-        return new ResultUtil<>(0, "获取菜单成功", menuList);
+        return ResultUtil.success("获取菜单成功", menuList);
     }
 
     public ResultUtil calculationLevel(String id, Integer direction) {
         boolean limitLevel = sysMenuMapper.isLimitLevel(id, direction);
         if (limitLevel) {
-            return new ResultUtil<>(1, "已经处于数据极限位置");
+            return ResultUtil.failed(1, "已经处于数据极限位置");
         }
         sysMenuMapper.calculationLevel(id, direction, Consot.LEVEL_VALUE);
-        return new ResultUtil<>(0, "移动成功");
+        return ResultUtil.success("移动成功");
     }
 
     private void handleData(List<SysMenuVO> menuList) {
@@ -47,16 +47,16 @@ public class SysMenuService {
 
     public ResultUtil save(SysMenuEntity entity) {
         String parent = entity.getParent();
-        if(Strings.isNullOrEmpty(parent)){
-            return new ResultUtil<>(0, "保存成功");
+        if (Strings.isNullOrEmpty(parent)) {
+            return ResultUtil.success( "保存成功");
         }
         sysMenuMapper.save(entity);
-        return new ResultUtil<>(0, "保存成功");
+        return ResultUtil.success( "保存成功");
     }
 
     public ResultUtil del(String id) {
         sysMenuMapper.del(id);
-        return new ResultUtil<>(0, "删除成功");
+        return ResultUtil.success( "删除成功");
     }
 }
 

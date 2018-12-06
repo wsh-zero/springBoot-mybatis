@@ -25,7 +25,7 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
         String[] heart = {"ID", "用户名", "账号", "密码"};
         List<SysUserVO> list = sysUserMapper.getList(null, 0, 10);
         new ExportExcelUtil<>(response, heart, list, "第一次导出", "wsh");
-        return new ResultUtil<>("导出成功");
+        return ResultUtil.success("导出成功");
     }
 
     public ResultUtil importExcel(MultipartFile file) {
@@ -33,7 +33,7 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
         for (List<String> list : lists) {
             System.out.println(list.get(0));
         }
-        return new ResultUtil<>("导入成功");
+        return ResultUtil.success("导入成功");
 
     }
 
@@ -44,13 +44,13 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
             if (existUser) {
                 boolean frozen = sysUserMapper.getFrozenValueByUserName(userName);
                 if (frozen) {
-                    return new ResultUtil<>(1,"账号已经被冻结，请联系管理员!");
+                    return ResultUtil.failed(1,"账号已经被冻结，请联系管理员!");
                 }
-                return new ResultUtil<>("登录成功!");
+                return ResultUtil.success("登录成功!");
             }
-            return new ResultUtil<>(1, "用户密码错误!");
+            return ResultUtil.failed(1, "用户密码错误!");
         }
-        return new ResultUtil<>(1, "用户不存在!");
+        return ResultUtil.failed(1, "用户不存在!");
     }
 
 }
