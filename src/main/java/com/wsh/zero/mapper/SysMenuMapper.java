@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface SysMenuMapper {
-    List<SysMenuVO> getMenuList(@Param("parent") String parent);
+    List<SysMenuVO> getMenuList(@Param("parent") String parent, @Param("userName") String userName);
 
     int save(SysMenuEntity entity);
 
