@@ -14,7 +14,7 @@ public interface SysMenuMapper {
 
     int save(SysMenuEntity entity);
 
-    int del(@Param("id") String id);
+    BigDecimal getMaxLevelByParnt(@Param("parent") String parent);
 
     /**
      * 实现数据上下移动

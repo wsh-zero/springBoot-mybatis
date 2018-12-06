@@ -21,10 +21,10 @@
         update sys_menu set
         <choose>
             <when test="direction == 1">
-                `level`=`level`+1.01
+                `level`=`level` + #{levelValue}
             </when>
             <otherwise>
-                `level`=`level`-1.01
+                `level`=`level` - #{levelValue}
             </otherwise>
         </choose>
         where id=#{id}
@@ -42,4 +42,7 @@
         FROM sys_menu where parent =(SELECT parent from sys_menu WHERE id=#{id}))
 
     </select>
+    <update id="save">
+        insert into sys_menu(id,title,icon,jump,spread,parent,`level`) values(UUID(),#{title},#{icon},#{jump},#{spread},#{parent},#{level})
+    </update>
 </mapper>

@@ -5,6 +5,7 @@ import com.wsh.zero.entity.SysMenuEntity;
 import com.wsh.zero.service.SysMenuService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,12 +29,7 @@ public class SysMenuController {
     }
 
     @GetMapping("save")
-    public ResultUtil save(SysMenuEntity entity) {
+    public ResultUtil save(@Validated SysMenuEntity entity) {
         return sysMenuService.save(entity);
-    }
-
-    @GetMapping("del")
-    public ResultUtil del(@RequestParam String id) {
-        return sysMenuService.del(id);
     }
 }
