@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wsh.zero.mapper.SysMenuMapper">
+    <resultMap id="resultSysMenuVO" type="SysMenuVO">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="icon" property="icon"/>
+        <result column="spread" property="spread"/>
+        <result column="jump" property="jump"/>
+        <result column="parent" property="parent"/>
+    </resultMap>
+    <sql id="list_fields">
+        id,title,icon,jump,spread,parent
+    </sql>
+    <select id="getMenuList" resultMap="resultSysMenuVO">
+        select
+        <include refid="list_fields"/>
+        from sys_menu sm where sm.parent =#{parent} order by `level`
+    </select>
+    <update id="calculationLevel">
+        update sys_menu set
+        <choose>
+            <when test="direction == 1">
+                `level`=`level`+1.01
+            </when>
+            <otherwise>
+                `level`=`level`-1.01
+            </otherwise>
+        </choose>
+        where id=#{id}
+    </update>
+    <select id="isLimitLevel" resultType="boolean">
+        SELECT count(1) FROM sys_menu where id=#{id} and `level`
+        <choose>
+            <when test="direction == 1">
+                &gt;= (SELECT max(`level`)
+            </when>
+            <otherwise>
+                &lt;= (SELECT min(`level`)
+            </otherwise>
+        </choose>
+        FROM sys_menu where parent =(SELECT parent from sys_menu WHERE id=#{id}))
+
+    </select>
+</mapper>

@@ -27,8 +27,8 @@ spring:
   thymeleaf:
     mode: LEGACYHTML5
     cache: false
-#  resources:
-#    static-locations: classpath:/templates/ # 设置web访问html文件
+  #  resources:
+  #    static-locations: classpath:/templates/ # 设置web访问html文件
   auto:
     openurl: false
   web:
@@ -44,6 +44,13 @@ spring:
       min-idle: 0
       max-active: 8
       max-wait: -1
+  #实体类转json时过滤掉空值
+  #  * Include.Include.ALWAYS 默认
+  #  * Include.NON_DEFAULT 属性为默认值不序列化
+  #  * Include.NON_EMPTY 属性为 空（""） 或者为 null 都不序列化
+  #  * Include.NON_NULL 属性为NULL 不序列化
+  jackson:
+    default-property-inclusion: non_null
 #配置日志
 logging:
   level:
