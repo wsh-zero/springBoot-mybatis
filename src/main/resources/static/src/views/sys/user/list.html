@@ -24,7 +24,7 @@
                     <table class="layui-hide" id="test-table-operate" lay-filter="test-table-operate"></table>
 
                     <script type="text/html" id="test-table-operate-barDemo">
-                        <a class="layui-btn layui-btn-xs" lay-href="/sys/view/user_view/id={{ d.id }}">查看</a>
+                        <a class="layui-btn layui-btn-xs" lay-href="/sys/user/details/id={{ d.id }}">查看</a>
                         <!--<a class="layui-btn layui-btn-xs" lay-href="/sys/view/user_edit/id={{d.id}}">编辑</a>-->
                         <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
                         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
@@ -88,7 +88,7 @@
                     //弹框id
                     , id: 'LAY-popup-content-edit'
                     , success: function (layero, index) {
-                        view(this.id).render('sys/view/user_edit1', data).done(function () {
+                        view(this.id).render('sys/user/edit', data).done(function () {
                             //初始化弹框
                             form.render(null, 'model');
                             //渲染弹框
