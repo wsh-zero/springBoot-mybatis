@@ -52,9 +52,12 @@
     <update id="update">
         update sys_user set user_name=#{userName} where id=#{id}
     </update>
-    <delete id="delByPrimarykey">
+    <delete id="delByPrimaryKey">
         delete from sys_user where id=#{id}
     </delete>
+    <select id="getByPrimaryKey" resultMap="resultSysUserVO">
+        select <include refid="list_fields"/> from sys_user where id=#{id}
+    </select>
     <select id="getUserInfoByUserName" resultMap="resultSysUserEntity">
         SELECT su.id,su.user_amount,su.user_name,su.user_pwd,su.frozen,
         sr.id as sid,sr.role_name,

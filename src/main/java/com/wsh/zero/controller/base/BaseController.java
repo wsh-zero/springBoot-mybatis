@@ -41,4 +41,10 @@ public class BaseController<S extends BaseService, Q, E> {
         return baseService.del(ids);
     }
 
+    @GetMapping("get")
+    @ApiOperation(value = "获取一条", notes = "通过主键获取数据")
+    public ResultUtil getByPrimaryKey(@RequestParam String id) {
+        return baseService.getByPrimaryKey(id);
+    }
+
 }

@@ -28,6 +28,10 @@ public class BaseService<M extends BaseMapper, Q, V, E> {
         return ResultUtil.success("保存成功");
     }
 
+    public ResultUtil getByPrimaryKey(String id) {
+        return ResultUtil.success("获取成功", baseMapper.getByPrimaryKey(id));
+    }
+
     @Transactional
     public ResultUtil update(E e) {
         baseMapper.update(e);
@@ -38,7 +42,7 @@ public class BaseService<M extends BaseMapper, Q, V, E> {
     public ResultUtil del(String[] ids) {
         if (null != ids && ids.length > 0) {
             for (String id : ids) {
-                baseMapper.delByPrimarykey(id);
+                baseMapper.delByPrimaryKey(id);
             }
         }
         return ResultUtil.success("删除成功");

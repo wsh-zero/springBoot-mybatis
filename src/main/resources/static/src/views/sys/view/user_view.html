@@ -1,0 +1,40 @@
+<title>用户详情</title>
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>设置</cite></a>
+        <a><cite>邮件服务</cite></a>
+    </div>
+</div>
+<script type="text/html" template lay-url="/sys/user/get?id={{ layui.router().search.id }}" lay-type="get">
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">查看用户详情</div>
+                    <div class="layui-card-body">
+                        <div class="layui-form" lay-filter="">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">编号</label>
+                                <div class="layui-form-mid">{{d.data.id}}</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">姓名</label>
+                                <div class="layui-form-mid">{{d.data.userName}}</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">账号</label>
+                                <div class="layui-form-mid">{{d.data.userAmount}}</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">密码</label>
+                                <div class="layui-form-mid">{{d.data.userPwd}}</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>

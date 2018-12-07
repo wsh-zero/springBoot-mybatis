@@ -52,8 +52,8 @@ spring:
   #  * Include.NON_DEFAULT 属性为默认值不序列化
   #  * Include.NON_EMPTY 属性为 空（""） 或者为 null 都不序列化
   #  * Include.NON_NULL 属性为NULL 不序列化
-  jackson:
-    default-property-inclusion: non_null
+#  jackson:
+#    default-property-inclusion: non_null
 #配置日志
 logging:
   level:

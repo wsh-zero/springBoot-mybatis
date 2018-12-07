@@ -30,7 +30,7 @@ public interface BaseMapper<E, Q, V> {
      * @param id 通过主键获取一条数据
      * @return
      */
-    E getByPrimarykey(String id);
+    E getByPrimaryKey(String id);
 
     /**
      * @param e 保存数据
@@ -42,7 +42,7 @@ public interface BaseMapper<E, Q, V> {
      * @param id 通过主键删除一条数据
      * @return
      */
-    int delByPrimarykey(String id);
+    int delByPrimaryKey(String id);
 
     /**
      * @param e 修改数据
