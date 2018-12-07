@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 @Data
 public class SysMenuEntity {
     private String id;
+    private String name;
     private String title;
     private String icon;
     private String jump;

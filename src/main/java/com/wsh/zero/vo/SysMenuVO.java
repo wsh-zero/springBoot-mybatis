@@ -10,6 +10,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SysMenuVO {
     private String id;
+    private String name;
     private String title;
     private Boolean spread;
     private String icon;

@@ -3,6 +3,7 @@
 <mapper namespace="com.wsh.zero.mapper.SysMenuMapper">
     <resultMap id="resultSysMenuVO" type="SysMenuVO">
         <id column="id" property="id"/>
+        <result column="name" property="name"/>
         <result column="title" property="title"/>
         <result column="icon" property="icon"/>
         <result column="spread" property="spread"/>
@@ -10,7 +11,7 @@
         <result column="parent" property="parent"/>
     </resultMap>
     <sql id="list_fields">
-        sm.id,sm.title,sm.icon,sm.jump,sm.spread,sm.parent
+        sm.id,sm.name,sm.title,sm.icon,sm.jump,sm.spread,sm.parent
     </sql>
     <select id="getMenuList" resultMap="resultSysMenuVO">
         SELECT <include refid="list_fields"/> FROM sys_user su
@@ -43,6 +44,7 @@
 
     </select>
     <update id="save">
-        insert into sys_menu(id,title,icon,jump,spread,parent,`level`) values(UUID(),#{title},#{icon},#{jump},#{spread},#{parent},#{level})
+        insert into sys_menu(id,`name`,title,icon,jump,spread,parent,`level`)
+        values(UUID(),#{name},#{title},#{icon},#{jump},#{spread},#{parent},#{level})
     </update>
 </mapper>
