@@ -25,8 +25,8 @@
 
                     <script type="text/html" id="test-table-operate-barDemo">
                         <a class="layui-btn layui-btn-xs" lay-href="/sys/view/user_view/id={{ d.id }}">查看</a>
-                        <a class="layui-btn layui-btn-xs" lay-href="/sys/view/user_edit/id={{d.id}}">编辑</a>
-                        <!--<a class="layui-btn layui-btn-xs" lay-href="/sys/view/user_edit1">编辑</a>-->
+                        <!--<a class="layui-btn layui-btn-xs" lay-href="/sys/view/user_edit/id={{d.id}}">编辑</a>-->
+                        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
                         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
                     </script>
                 </div>
@@ -39,9 +39,11 @@
     layui.use(['admin', 'table'], function () {
         var table = layui.table
             , admin = layui.admin
+            , form = layui.form
+            , view = layui.view
             , tableId = "test-table-operate";
         table.render({
-            elem: '#'+tableId
+            elem: '#' + tableId
             , url: '/sys/user/list'
             // ,width: admin.screen() > 1 ? 892 : ''
             // ,height: 332
@@ -54,6 +56,9 @@
                 , {width: 178, align: 'center', fixed: 'right', title: '操作', toolbar: '#test-table-operate-barDemo'}
             ]]
             , page: true
+            , limit: 10
+            , limits: [10, 15, 20, 25, 30]
+            , text: '对不起，加载出现异常！'
         });
 
         //监听表格复选框选择
@@ -77,6 +82,38 @@
                     layer.close(index);
                 });
             } else if (obj.event === 'edit') {
+                console.log(111)
+                admin.popup({
+                    title: '编辑文章'
+                    , area: ['550px', '550px']
+                    //弹框id
+                    , id: 'LAY-popup-content-edit'
+                    , success: function (layero, index) {
+                        view(this.id).render('sys/view/user_edit1', data).done(function () {
+                            //初始化弹框
+                            form.render(null, 'model');
+                            //渲染弹框
+                            form.val('model', data)
+
+                            //监听提交
+                            form.on('submit(submit)', function (data) {
+                                var field = data.field; //获取提交的字段
+                                admin.req({
+                                    url: '/sys/user/update'
+                                    , type: 'post'
+                                    , data: field
+                                    , done: function (res) {
+                                        layer.msg(res.msg);
+                                    }
+                                });
+                                //提交 Ajax 成功后，关闭当前弹层并重载表格
+                                //$.ajax({});
+                                layui.table.reload(tableId); //重载表格
+                                layer.close(index); //执行关闭
+                            });
+                        });
+                    }
+                });
             }
         });
 
