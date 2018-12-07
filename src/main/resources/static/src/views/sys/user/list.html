@@ -15,15 +15,13 @@
             <div class="layui-card">
                 <div class="layui-card-header">数据操作</div>
                 <div class="layui-card-body">
-                    <div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
-                        <button class="layui-btn" data-type="getCheckData">获取选中行数据</button>
-                        <button class="layui-btn" data-type="getCheckLength">获取选中数目</button>
-                        <button class="layui-btn" data-type="isAll">验证是否全选</button>
+                    <div style="padding-bottom: 10px;" id="operate-btn">
+                        <button class="layui-btn" data-type="add">添加</button>
+                        <button class="layui-btn layui-btn-danger" data-type="batchDel">批量删除</button>
                     </div>
+                    <table class="layui-hide" id="table" lay-filter="table-filter"></table>
 
-                    <table class="layui-hide" id="test-table-operate" lay-filter="test-table-operate"></table>
-
-                    <script type="text/html" id="test-table-operate-barDemo">
+                    <script type="text/html" id="table-operate">
                         <a class="layui-btn layui-btn-xs" lay-href="/sys/user/details/id={{ d.id }}">查看</a>
                         <!--<a class="layui-btn layui-btn-xs" lay-href="/sys/view/user_edit/id={{d.id}}">编辑</a>-->
                         <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
@@ -38,10 +36,11 @@
 <script>
     layui.use(['admin', 'table'], function () {
         var table = layui.table
+            , $ = layui.$
             , admin = layui.admin
             , form = layui.form
             , view = layui.view
-            , tableId = "test-table-operate";
+            , tableId = "table";
         table.render({
             elem: '#' + tableId
             , url: '/sys/user/list'
@@ -53,7 +52,7 @@
                 , {field: 'userAmount', title: '登录账号'}
                 , {field: 'userPwd', title: '登录密码', sort: true}
                 , {field: 'userName', title: '用户名称'}
-                , {width: 178, align: 'center', fixed: 'right', title: '操作', toolbar: '#test-table-operate-barDemo'}
+                , {width: 178, align: 'center', fixed: 'right', title: '操作', toolbar: '#table-operate'}
             ]]
             , page: true
             , limit: 10
@@ -61,12 +60,8 @@
             , text: '对不起，加载出现异常！'
         });
 
-        //监听表格复选框选择
-        table.on('checkbox(test-table-operate)', function (obj) {
-            console.log(obj)
-        });
         //监听工具条
-        table.on('tool(test-table-operate)', function (obj) {
+        table.on('tool(table-filter)', function (obj) {
             var data = obj.data;
             if (obj.event === 'del') {
                 layer.confirm('真的删除行么', function (index) {
@@ -76,67 +71,81 @@
                         , data: {ids: data.id}
                         , done: function (res) {
                             layer.msg(res.msg)
+                            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                            layer.close(index);
                         }
                     });
-                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-                    layer.close(index);
                 });
             } else if (obj.event === 'edit') {
-                admin.popup({
-                    title: '编辑用户信息'
-                    , area: ['450px', '550px']
-                    //弹框id
-                    , id: 'LAY-popup-content-edit'
-                    , success: function (layero, index) {
-                        view(this.id).render('sys/user/edit', data).done(function () {
-                            //初始化弹框
-                            form.render(null, 'model');
-                            //渲染弹框
-                            form.val('model', data)
-
-                            //监听提交
-                            form.on('submit(submit)', function (data) {
-                                var field = data.field; //获取提交的字段
-                                admin.req({
-                                    url: '/sys/user/update'
-                                    , type: 'post'
-                                    , data: field
-                                    , done: function (res) {
-                                        layer.msg(res.msg);
-                                    }
-                                });
-                                //提交 Ajax 成功后，关闭当前弹层并重载表格
-                                //$.ajax({});
-                                layui.table.reload(tableId); //重载表格
-                                layer.close(index); //执行关闭
-                            });
-                        });
-                    }
-                });
+                common('编辑用户信息', 'content-edit', '/sys/user/update', 'post', data);
             }
         });
 
-        var $ = layui.$, active = {
-            getCheckData: function () { //获取选中数据
-                var checkStatus = table.checkStatus('test-table-operate')
-                    , data = checkStatus.data;
-                layer.alert(JSON.stringify(data));
-            }
-            , getCheckLength: function () { //获取选中数目
-                var checkStatus = table.checkStatus('test-table-operate')
-                    , data = checkStatus.data;
-                layer.msg('选中了：' + data.length + ' 个');
-            }
-            , isAll: function () { //验证是否全选
-                var checkStatus = table.checkStatus('test-table-operate');
-                layer.msg(checkStatus.isAll ? '全选' : '未全选')
-            }
-        };
-
-        $('.test-table-operate-btn .layui-btn').on('click', function () {
+        $('#operate-btn .layui-btn').on('click', function () {
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';
         });
+
+        var active = {
+            //批量刪除
+            batchDel: function () {
+                var checkStatus = table.checkStatus(tableId)
+                    , checkData = checkStatus.data; //得到选中的数据
+                var length = checkData.length;
+                if (length === 0) {
+                    return layer.msg('请选择数据');
+                }
+                var ids = ''
+                for (item in checkData) ids += checkData[item]["id"] + ",";
+                layer.confirm('确定删除这 ' + length + ' 条数据吗？', function () {
+                    admin.req({
+                        url: '/sys/user/del'
+                        , type: 'post'
+                        , data: {ids: ids}
+                        , done: function (res) {
+                            layer.msg(res.msg)
+                            table.reload(tableId);
+                        }
+                    });
+                });
+            }
+
+            //添加
+            , add: function () {
+                common('添加用户信息', 'content-add', '/sys/user/save', 'post');
+            }
+        };
+
+        function common(title, id, url, ajaxType, data) {
+            admin.popup({
+                title: title
+                , area: ['450px', '550px']
+                , id: id
+                , success: function (layero, index) {
+                    view(this.id).render('sys/user/model').done(function () {
+                        //初始化弹框
+                        form.render(null, 'model-filter');
+                        if (data) {
+                            //渲染弹框
+                            form.val('model-filter', data)
+                        }
+                        //监听提交
+                        form.on('submit(submit)', function (data) {
+                            admin.req({
+                                url: url
+                                , type: ajaxType
+                                , data: data.field
+                                , done: function (res) {
+                                    layer.msg(res.msg);
+                                    table.reload(tableId); //重载表格
+                                    layer.close(index); //执行关闭
+                                }
+                            });
+                        });
+                    });
+                }
+            });
+        }
 
     });
 </script>
