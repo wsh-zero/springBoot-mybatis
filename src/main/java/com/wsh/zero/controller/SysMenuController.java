@@ -32,4 +32,9 @@ public class SysMenuController {
     public ResultUtil save(@Validated SysMenuEntity entity) {
         return sysMenuService.save(entity);
     }
+
+    @GetMapping("get_tree")
+    public ResultUtil getMenuTree() {
+        return sysMenuService.getMenuTree();
+    }
 }

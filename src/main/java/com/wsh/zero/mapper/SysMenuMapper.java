@@ -1,6 +1,7 @@
 package com.wsh.zero.mapper;
 
 import com.wsh.zero.entity.SysMenuEntity;
+import com.wsh.zero.vo.MenuTreeVO;
 import com.wsh.zero.vo.SysMenuVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -13,6 +14,8 @@ public interface SysMenuMapper {
     List<SysMenuVO> getMenuList(@Param("parent") String parent, @Param("userName") String userName);
 
     int save(SysMenuEntity entity);
+
+    List<MenuTreeVO> getAll();
 
     BigDecimal getMaxLevelByParnt(@Param("parent") String parent);
 

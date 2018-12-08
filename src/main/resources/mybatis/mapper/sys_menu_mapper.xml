@@ -10,13 +10,21 @@
         <result column="jump" property="jump"/>
         <result column="parent" property="parent"/>
     </resultMap>
+    <resultMap id="resultMenuTreeVO" type="MenuTreeVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="parent" property="parent"/>
+    </resultMap>
     <sql id="list_fields">
         sm.id,sm.name,sm.title,sm.icon,sm.jump,sm.spread,sm.parent
     </sql>
     <select id="getMenuList" resultMap="resultSysMenuVO">
-        SELECT <include refid="list_fields"/> FROM sys_user su
+        SELECT
+        <include refid="list_fields"/>
+        FROM sys_user su
         LEFT JOIN sys_user_menu map ON su.id=map.user_id
-        LEFT JOIN sys_menu sm on map.menu_id=sm.id where su.user_name=#{userName} and sm.parent =#{parent} order by sm.`level`;
+        LEFT JOIN sys_menu sm on map.menu_id=sm.id where su.user_name=#{userName} and sm.parent =#{parent} order by
+        sm.`level`;
     </select>
     <update id="calculationLevel">
         update sys_menu set
@@ -47,4 +55,7 @@
         insert into sys_menu(id,`name`,title,icon,jump,spread,parent,`level`)
         values(UUID(),#{name},#{title},#{icon},#{jump},#{spread},#{parent},#{level})
     </update>
+    <select id="getAll" resultMap="resultMenuTreeVO">
+       select id,title as name,parent from  sys_menu
+    </select>
 </mapper>
