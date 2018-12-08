@@ -1,16 +1,14 @@
+关键字：<input type="text" id="key" value="" class="empty"/><br/>
 <div id="navTree">
     <ul id="tree" class="ztree"></ul>
 </div>
-
-
-<script type="text/javascript">
+<script>
     layui.use(['admin', 'table'], function () {
         var admin = layui.admin;
 
         var setting = {
             async: {
                 enable: true,
-                url: getAsyncUrl,
                 autoParam: ["id"]
             },
             data: {
@@ -20,19 +18,35 @@
                     pIdKey: "parent",
                     rootPId: 0
                 }
+            },
+            check: {
+                // enable: true//checkbox
+            },
+            view: {
+                nameIsHTML: true, //允许name支持html
+                selectedMulti: false
+                // , fontCss: {'color': 'blue', 'font-family': '微软雅黑'}
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            callback: {
+                onClick: onClick//点击事件
             }
         };
 
-        // 查询子节点
-        function getAsyncUrl(treeId, treeNode) {
-            console.log(11111)
-            // return "<%=request.getContextPath()%>/auth/permission/getTreeSubNode";
+        function onClick(event, treeId, treeNode, clickFlag) {
+            //实现单击展开
+            var zTree = $.fn.zTree.getZTreeObj("tree");
+            zTree.expandNode(treeNode);
         }
 
         admin.req({
             url: "/sys/menu/get_tree"
             , success: function (res) {
                 $.fn.zTree.init($("#tree"), setting, res.data);
+                fuzzySearch('tree', '#key', null, true); //初始化模糊搜索方法
             }
         });
 
