@@ -1,6 +1,25 @@
-关键字：<input type="text" id="key" value="" class="empty"/><br/>
-<div id="navTree">
-    <ul id="tree" class="ztree"></ul>
+<title>菜单分配</title>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm4">
+            <div class="layui-card zero-height-brace-up" style="width: 25%">
+                <div class="layui-card-header">用户留言</div>
+                <div class="layui-card-body ">
+                    <input type="text" id="key" placeholder="检索权限" class="layui-input" title="检索权限">
+                    <div id="navTree">
+                        <ul id="tree" class="ztree"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm8">
+            <div class="layui-card zero-height-brace-up" style="width: 54%">
+                <div class="layui-card-header">用户留言</div>
+                <div class="layui-card-body">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
     layui.use(['admin', 'table'], function () {
@@ -23,7 +42,7 @@
                 // enable: true//checkbox
             },
             view: {
-                showIcon:false,
+                showIcon: false,
                 nameIsHTML: true, //允许name支持html
                 selectedMulti: false
                 // , fontCss: {'color': 'blue', 'font-family': '微软雅黑'}

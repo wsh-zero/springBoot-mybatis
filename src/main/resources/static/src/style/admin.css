@@ -6,7 +6,7 @@
  @License：LPPL
  
  */
- 
+
 html #layuicss-layuiAdmin{display: none; position: absolute; width: 1989px;}
 
 
@@ -35,7 +35,7 @@ html{background-color: #f2f2f2; color: #666;}
 *[layadmin-event]{cursor: pointer;}
 
 /* 重置布局结构 */
-.layui-layout-admin .layui-header{position: fixed; top: 0; left: 0; width: 100%; height: 50px;} 
+.layui-layout-admin .layui-header{position: fixed; top: 0; left: 0; width: 100%; height: 50px;}
 
 /*
 .layui-layout-admin .layui-header .layui-layout-right .layui-nav-item a{color: #fff;}
@@ -238,7 +238,7 @@ html{background-color: #f2f2f2; color: #666;}
 .layui-layout-admin .layui-header a:hover{color: #000;}
 .layui-layout-admin .layui-header .layui-nav .layui-nav-more{border-top-color: #666}
 .layui-layout-admin .layui-header .layui-nav .layui-nav-mored{border-color: transparent; border-bottom-color: #666;}
-.layui-layout-admin .layui-header .layui-nav .layui-this:after, 
+.layui-layout-admin .layui-header .layui-nav .layui-this:after,
 .layui-layout-admin .layui-header .layui-nav-bar{height: 2px; background-color: #20222A}
 .layui-layout-admin .layui-logo{background-color: #20222A; box-shadow: 0 1px 2px 0 rgba(0,0,0,.15);}
 .layui-layout-admin .layui-logo,
@@ -502,7 +502,7 @@ html{background-color: #f2f2f2; color: #666;}
 .layadmin-tips .layui-text{width: 500px; margin: 30px auto; padding-top: 20px; border-top: 5px solid #009688; font-size: 16px;}
 .layadmin-tips h1{font-size: 100px; line-height: 100px; color: #009688;}
 .layadmin-tips .layui-text .layui-anim{display: inline-block;}
-
+.zero-height-brace-up{position:fixed;height:100%;}
 
 /*
 
@@ -511,13 +511,13 @@ html{background-color: #f2f2f2; color: #666;}
 */
 
 @media screen and (max-width: 768px) {
-  
+
   /* 产品清单模板 */
   .layadmin-panel-selection{margin: 0; width: auto;}
-  
+
   /* 导航 */
   .layui-body .layui-nav .layui-nav-item{display: block;}
-  
+
   /* 主体容器 */
   .layui-layout-admin .layui-body .layadmin-tabsbody-item{-webkit-overflow-scrolling: touch; overflow: auto;}
 }
