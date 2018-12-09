@@ -3,6 +3,7 @@ package com.wsh.zero.service;
 import com.google.common.collect.Lists;
 import com.wsh.util.Consot;
 import com.wsh.util.ResultUtil;
+import com.wsh.util.Utils;
 import com.wsh.zero.entity.SysMenuEntity;
 import com.wsh.zero.mapper.SysMenuMapper;
 import com.wsh.zero.vo.MenuTreeVO;
@@ -42,7 +43,7 @@ public class SysMenuService {
     }
 
     public ResultUtil getByPrimaryKey(String id) {
-        return ResultUtil.success("获取成功",sysMenuMapper.getByPrimaryKey(id));
+        return ResultUtil.success("获取成功", sysMenuMapper.getByPrimaryKey(id));
     }
 
     private void handleData(List<SysMenuVO> menuList, String userName) {
@@ -63,6 +64,7 @@ public class SysMenuService {
         //获取
         BigDecimal maxLevelByParnt = sysMenuMapper.getMaxLevelByParnt(entity.getParent());
         entity.setLevel(maxLevelByParnt.add(new BigDecimal(BigInteger.ONE)));
+        entity.setId(Utils.UUID());
         sysMenuMapper.save(entity);
         return ResultUtil.success("保存成功");
     }

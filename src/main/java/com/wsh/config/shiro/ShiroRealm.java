@@ -21,8 +21,8 @@ public class ShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         //获取登录用户名
-        String userName = (String) principals.getPrimaryPrincipal();
-        SysUserEntity entity = sysUserMapper.getUserInfoByUserName(userName);
+        String userAmount = (String) principals.getPrimaryPrincipal();
+        SysUserEntity entity = sysUserMapper.getUserInfoByUserAmount(userAmount);
         //用户的角色，及权限进行绑定
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         for (SysRoleEntity role : entity.getRoleList()) {
@@ -43,9 +43,9 @@ public class ShiroRealm extends AuthorizingRealm {
         if (token.getPrincipal() == null) {
             return null;
         }
-        String userName = (String) token.getPrincipal();
+        String userAmount = (String) token.getPrincipal();
         //从数据库查询出User信息及用户关联的角色，权限信息，以备权限分配时使用
-        SysUserEntity entity = sysUserMapper.getUserInfoByUserName(userName);
+        SysUserEntity entity = sysUserMapper.getUserInfoByUserAmount(userAmount);
         if (null == entity) return null;
         return new SimpleAuthenticationInfo(
                 entity.getUserName(), //用户名

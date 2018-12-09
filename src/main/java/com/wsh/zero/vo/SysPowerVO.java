@@ -9,4 +9,5 @@ import lombok.Data;
 public class SysPowerVO {
     private String id;
     private String powerName;
+    private String powerPath;
 }

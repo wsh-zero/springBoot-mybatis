@@ -31,3 +31,5 @@ spring 注解验证@NotNull等使用方法
     @Length 被注释的字符串的大小必须在指定的范围内
     @NotEmpty  被注释的字符串必须非空
     @Range  被注释的元素必须在合适的范围内
+layuiAdmin学习资料
+    https://faysunshine.com/layui/template/index.html （select多选，tree列表优化实现右键删除等）

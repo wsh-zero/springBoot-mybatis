@@ -1,8 +1,10 @@
 <div class="layui-form" lay-filter="model-filter">
+    <input type="hidden" name="id" placeholder="编号" class="layui-input">
     <div class="layui-form-item">
-        <label class="layui-form-label required">编号</label>
+        <label class="layui-form-label required">用户名称</label>
         <div class="layui-input-block">
-            <input type="text" name="id" lay-verify="required" placeholder="编号" class="layui-input">
+            <input type="text" name="userName" lay-verify="required" placeholder="用户名称"
+                   class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -12,7 +14,7 @@
                    class="layui-input">
         </div>
     </div>
-    <div class="layui-form-item">
+    <div class="layui-form-item" id="user_pwd_div">
         <label class="layui-form-label required">登录密码</label>
         <div class="layui-input-block">
             <input type="text" name="userPwd" lay-verify="required" placeholder="登录密码"
@@ -24,11 +26,10 @@
         <div class="layui-input-block" id="role_checkbox">
         </div>
     </div>
-</div>
-<div class="layui-form-item">
-    <label class="layui-form-label"></label>
-    <div class="layui-input-inline">
-        <input type="button" lay-submit lay-filter="submit-filter" value="确认" class="layui-btn">
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="submit-filter" value="确认" class="layui-btn">
+        </div>
     </div>
-</div>
 </div>

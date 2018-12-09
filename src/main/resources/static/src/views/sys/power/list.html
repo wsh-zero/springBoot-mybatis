@@ -1,19 +1,19 @@
-<title>系统角色 - 数据表格</title>
+<title>系统权限 - 数据表格</title>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-header">数据操作</div>
                 <div class="layui-card-body">
-                    <script type="text/html" id="role_operate_btn">
+                    <script type="text/html" id="power_operate_btn">
                         <div class="layui-btn-container">
                             <button class="layui-btn" lay-event="add">添加</button>
                             <button class="layui-btn layui-btn-danger" lay-event="batchDel">批量删除</button>
                         </div>
                     </script>
-                    <table class="layui-hide" id="role_table" lay-filter="role-table-filter"></table>
+                    <table class="layui-hide" id="power_table" lay-filter="power-table-filter"></table>
 
-                    <script type="text/html" id="role-table-operate">
+                    <script type="text/html" id="power-table-operate">
                         <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
                         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
                     </script>
@@ -30,19 +30,19 @@
             , admin = layui.admin
             , form = layui.form
             , view = layui.view
-            , tableId = "role_table";
+            , tableId = "power_table";
         table.render({
             elem: '#' + tableId
-            , url: '/sys/role/list'
+            , url: '/sys/power/list'
             // ,width: admin.screen() > 1 ? 892 : ''
             // ,height: 332
             //开启头部工具栏
-            , toolbar: '#role_operate_btn'
+            , toolbar: '#power_operate_btn'
             , cols: [[
                 {type: 'checkbox', fixed: 'left'}
                 , {field: 'id', title: 'ID', sort: true, fixed: 'left'}
-                , {field: 'roleName', title: '角色名称'}
-                , {width: 178, align: 'center', fixed: 'right', title: '操作', toolbar: '#role-table-operate'}
+                , {field: 'powerName', title: '权限名称'}
+                , {width: 178, align: 'center', fixed: 'right', title: '操作', toolbar: '#power-table-operate'}
             ]]
             , page: true
             , limit: 10
@@ -51,12 +51,12 @@
         });
 
         //监听工具条
-        table.on('tool(role-table-filter)', function (obj) {
+        table.on('tool(power-table-filter)', function (obj) {
             var data = obj.data;
             if (obj.event === 'del') {
                 layer.confirm('真的删除行么', function (index) {
                     admin.req({
-                        url: '/sys/role/del'
+                        url: '/sys/power/del'
                         , type: 'post'
                         , data: {ids: data.id}
                         , done: function (res) {
@@ -67,11 +67,11 @@
                     });
                 });
             } else if (obj.event === 'edit') {
-                common('编辑角色信息', 'role-content-edit', '/sys/role/update', 'post', data);
+                common('编辑权限信息', 'power-content-edit', '/sys/power/update', 'post', data);
             }
         });
 
-        table.on('toolbar(role-table-filter)', function (obj) {
+        table.on('toolbar(power-table-filter)', function (obj) {
             switch (obj.event) {
                 case 'batchDel':
                     var checkStatus = table.checkStatus(tableId)
@@ -84,7 +84,7 @@
                     for (item in checkData) ids += checkData[item]["id"] + ",";
                     layer.confirm('确定删除这 ' + length + ' 条数据吗？', function () {
                         admin.req({
-                            url: '/sys/role/del'
+                            url: '/sys/power/del'
                             , type: 'post'
                             , data: {ids: ids}
                             , done: function (res) {
@@ -95,7 +95,7 @@
                     });
                     break;
                 case 'add':
-                    common('添加角色信息', 'role-content-add', '/sys/role/save', 'post');
+                    common('添加权限信息', 'power-content-add', '/sys/power/save', 'post');
                     break;
             }
         });
@@ -106,15 +106,15 @@
                 , area: ['450px', '550px']
                 , id: id
                 , success: function (layero, index) {
-                    view(this.id).render('sys/role/model').done(function () {
+                    view(this.id).render('sys/power/model').done(function () {
                         //初始化弹框
-                        form.render(null, 'role-model-filter');
+                        form.render(null, 'power-model-filter');
                         if (data) {
                             //渲染弹框
-                            form.val('role-model-filter', data)
+                            form.val('power-model-filter', data)
                         }
                         //监听提交
-                        form.on('submit(role-submit-filter)', function (data) {
+                        form.on('submit(power-submit-filter)', function (data) {
                             admin.req({
                                 url: url
                                 , type: ajaxType

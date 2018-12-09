@@ -47,26 +47,26 @@ public class LoginController {
     /**
      * 登陆
      *
-     * @param userName 用户名
-     * @param userPwd  密码
+     * @param userAmount 登录账号
+     * @param userPwd    密码
      */
 
 
     @GetMapping("login")
-    public ResultUtil login(@RequestParam String userName, @RequestParam String userPwd) {
+    public ResultUtil login(@RequestParam String userAmount, @RequestParam String userPwd) {
         // 从SecurityUtils里边创建一个 subject
         Subject subject = SecurityUtils.getSubject();
-        ResultUtil resultUtil = sysUserService.loginDataBaseCheck(userName, userPwd);
+        ResultUtil resultUtil = sysUserService.loginDataBaseCheck(userAmount, userPwd);
         int code = resultUtil.getCode();
         if (code > 0) {//数据库验证没通过
             return resultUtil;
         }
         // 在认证提交前准备 token（令牌）
-        UsernamePasswordToken token = new UsernamePasswordToken(userName, userPwd);
+        UsernamePasswordToken token = new UsernamePasswordToken(userAmount, userPwd);
         // 执行认证登陆
         subject.login(token);
         Map<String, String> map = new LinkedHashMap<>();
         map.put("access_token", "111111");
-        return ResultUtil.success( "登录成功！", map);
+        return ResultUtil.success("登录成功！", map);
     }
 }

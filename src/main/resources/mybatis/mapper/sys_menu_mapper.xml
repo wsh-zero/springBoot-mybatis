@@ -53,7 +53,7 @@
     </select>
     <update id="save">
         insert into sys_menu(id,`name`,title,icon,jump,spread,parent,`level`)
-        values(UUID(),#{name},#{title},#{icon},#{jump},#{spread},#{parent},#{level})
+        values(#{id},#{name},#{title},#{icon},#{jump},#{spread},#{parent},#{level})
     </update>
     <select id="getAll" resultMap="resultMenuTreeVO">
        select id,title as name,parent from  sys_menu

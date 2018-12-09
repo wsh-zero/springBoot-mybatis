@@ -5,17 +5,18 @@
             <div class="layui-card">
                 <div class="layui-card-header">数据操作</div>
                 <div class="layui-card-body">
+
+                    <table class="layui-hide" id="table" lay-filter="table-filter"></table>
                     <script type="text/html" id="operate_btn">
                         <div class="layui-btn-container">
-                            <button class="layui-btn" data-type="add">添加</button>
-                            <button class="layui-btn layui-btn-danger" data-type="batchDel">批量删除</button>
+                            <button class="layui-btn" lay-event="add">添加</button>
+                            <button class="layui-btn layui-btn-danger" lay-event="batchDel">批量删除</button>
                         </div>
                     </script>
                     <!--<div style="padding-bottom: 10px;" id="operate_btn">-->
                     <!--<button class="layui-btn" data-type="add">添加</button>-->
                     <!--<button class="layui-btn layui-btn-danger" data-type="batchDel">批量删除</button>-->
                     <!--</div>-->
-                    <table class="layui-hide" id="table" lay-filter="table-filter"></table>
 
                     <script type="text/html" id="table-operate">
                         <a class="layui-btn layui-btn-xs" lay-href="/sys/user/details/id={{ d.id }}">查看</a>
@@ -47,9 +48,8 @@
             , cols: [[
                 {type: 'checkbox', fixed: 'left'}
                 , {field: 'id', title: 'ID', sort: true, fixed: 'left'}
-                , {field: 'userAmount', title: '登录账号'}
-                , {field: 'userPwd', title: '登录密码', sort: true}
                 , {field: 'userName', title: '用户名称'}
+                , {field: 'userAmount', title: '登录账号'}
                 , {width: 178, align: 'center', fixed: 'right', title: '操作', toolbar: '#table-operate'}
             ]]
             , page: true
@@ -61,58 +61,80 @@
         //监听工具条
         table.on('tool(table-filter)', function (obj) {
             var data = obj.data;
-            if (obj.event === 'del') {
-                layer.confirm('真的删除行么', function (index) {
-                    admin.req({
-                        url: '/sys/user/del'
-                        , type: 'post'
-                        , data: {ids: data.id}
-                        , done: function (res) {
-                            layer.msg(res.msg)
-                            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-                            layer.close(index);
-                        }
+            switch (obj.event) {
+                case 'del':
+                    layer.confirm('真的删除行么', function (index) {
+                        admin.req({
+                            url: '/sys/user/del'
+                            , type: 'post'
+                            , data: {ids: data.id}
+                            , done: function (res) {
+                                layer.msg(res.msg)
+                                obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                layer.close(index);
+                            }
+                        });
                     });
-                });
-            } else if (obj.event === 'edit') {
-                common('编辑用户信息', 'content-edit', '/sys/user/update', 'post', data);
+                    break;
+                case 'edit':
+                    common('编辑用户信息', 'content-edit', '/sys/user/update', 'post', data);
+                    break;
+                case 'batchDel':
+                    var checkStatus = table.checkStatus(tableId)
+                        , checkData = checkStatus.data; //得到选中的数据
+                    var length = checkData.length;
+                    if (length === 0) {
+                        return layer.msg('请选择数据');
+                    }
+                    var ids = ''
+                    for (item in checkData) ids += checkData[item]["id"] + ",";
+                    layer.confirm('确定删除这 ' + length + ' 条数据吗？', function () {
+                        admin.req({
+                            url: '/sys/user/del'
+                            , type: 'post'
+                            , data: {ids: ids}
+                            , done: function (res) {
+                                layer.msg(res.msg)
+                                table.reload(tableId);
+                            }
+                        });
+                    });
+                    break;
+                case 'add':
+                    common('添加用户信息', 'content-add', '/sys/user/save', 'post');
+                    break;
             }
         });
 
-        $('#operate_btn .layui-btn').on('click', function () {
-            var type = $(this).data('type');
-            active[type] ? active[type].call(this) : '';
+        table.on('toolbar(table-filter)', function (obj) {
+            switch (obj.event) {
+                case 'batchDel':
+                    var checkStatus = table.checkStatus(tableId)
+                        , checkData = checkStatus.data; //得到选中的数据
+                    var length = checkData.length;
+                    if (length === 0) {
+                        return layer.msg('请选择数据');
+                    }
+                    var ids = ''
+                    for (item in checkData) ids += checkData[item]["id"] + ",";
+                    layer.confirm('确定删除这 ' + length + ' 条数据吗？', function () {
+                        admin.req({
+                            url: '/sys/user/del'
+                            , type: 'post'
+                            , data: {ids: ids}
+                            , done: function (res) {
+                                layer.msg(res.msg)
+                                table.reload(tableId);
+                            }
+                        });
+                    });
+                    break;
+                case 'add':
+                    common('添加用户信息', 'content-add', '/sys/user/save', 'post');
+                    break;
+            }
         });
 
-        var active = {
-            //批量刪除
-            batchDel: function () {
-                var checkStatus = table.checkStatus(tableId)
-                    , checkData = checkStatus.data; //得到选中的数据
-                var length = checkData.length;
-                if (length === 0) {
-                    return layer.msg('请选择数据');
-                }
-                var ids = ''
-                for (item in checkData) ids += checkData[item]["id"] + ",";
-                layer.confirm('确定删除这 ' + length + ' 条数据吗？', function () {
-                    admin.req({
-                        url: '/sys/user/del'
-                        , type: 'post'
-                        , data: {ids: ids}
-                        , done: function (res) {
-                            layer.msg(res.msg)
-                            table.reload(tableId);
-                        }
-                    });
-                });
-            }
-
-            //添加
-            , add: function () {
-                common('添加用户信息', 'content-add', '/sys/user/save', 'post');
-            }
-        };
 
         function common(title, id, url, ajaxType, data) {
             admin.popup({
@@ -121,25 +143,47 @@
                 , id: id
                 , success: function (layero, index) {
                     view(this.id).render('sys/user/model').done(function () {
-                        console.log(1111111)
-                        //初始化弹框
-                        form.render(null, 'model-filter');
+
+                        $("#role_checkbox").html('');
                         admin.req({
                             url: '/sys/role/get_by_user'
                             , async: false
-                            , data: {userId: data.id}
-                            , done: function () {
-                                $("#role_checkbox").html('<input type="checkbox" name="interest[write]" title="写作" lay-skin="primary">');
+                            , done: function (res) {
+                                var html = '';
+                                for (var item in res.data) {
+                                    html += ('<input type="checkbox" value="' + res.data[item].id + '" title="' + res.data[item].roleName + '" lay-skin="primary"/>')
+                                }
+                                $("#role_checkbox").html(html)
                             }
                         });
+                        //初始化弹框
+                        form.render(null, 'model-filter');
                         if (data) {
-                            //渲染弹框
+                            admin.req({
+                                url: '/sys/role/get_by_user'
+                                , async: false
+                                , data: {userId: data.id}
+                                , done: function (res) {
+                                    for (var item in res.data) {
+                                        $("[value='" + res.data[item].id + "']").prop("checked", 'true')
+                                    }
+                                }
+                            });
+                            //渲染数据
                             form.val('model-filter', data)
-
+                            $("#user_pwd_div").addClass("layui-hide");
+                        } else {
+                            $("#user_pwd_div").removeClass("layui-hide");
                         }
+                        //重新渲染弹框
                         form.render();
                         //监听提交
                         form.on('submit(submit-filter)', function (data) {
+                            var roleIds = "";
+                            $("#role_checkbox input:checked").each(function (i) {
+                                roleIds += $(this).val() + ",";
+                            });
+                            data.field.roleIds = roleIds;
                             admin.req({
                                 url: url
                                 , type: ajaxType
