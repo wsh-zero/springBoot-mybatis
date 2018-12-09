@@ -6,7 +6,7 @@
         <result column="role_name" property="roleName"/>
     </resultMap>
     <sql id="list_fields">
-        id, role_name
+        sr.id, sr.role_name
     </sql>
     <sql id="list_sql">
         <where>
@@ -16,7 +16,7 @@
     <select id="getList" resultMap="resultSysRoleVO">
         select
         <include refid="list_fields"/>
-        from sys_role
+        from sys_role sr
         <include refid="list_sql"/>
         <if test="pageNum !=-1 and pageSize!=-1">
             limit #{pageNum},#{pageSize}
@@ -26,6 +26,16 @@
     <select id="getCount" resultType="int">
         select count(1) from sys_role
         <include refid="list_sql"/>
+    </select>
+    <select id="getRoleByUserId" resultMap="resultSysRoleVO">
+        select
+        <include refid="list_fields"/>
+        from sys_user su
+        left join sys_user_role sul on su.id=sul.user_id
+        left join sys_role sr on sul.role_id=sr.id
+        <if test="userId !=null and userId !=''">
+            where su.id=#{userId}
+        </if>
     </select>
     <insert id="save">
         insert into sys_role (id, role_name)

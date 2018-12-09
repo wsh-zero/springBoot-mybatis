@@ -27,12 +27,20 @@ public class ResultUtil {
         this.msg = msg;
     }
 
+    private ResultUtil(Object data) {
+        this.data = data;
+    }
+
     public static ResultUtil success(String msg, Object data) {
         return new ResultUtil(msg, data);
     }
 
     public static ResultUtil success(String msg) {
         return new ResultUtil(msg);
+    }
+
+    public static ResultUtil success(Object data) {
+        return new ResultUtil(data);
     }
 
     public static ResultUtil failed(int code, String msg) {

@@ -5,7 +5,7 @@
             <div class="layui-card">
                 <div class="layui-card-header">数据操作</div>
                 <div class="layui-card-body">
-                    <script type="text/html" id="operate-btn">
+                    <script type="text/html" id="role_operate_btn">
                         <div class="layui-btn-container">
                             <button class="layui-btn" data-type="add">添加</button>
                             <button class="layui-btn layui-btn-danger" data-type="batchDel">批量删除</button>
@@ -37,7 +37,7 @@
             // ,width: admin.screen() > 1 ? 892 : ''
             // ,height: 332
             //开启头部工具栏
-            ,toolbar:'#operate-btn'
+            ,toolbar:'#role_operate_btn'
             , cols: [[
                 {type: 'checkbox', fixed: 'left'}
                 , {field: 'id', title: 'ID', sort: true, fixed: 'left'}
@@ -71,7 +71,7 @@
             }
         });
 
-        $('#operate-btn .layui-btn').on('click', function () {
+        $('#role_operate_btn .layui-btn').on('click', function () {
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';
         });
@@ -112,7 +112,7 @@
                 , area: ['450px', '550px']
                 , id: id
                 , success: function (layero, index) {
-                    view(this.id).render('sys/user/model').done(function () {
+                    view(this.id).render('sys/role/model').done(function () {
                         //初始化弹框
                         form.render(null, 'role-model-filter');
                         if (data) {

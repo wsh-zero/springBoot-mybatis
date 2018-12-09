@@ -5,15 +5,15 @@
             <div class="layui-card">
                 <div class="layui-card-header">数据操作</div>
                 <div class="layui-card-body">
-                    <script type="text/html" id="operate-btn">
+                    <script type="text/html" id="operate_btn">
                         <div class="layui-btn-container">
                             <button class="layui-btn" data-type="add">添加</button>
                             <button class="layui-btn layui-btn-danger" data-type="batchDel">批量删除</button>
                         </div>
                     </script>
-                    <!--<div style="padding-bottom: 10px;" id="operate-btn">-->
-                        <!--<button class="layui-btn" data-type="add">添加</button>-->
-                        <!--<button class="layui-btn layui-btn-danger" data-type="batchDel">批量删除</button>-->
+                    <!--<div style="padding-bottom: 10px;" id="operate_btn">-->
+                    <!--<button class="layui-btn" data-type="add">添加</button>-->
+                    <!--<button class="layui-btn layui-btn-danger" data-type="batchDel">批量删除</button>-->
                     <!--</div>-->
                     <table class="layui-hide" id="table" lay-filter="table-filter"></table>
 
@@ -43,7 +43,7 @@
             // ,width: admin.screen() > 1 ? 892 : ''
             // ,height: 332
             //开启头部工具栏
-            ,toolbar:'#operate-btn'
+            , toolbar: '#operate_btn'
             , cols: [[
                 {type: 'checkbox', fixed: 'left'}
                 , {field: 'id', title: 'ID', sort: true, fixed: 'left'}
@@ -79,7 +79,7 @@
             }
         });
 
-        $('#operate-btn .layui-btn').on('click', function () {
+        $('#operate_btn .layui-btn').on('click', function () {
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';
         });
@@ -121,12 +121,23 @@
                 , id: id
                 , success: function (layero, index) {
                     view(this.id).render('sys/user/model').done(function () {
+                        console.log(1111111)
                         //初始化弹框
                         form.render(null, 'model-filter');
+                        admin.req({
+                            url: '/sys/role/get_by_user'
+                            , async: false
+                            , data: {userId: data.id}
+                            , done: function () {
+                                $("#role_checkbox").html('<input type="checkbox" name="interest[write]" title="写作" lay-skin="primary">');
+                            }
+                        });
                         if (data) {
                             //渲染弹框
                             form.val('model-filter', data)
+
                         }
+                        form.render();
                         //监听提交
                         form.on('submit(submit-filter)', function (data) {
                             admin.req({
