@@ -1,0 +1,21 @@
+<div class="layui-form" lay-filter="role-model-filter">
+    <div class="layui-form-item">
+        <label class="layui-form-label required">编号</label>
+        <div class="layui-input-block">
+            <input type="text" name="id" lay-verify="required" placeholder="编号" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">角色名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="roleName" lay-verify="required" placeholder="角色名称"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="role-submit-filter" value="确认" class="layui-btn">
+        </div>
+    </div>
+</div>

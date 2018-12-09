@@ -1,101 +1,141 @@
-<title>菜单分配</title>
+<title>系统角色 - 数据表格</title>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
-        <div class="layui-col-sm4">
-            <div class="layui-card zero-height-brace-up" style="width: 25%">
-                <div class="layui-card-header">用户留言</div>
-                <div class="layui-card-body ">
-                    <input type="text" id="key" placeholder="检索权限" class="layui-input" title="检索权限">
-                    <div id="navTree">
-                        <ul id="tree" class="ztree"></ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="layui-col-sm8">
-            <div class="layui-card zero-height-brace-up" style="width: 54%">
-                <div class="layui-card-header">用户留言</div>
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">数据操作</div>
                 <div class="layui-card-body">
+                    <script type="text/html" id="operate-btn">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn" data-type="add">添加</button>
+                            <button class="layui-btn layui-btn-danger" data-type="batchDel">批量删除</button>
+                        </div>
+                    </script>
+                    <table class="layui-hide" id="role_table" lay-filter="role-table-filter"></table>
+
+                    <script type="text/html" id="role-table-operate">
+                        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                    </script>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!--根目录不能操作-->
-<style type="text/css">
-    .ztree li span.button.switch.level0 {
-        visibility: hidden;
-        width: 1px;
-    }
 
-    .ztree li ul.level0 {
-        padding: 0;
-        background: none;
-    }
-</style>
 <script>
     layui.use(['admin', 'table'], function () {
-        var admin = layui.admin;
+        var table = layui.table
+            , $ = layui.$
+            , admin = layui.admin
+            , form = layui.form
+            , view = layui.view
+            , tableId = "role_table";
+        table.render({
+            elem: '#' + tableId
+            , url: '/sys/role/list'
+            // ,width: admin.screen() > 1 ? 892 : ''
+            // ,height: 332
+            //开启头部工具栏
+            ,toolbar:'#operate-btn'
+            , cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'id', title: 'ID', sort: true, fixed: 'left'}
+                , {field: 'roleName', title: '角色名称'}
+                , {width: 178, align: 'center', fixed: 'right', title: '操作', toolbar: '#role-table-operate'}
+            ]]
+            , page: true
+            , limit: 10
+            , limits: [10, 15, 20, 25, 30]
+            , text: '对不起，加载出现异常！'
+        });
 
-        var setting = {
-            async: {
-                enable: true,
-                autoParam: ["id"]
-            },
-            data: {
-                simpleData: {
-                    enable: true,
-                    idKey: "id",
-                    pIdKey: "parent",
-                    rootPId: 0
-                }
-            },
-            check: {
-                // enable: true//checkbox
-            },
-            view: {
-                showIcon: showIcon,
-                nameIsHTML: true, //允许name支持html
-                selectedMulti: false
-                // , fontCss: {'color': 'blue', 'font-family': '微软雅黑'}
-                , dblClickExpand: dblClickExpand
-            },
-            edit: {
-                enable: false,
-                editNameSelectAll: false
-            },
-            callback: {
-                onClick: onClick//点击事件
-            }
-        };
-
-        function onClick(event, treeId, treeNode, clickFlag) {
-            if (treeNode.level > 0) {
-                //实现单击展开
-                var zTree = $.fn.zTree.getZTreeObj("tree");
-                zTree.expandNode(treeNode);
-            }
-        }
-
-        function dblClickExpand(treeId, treeNode) {
-            return treeNode.level > 0;
-        }
-        function showIcon(treeId, treeNode) {
-            return treeNode.level === 0;
-        }
-
-        admin.req({
-            url: "/sys/menu/get_tree"
-            , success: function (res) {
-                res.data[0].open=true
-                res.data[0].iconClose="/zTree_v3/img/1_open.png"
-                res.data[0].iconOpen="/zTree_v3/img/1_open.png"
-                console.log(res.data[0])
-                $.fn.zTree.init($("#tree"), setting, res.data);
-                fuzzySearch('tree', '#key', null, true); //初始化模糊搜索方法
+        //监听工具条
+        table.on('tool(role-table-filter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('真的删除行么', function (index) {
+                    admin.req({
+                        url: '/sys/role/del'
+                        , type: 'post'
+                        , data: {ids: data.id}
+                        , done: function (res) {
+                            layer.msg(res.msg)
+                            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                            layer.close(index);
+                        }
+                    });
+                });
+            } else if (obj.event === 'edit') {
+                common('编辑角色信息', 'role-content-edit', '/sys/role/update', 'post', data);
             }
         });
 
-    });
+        $('#operate-btn .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
 
+        var active = {
+            //批量刪除
+            batchDel: function () {
+                var checkStatus = table.checkStatus(tableId)
+                    , checkData = checkStatus.data; //得到选中的数据
+                var length = checkData.length;
+                if (length === 0) {
+                    return layer.msg('请选择数据');
+                }
+                var ids = ''
+                for (item in checkData) ids += checkData[item]["id"] + ",";
+                layer.confirm('确定删除这 ' + length + ' 条数据吗？', function () {
+                    admin.req({
+                        url: '/sys/role/del'
+                        , type: 'post'
+                        , data: {ids: ids}
+                        , done: function (res) {
+                            layer.msg(res.msg)
+                            table.reload(tableId);
+                        }
+                    });
+                });
+            }
+
+            //添加
+            , add: function () {
+                common('添加角色信息', 'role-content-add', '/sys/role/save', 'post');
+            }
+        };
+
+        function common(title, id, url, ajaxType, data) {
+            admin.popup({
+                title: title
+                , area: ['450px', '550px']
+                , id: id
+                , success: function (layero, index) {
+                    view(this.id).render('sys/user/model').done(function () {
+                        //初始化弹框
+                        form.render(null, 'role-model-filter');
+                        if (data) {
+                            //渲染弹框
+                            form.val('role-model-filter', data)
+                        }
+                        //监听提交
+                        form.on('submit(role-submit-filter)', function (data) {
+                            admin.req({
+                                url: url
+                                , type: ajaxType
+                                , data: data.field
+                                , done: function (res) {
+                                    layer.msg(res.msg);
+                                    table.reload(tableId); //重载表格
+                                    layer.close(index); //执行关闭
+                                }
+                            });
+                        });
+                    });
+                }
+            });
+        }
+
+    });
 </script>

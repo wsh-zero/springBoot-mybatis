@@ -41,6 +41,10 @@ public class SysMenuService {
         return ResultUtil.success("移动成功");
     }
 
+    public ResultUtil getByPrimaryKey(String id) {
+        return ResultUtil.success("获取成功",sysMenuMapper.getByPrimaryKey(id));
+    }
+
     private void handleData(List<SysMenuVO> menuList, String userName) {
         if (null != menuList && menuList.size() > 0) {
             for (SysMenuVO item : menuList) {

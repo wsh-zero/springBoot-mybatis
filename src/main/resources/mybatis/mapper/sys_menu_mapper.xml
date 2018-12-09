@@ -58,4 +58,7 @@
     <select id="getAll" resultMap="resultMenuTreeVO">
        select id,title as name,parent from  sys_menu
     </select>
+    <select id="getByPrimaryKey" resultMap="resultSysMenuVO">
+       select <include refid="list_fields"/> from  sys_menu sm where id=#{id}
+    </select>
 </mapper>

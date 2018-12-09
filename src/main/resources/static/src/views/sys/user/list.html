@@ -1,14 +1,4 @@
-<title>数据操作 - 数据表格</title>
-
-<div class="layui-card layadmin-header">
-    <div class="layui-breadcrumb" lay-filter="breadcrumb">
-        <a lay-href="">主页</a>
-        <a><cite>组件</cite></a>
-        <a><cite>数据表格</cite></a>
-        <a><cite>数据操作</cite></a>
-    </div>
-</div>
-
+<title>系统用户 - 数据表格</title>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
@@ -138,7 +128,7 @@
                             form.val('model-filter', data)
                         }
                         //监听提交
-                        form.on('submit(submit)', function (data) {
+                        form.on('submit(submit-filter)', function (data) {
                             admin.req({
                                 url: url
                                 , type: ajaxType

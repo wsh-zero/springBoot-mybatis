@@ -23,6 +23,11 @@ public class SysMenuController {
         return sysMenuService.getMenuList();
     }
 
+    @GetMapping("get")
+    public ResultUtil getByPrimaryKey(@RequestParam String id) {
+        return sysMenuService.getByPrimaryKey(id);
+    }
+
     @GetMapping("move")
     public ResultUtil calculationLevel(@RequestParam String id, @RequestParam Integer direction) {
         return sysMenuService.calculationLevel(id, direction);

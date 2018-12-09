@@ -19,6 +19,8 @@ public interface SysMenuMapper {
 
     BigDecimal getMaxLevelByParnt(@Param("parent") String parent);
 
+    SysMenuVO getByPrimaryKey(@Param("id") String id);
+
     /**
      * 实现数据上下移动
      *

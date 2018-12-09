@@ -1,0 +1,152 @@
+<title>菜单分配</title>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm4">
+            <div class="layui-card zero-height-brace-up" style="width: 25%">
+                <div class="layui-card-header" style="text-align: center;font-size:30px;">左侧菜单配置</div>
+                <div class="layui-card-body ">
+                    <input type="text" id="key" placeholder="检索权限" class="layui-input" title="检索权限">
+                    <div id="navTree">
+                        <ul id="tree" class="ztree"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm8">
+            <div class="layui-card zero-height-brace-up" style="width: 54%">
+                <div class="layui-card-header">用户留言</div>
+                <div class="layui-card-body">
+                    <div class="layui-form" lay-filter="menu-model-filter">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">编号</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="id" placeholder="编号" class="layui-input" disabled/>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">路由名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="name" lay-verify="required" placeholder="路由名称"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">标题</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="title" lay-verify="required" placeholder="标题"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">图标</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="icon" placeholder="图标"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">URL</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="jump" lay-verify="required" placeholder="URL"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label"></label>
+                            <div class="layui-input-inline">
+                                <input type="button" lay-submit lay-filter="submit" value="确认" class="layui-btn">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--根目录不能操作-->
+<style type="text/css">
+    .ztree li span.button.switch.level0 {
+        visibility: hidden;
+        width: 1px;
+    }
+
+    .ztree li ul.level0 {
+        padding: 0;
+        background: none;
+    }
+</style>
+<script>
+    layui.use(['admin', 'table', 'form'], function () {
+        var admin = layui.admin, form = layui.form;
+
+        var setting = {
+            async: {
+                enable: true,
+                autoParam: ["id"]
+            },
+            data: {
+                simpleData: {
+                    enable: true,
+                    idKey: "id",
+                    pIdKey: "parent",
+                    rootPId: 0
+                }
+            },
+            check: {
+                // enable: true//checkbox
+            },
+            view: {
+                showIcon: showIcon,
+                nameIsHTML: true, //允许name支持html
+                selectedMulti: false
+                // , fontCss: {'color': 'blue', 'font-family': '微软雅黑'}
+                , dblClickExpand: dblClickExpand
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            callback: {
+                onClick: onClick//点击事件
+            }
+        };
+
+        function onClick(event, treeId, treeNode, clickFlag) {
+            admin.req({
+                url: "/sys/menu/get"
+                , data: {id: treeNode.id}
+                , success: function (res) {
+                    //初始化弹框
+                    form.render(null, 'menu-model-filter');
+                    form.val('menu-model-filter', res.data)
+                }
+            });
+            if (treeNode.level > 0) {
+                //实现单击展开
+                var zTree = $.fn.zTree.getZTreeObj("tree");
+                zTree.expandNode(treeNode);
+            }
+        }
+
+        function dblClickExpand(treeId, treeNode) {
+            return treeNode.level > 0;
+        }
+
+        function showIcon(treeId, treeNode) {
+            return treeNode.level === 0;
+        }
+
+        admin.req({
+            url: "/sys/menu/get_tree"
+            , success: function (res) {
+                res.data[0].open = true
+                res.data[0].iconClose = "/zTree_v3/img/1_open.png"
+                res.data[0].iconOpen = "/zTree_v3/img/1_open.png"
+                $.fn.zTree.init($("#tree"), setting, res.data);
+                fuzzySearch('tree', '#key', null, true); //初始化模糊搜索方法
+            }
+        });
+
+    });
+
+</script>
