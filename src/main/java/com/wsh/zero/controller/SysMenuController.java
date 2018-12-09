@@ -6,10 +6,7 @@ import com.wsh.zero.service.SysMenuService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "菜单")
 @RestController
@@ -28,17 +25,17 @@ public class SysMenuController {
         return sysMenuService.getByPrimaryKey(id);
     }
 
-    @GetMapping("move")
-    public ResultUtil calculationLevel(@RequestParam String id, @RequestParam Integer direction) {
+    @PostMapping("move")
+    public ResultUtil calculationLevel(@RequestParam String id, Integer direction) {
         return sysMenuService.calculationLevel(id, direction);
     }
 
-    @GetMapping("save")
+    @PostMapping("save")
     public ResultUtil save(@Validated SysMenuEntity entity) {
         return sysMenuService.save(entity);
     }
 
-    @GetMapping("get_tree")
+    @PostMapping("get_tree")
     public ResultUtil getMenuTree() {
         return sysMenuService.getMenuTree();
     }

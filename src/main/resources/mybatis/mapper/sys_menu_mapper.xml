@@ -16,15 +16,15 @@
         <result column="parent" property="parent"/>
     </resultMap>
     <sql id="list_fields">
-        sm.id,sm.name,sm.title,sm.icon,sm.jump,sm.spread,sm.parent
+        sm.id, sm.name, sm.title, sm.icon, sm.jump, sm.spread, sm.parent
     </sql>
     <select id="getMenuList" resultMap="resultSysMenuVO">
         SELECT
         <include refid="list_fields"/>
         FROM sys_user su
         LEFT JOIN sys_user_menu map ON su.id=map.user_id
-        LEFT JOIN sys_menu sm on map.menu_id=sm.id where su.user_name=#{userName} and sm.parent =#{parent} order by
-        sm.`level`;
+        LEFT JOIN sys_menu sm on map.menu_id=sm.id where su.user_name=#{userName}
+        and sm.parent =#{parent} order by sm.`level`
     </select>
     <update id="calculationLevel">
         update sys_menu set
@@ -52,13 +52,17 @@
 
     </select>
     <update id="save">
-        insert into sys_menu(id,`name`,title,icon,jump,spread,parent,`level`)
-        values(#{id},#{name},#{title},#{icon},#{jump},#{spread},#{parent},#{level})
+        insert into sys_menu (id, `name`, title, icon, jump, spread, parent, `level`)
+        values (#{id}, #{name}, #{title}, #{icon}, #{jump}, #{spread}, #{parent}, #{level})
     </update>
     <select id="getAll" resultMap="resultMenuTreeVO">
-       select id,title as name,parent from  sys_menu
+        select id, title as name, parent
+        from sys_menu
+        order by `level`
     </select>
     <select id="getByPrimaryKey" resultMap="resultSysMenuVO">
-       select <include refid="list_fields"/> from  sys_menu sm where id=#{id}
+        select
+        <include refid="list_fields"/>
+        from sys_menu sm where id=#{id}
     </select>
 </mapper>

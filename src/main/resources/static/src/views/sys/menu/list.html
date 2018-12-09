@@ -16,6 +16,24 @@
             <div class="layui-card zero-height-brace-up" style="width: 54%">
                 <div class="layui-card-header">用户留言</div>
                 <div class="layui-card-body">
+                    <div class="layui-form-item" id="menu_zero_btn">
+                        <button class="layui-btn layui-bg-blue layui-btn-sm" data-type="up">
+                            <i class="layui-icon layui-icon-up"></i>
+                            上移
+                        </button>
+                        <button class="layui-btn layui-bg-blue layui-btn-sm" data-type="down">
+                            <i class="layui-icon layui-icon-down"></i>
+                            下移
+                        </button>
+                        <button class="layui-btn layui-bg-green layui-btn-sm" data-type="add">
+                            <i class="layui-icon layui-icon-add-1"></i>
+                            添加
+                        </button>
+                        <button class="layui-btn layui-btn-danger layui-btn-sm" data-type="del">
+                            <i class="layui-icon layui-icon-delete"></i>
+                            删除
+                        </button>
+                    </div>
                     <div class="layui-form" lay-filter="menu-model-filter">
                         <div class="layui-form-item">
                             <label class="layui-form-label">编号</label>
@@ -76,8 +94,9 @@
     }
 </style>
 <script>
+    var init_id = '00000000-0000-0000-0000-000000000000';
     layui.use(['admin', 'table', 'form'], function () {
-        var admin = layui.admin, form = layui.form;
+        var admin = layui.admin, form = layui.form, jQ = layui.$, id = init_id;
 
         var setting = {
             async: {
@@ -112,6 +131,7 @@
         };
 
         function onClick(event, treeId, treeNode, clickFlag) {
+            id = treeNode.id;
             admin.req({
                 url: "/sys/menu/get"
                 , data: {id: treeNode.id}
@@ -138,6 +158,7 @@
 
         admin.req({
             url: "/sys/menu/get_tree"
+            , type: 'post'
             , success: function (res) {
                 res.data[0].open = true
                 res.data[0].iconClose = "/zTree_v3/img/1_open.png"
@@ -146,6 +167,59 @@
                 fuzzySearch('tree', '#key', null, true); //初始化模糊搜索方法
             }
         });
+        jQ('#menu_zero_btn .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        var active = {
+            up: function () {
+                admin.req({
+                    url: '/sys/menu/move'
+                    , type: 'post'
+                    , data: {id: id}
+                    , done: function (res) {
+                        layer.msg(res.msg)
+                    }
+                });
+            }
+            , down: function () {
+                admin.req({
+                    url: '/sys/menu/move'
+                    , type: 'post'
+                    , data: {id: id, direction: 1}
+                    , done: function (res) {
+                        layer.msg(res.msg)
+                    }
+                });
+            }
+            , del: function () {
+                var treeObj = $.fn.zTree.getZTreeObj("tree");
+                var nodes = treeObj.getSelectedNodes();
+                layer.confirm('确定删除这些数据吗？', function () {
+                    for (var i = 0; i < nodes.length; i++) {
+                        //删除选中的节点
+                        if (nodes[i].id === init_id) {
+                            layer.alert("禁止删除根节点！！！")
+                        } else {
+                            admin.req({
+                                url: '/sys/menu/del'
+                                , type: 'post'
+                                , async: false
+                                , data: {id: id}
+                                , done: function (res) {
+                                    treeObj.removeNode(nodes[i]);
+                                    layer.msg(res.msg);
+                                }
+                            });
+                        }
+                    }
+
+                });
+            }
+            , add: function () {
+            }
+        };
 
     });
 

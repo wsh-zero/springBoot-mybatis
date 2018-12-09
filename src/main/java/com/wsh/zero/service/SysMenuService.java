@@ -81,13 +81,13 @@ public class SysMenuService {
      */
     public ResultUtil getMenuTree() {
         List<MenuTreeVO> queryList = sysMenuMapper.getAll();
-        List<MenuTreeVO> parentList = Lists.newArrayList();
+        List<MenuTreeVO> parentList = Lists.newLinkedList();
         for (MenuTreeVO vo : queryList) {
             if (Objects.equals(Consot.DEFAULT_UUID, vo.getId())) {
                 parentList.add(vo);
             }
         }
-        List<MenuTreeVO> returnList = Lists.newArrayList();
+        List<MenuTreeVO> returnList = Lists.newLinkedList();
         for (MenuTreeVO parentMap : parentList) {
             returnList.add(parentMap);
             recursionChildren(parentMap, queryList, returnList);
