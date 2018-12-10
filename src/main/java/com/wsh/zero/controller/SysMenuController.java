@@ -39,4 +39,9 @@ public class SysMenuController {
     public ResultUtil getMenuTree() {
         return sysMenuService.getMenuTree();
     }
+
+    @PostMapping("del")
+    public ResultUtil del(@RequestParam String id) {
+        return sysMenuService.del(id);
+    }
 }

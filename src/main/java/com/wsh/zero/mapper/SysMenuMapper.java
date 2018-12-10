@@ -11,9 +11,15 @@ import java.util.List;
 
 @Mapper
 public interface SysMenuMapper {
-    List<SysMenuVO> getMenuList(@Param("parent") String parent, @Param("userName") String userName);
+    List<SysMenuVO> getMenuList(@Param("parent") String parent, @Param("userAmount") String userAmount);
 
     int save(SysMenuEntity entity);
+
+    int del(@Param("id") String id);
+
+    int delByParent(@Param("parent") String parent);
+
+    String[] getIdsByParent(@Param("parent") String parent);
 
     List<MenuTreeVO> getAll();
 

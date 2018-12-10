@@ -196,10 +196,10 @@
             , del: function () {
                 var treeObj = $.fn.zTree.getZTreeObj("tree");
                 var nodes = treeObj.getSelectedNodes();
-                layer.confirm('确定删除这些数据吗？', function () {
-                    for (var i = 0; i < nodes.length; i++) {
+                if (nodes.length > 0) {
+                    layer.confirm('确定删除这些数据吗？', function () {
                         //删除选中的节点
-                        if (nodes[i].id === init_id) {
+                        if (nodes[0].id === init_id) {
                             layer.alert("禁止删除根节点！！！")
                         } else {
                             admin.req({
@@ -208,14 +208,16 @@
                                 , async: false
                                 , data: {id: id}
                                 , done: function (res) {
-                                    treeObj.removeNode(nodes[i]);
+                                    treeObj.removeNode(nodes[0]);
                                     layer.msg(res.msg);
                                 }
                             });
                         }
-                    }
 
-                });
+                    });
+                } else {
+                    layer.msg("请选要删除的数据！！")
+                }
             }
             , add: function () {
             }

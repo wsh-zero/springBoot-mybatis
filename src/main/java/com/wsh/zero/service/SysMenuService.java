@@ -27,9 +27,9 @@ public class SysMenuService {
 
     public ResultUtil getMenuList() {
         Subject subject = SecurityUtils.getSubject();
-        String userName = (String) subject.getPrincipal();
-        List<SysMenuVO> menuList = sysMenuMapper.getMenuList(Consot.DEFAULT_UUID, userName);
-        handleData(menuList, userName);
+        String userAmount = (String) subject.getPrincipal();
+        List<SysMenuVO> menuList = sysMenuMapper.getMenuList(Consot.DEFAULT_UUID, userAmount);
+        handleData(menuList, userAmount);
         return ResultUtil.success("获取菜单成功", menuList);
     }
 
@@ -46,14 +46,14 @@ public class SysMenuService {
         return ResultUtil.success("获取成功", sysMenuMapper.getByPrimaryKey(id));
     }
 
-    private void handleData(List<SysMenuVO> menuList, String userName) {
+    private void handleData(List<SysMenuVO> menuList, String userAmount) {
         if (null != menuList && menuList.size() > 0) {
             for (SysMenuVO item : menuList) {
-                List<SysMenuVO> childrenMenu = sysMenuMapper.getMenuList(item.getId(), userName);
+                List<SysMenuVO> childrenMenu = sysMenuMapper.getMenuList(item.getId(), userAmount);
                 if (null != childrenMenu && childrenMenu.size() > 0) {
                     item.setList(childrenMenu);
                 }
-                handleData(childrenMenu, userName);
+                handleData(childrenMenu, userAmount);
             }
 
         }
@@ -67,6 +67,22 @@ public class SysMenuService {
         entity.setId(Utils.UUID());
         sysMenuMapper.save(entity);
         return ResultUtil.success("保存成功");
+    }
+
+    @Transactional
+    public ResultUtil del(String id) {
+        recursionDel(id);
+        return ResultUtil.success("删除成功!");
+    }
+
+    // 递归删除
+    private void recursionDel(String id) {
+        String[] ids = sysMenuMapper.getIdsByParent(id);
+        sysMenuMapper.delByParent(id);
+        for (String item : ids) {
+            recursionDel(item);
+        }
+        sysMenuMapper.del(id);
     }
 
     /**
