@@ -1,6 +1,7 @@
 package com.wsh.zero.controller.base;
 
 import com.wsh.util.ResultUtil;
+import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.service.SysUserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -53,6 +54,7 @@ public class LoginController {
 
 
     @GetMapping("login")
+    @SysLogTag(value = "系统用户", operation = "登录系统")
     public ResultUtil login(@RequestParam String userAmount, @RequestParam String userPwd) {
         // 从SecurityUtils里边创建一个 subject
         Subject subject = SecurityUtils.getSubject();

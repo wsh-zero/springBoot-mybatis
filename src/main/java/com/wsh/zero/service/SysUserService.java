@@ -46,7 +46,6 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
 
     }
 
-    @SysLogTag(value = "系统用户", operation = "登录系统")
     public ResultUtil loginDataBaseCheck(String userAmount, String userPwd) {
         boolean existUserName = sysUserMapper.isExistUserAmount(userAmount);
         if (existUserName) {

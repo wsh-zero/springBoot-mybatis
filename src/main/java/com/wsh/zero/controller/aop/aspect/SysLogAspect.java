@@ -1,13 +1,13 @@
 package com.wsh.zero.controller.aop.aspect;
 
 import com.alibaba.fastjson.JSON;
+import com.wsh.util.Consot;
 import com.wsh.util.ConsotEnum;
 import com.wsh.util.Utils;
 import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.entity.SysLogEntity;
 import com.wsh.zero.mapper.SysLogMapper;
 import org.apache.shiro.SecurityUtils;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
@@ -18,15 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 系统日志切面
@@ -72,7 +70,10 @@ public class SysLogAspect {
 
     //@AfterThrowing: 异常通知
     @AfterThrowing(value = "Pointcut()", throwing = "e")
-    public void afterReturningMethod(JoinPoint joinPoint, Exception e) {
+    public void afterReturningMethod(ProceedingJoinPoint joinPoint, Exception e) {
+        //当controller没有捕获到异常时会进入
+        System.out.println("=====进入异常日志类======");
+        setEntity(joinPoint);
         dataMap.put("response", e);
         entity.setData(JSON.toJSONString(dataMap));
         entity.setLevel(ConsotEnum.ERROR);
@@ -83,22 +84,41 @@ public class SysLogAspect {
     //@Around：环绕通知
     @Around("Pointcut()")
     public Object Around(ProceedingJoinPoint pjp) throws Throwable {
+        setEntity(pjp);
+        Object object = pjp.proceed();
+        entity.setUseTime(System.currentTimeMillis() - startTime);
+        entity.setLevel(ConsotEnum.INFO);
+        dataMap.put("response", object);
+        entity.setData(JSON.toJSONString(dataMap));
+        sysLogMapper.save(entity);
+        return object;
+    }
+
+    public void setEntity(ProceedingJoinPoint pjp) {
         // 接收到请求，记录请求内容
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-        Object userName = SecurityUtils.getSubject().getPrincipal();
         entity = new SysLogEntity();
         entity.setId(Utils.UUID());
-        entity.setUserName(null == userName ? "游客" : (String) userName);
-        entity.setClassMethod(pjp.getSignature().getDeclaringTypeName() + "." + pjp.getSignature().getName());
+        String classMethod = pjp.getSignature().getDeclaringTypeName() + "." + pjp.getSignature().getName();
         //获取传入目标方法的参数
         Object[] args = pjp.getArgs();
+        StringBuilder params = new StringBuilder();
         for (int i = 0; i < args.length; i++) {
-            Object o = args[i];
-            if (o instanceof ServletRequest || (o instanceof ServletResponse) || o instanceof MultipartFile) {
-                args[i] = o.toString();
+            params.append(args[i]);
+            if (i < args.length - 1) {
+                params.append(",");
             }
         }
+        Object userName;
+        if (Objects.equals(classMethod, Consot.LOGIN_PACKAGE_NAME)) {
+            userName = args[0];
+        } else {
+            userName = SecurityUtils.getSubject().getPrincipal();
+        }
+        entity.setUserName(null == userName ? "游客" : (String) userName);
+        entity.setClassMethod(classMethod);
+
         entity.setRequestUri(request.getRequestURL().toString());
         entity.setRemoteAddr(Utils.getClientIp(request));
         MethodSignature signature = (MethodSignature) pjp.getSignature();
@@ -113,13 +133,6 @@ public class SysLogAspect {
         }
         startTime = System.currentTimeMillis();
         entity.setGmtTime(new Timestamp(startTime));
-        dataMap.put("params", args.length > 0 ? JSON.toJSONString(args) : null);
-        Object object = pjp.proceed();
-        entity.setUseTime(System.currentTimeMillis() - startTime);
-        entity.setLevel(ConsotEnum.INFO);
-        dataMap.put("response", object);
-        entity.setData(JSON.toJSONString(dataMap));
-        sysLogMapper.save(entity);
-        return object;
+        dataMap.put("params", params);
     }
 }
