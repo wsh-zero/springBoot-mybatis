@@ -2,6 +2,7 @@ package com.wsh.zero.service.base;
 
 import com.wsh.util.ResultUtil;
 import com.wsh.util.TableUtil;
+import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.mapper.base.BaseMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class BaseService<M extends BaseMapper, Q, V, E> {
         return table;
     }
 
+    @SysLogTag(value = "Basic", operation = "save")
     @Transactional
     public ResultUtil save(E e) {
         baseMapper.save(e);
@@ -29,15 +31,17 @@ public class BaseService<M extends BaseMapper, Q, V, E> {
     }
 
     public ResultUtil getByPrimaryKey(String id) {
-        return ResultUtil.success("获取成功", baseMapper.getByPrimaryKey(id));
+        return ResultUtil.success(baseMapper.getByPrimaryKey(id));
     }
 
+    @SysLogTag(value = "Basic", operation = "update")
     @Transactional
     public ResultUtil update(E e) {
         baseMapper.update(e);
         return ResultUtil.success("保存成功");
     }
 
+    @SysLogTag(value = "Basic", operation = "del")
     @Transactional
     public ResultUtil del(String[] ids) {
         if (null != ids && ids.length > 0) {

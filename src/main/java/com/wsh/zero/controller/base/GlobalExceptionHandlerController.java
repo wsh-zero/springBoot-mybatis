@@ -1,6 +1,7 @@
 package com.wsh.zero.controller.base;
 
 import com.wsh.util.ResultUtil;
+import com.wsh.zero.controller.aop.anno.SysLogTag;
 import org.apache.shiro.ShiroException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

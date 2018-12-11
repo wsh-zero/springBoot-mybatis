@@ -3,7 +3,7 @@ package com.wsh.zero.controller.aop.aspect;
 import com.alibaba.fastjson.JSON;
 import com.wsh.util.ConsotEnum;
 import com.wsh.util.Utils;
-import com.wsh.zero.controller.aop.anno.SysLog;
+import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.entity.SysLogEntity;
 import com.wsh.zero.mapper.SysLogMapper;
 import org.apache.shiro.SecurityUtils;
@@ -46,7 +46,7 @@ public class SysLogAspect {
 
     //表示匹配com.savage.server包及其子包下的所有方法
 //    @Pointcut("execution(* com.wsh.zero.controller..*.*(..))")
-    @Pointcut("@annotation(com.wsh.zero.controller.aop.anno.SysLog)")
+    @Pointcut("@annotation(com.wsh.zero.controller.aop.anno.SysLogTag)")
     public void Pointcut() {
     }
 
@@ -82,7 +82,7 @@ public class SysLogAspect {
 
     //@Around：环绕通知
     @Around("Pointcut()")
-    public void Around(ProceedingJoinPoint pjp) throws Throwable {
+    public Object Around(ProceedingJoinPoint pjp) throws Throwable {
         // 接收到请求，记录请求内容
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
@@ -105,7 +105,7 @@ public class SysLogAspect {
         Method method = signature.getMethod();
         Map<String, String> browserMap = Utils.getOsAndBrowserInfo(request);
         entity.setBrowser(browserMap.get("os") + "-" + browserMap.get("browser"));
-        SysLog log = method.getAnnotation(SysLog.class);
+        SysLogTag log = method.getAnnotation(SysLogTag.class);
         if (null != log) {
             //注解上的描述
             entity.setTitle(log.value());
@@ -120,5 +120,6 @@ public class SysLogAspect {
         dataMap.put("response", object);
         entity.setData(JSON.toJSONString(dataMap));
         sysLogMapper.save(entity);
+        return object;
     }
 }

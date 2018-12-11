@@ -5,6 +5,7 @@ import com.wsh.util.ExportExcelUtil;
 import com.wsh.util.ImportExcelUtil;
 import com.wsh.util.ResultUtil;
 import com.wsh.util.Utils;
+import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.entity.SysUserEntity;
 import com.wsh.zero.mapper.SysUserMapper;
 import com.wsh.zero.mapper.SysUserRoleMapper;
@@ -27,6 +28,7 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
     @Autowired
     private SysUserRoleMapper sysUserRoleMapper;
 
+    @SysLogTag(value = "系统用户", operation = "导出用户信息")
     public ResultUtil exportExcel(HttpServletResponse response) {
         String[] heart = {"ID", "用户名", "账号", "密码"};
         List<SysUserVO> list = sysUserMapper.getList(null, 0, 10);
@@ -34,6 +36,7 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
         return ResultUtil.success("导出成功");
     }
 
+    @SysLogTag(value = "系统用户", operation = "导入用户信息")
     public ResultUtil importExcel(MultipartFile file) {
         List<List<String>> lists = ImportExcelUtil.importExcel(file);
         for (List<String> list : lists) {
@@ -43,6 +46,7 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
 
     }
 
+    @SysLogTag(value = "系统用户", operation = "登录系统")
     public ResultUtil loginDataBaseCheck(String userAmount, String userPwd) {
         boolean existUserName = sysUserMapper.isExistUserAmount(userAmount);
         if (existUserName) {
@@ -59,6 +63,7 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
         return ResultUtil.failed(1, "用户不存在!");
     }
 
+    @SysLogTag(value = "系统用户", operation = "保存用户")
     @Override
     @Transactional
     public ResultUtil save(SysUserEntity sysUserEntity) {
@@ -71,6 +76,7 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
         return super.save(sysUserEntity);
     }
 
+    @SysLogTag(value = "系统用户", operation = "修改用户")
     @Override
     @Transactional
     public ResultUtil update(SysUserEntity sysUserEntity) {
@@ -80,6 +86,7 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
         return super.update(sysUserEntity);
     }
 
+    @SysLogTag(value = "系统用户", operation = "删除用户")
     @Override
     @Transactional
     public ResultUtil del(String[] ids) {

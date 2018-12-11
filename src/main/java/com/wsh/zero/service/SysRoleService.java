@@ -3,6 +3,7 @@ package com.wsh.zero.service;
 import com.google.common.base.Strings;
 import com.wsh.util.ResultUtil;
 import com.wsh.util.Utils;
+import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.entity.SysRoleEntity;
 import com.wsh.zero.mapper.SysRoleMapper;
 import com.wsh.zero.mapper.SysRolePowerMapper;
@@ -25,6 +26,7 @@ public class SysRoleService extends BaseService<SysRoleMapper, SysRoleQuery, Sys
         return ResultUtil.success(sysRoleMapper.getRoleByUserId(userId));
     }
 
+    @SysLogTag(value = "系统角色", operation = "保存角色")
     @Override
     @Transactional
     public ResultUtil save(SysRoleEntity entity) {
@@ -37,6 +39,7 @@ public class SysRoleService extends BaseService<SysRoleMapper, SysRoleQuery, Sys
         return super.save(entity);
     }
 
+    @SysLogTag(value = "系统角色", operation = "修改角色")
     @Override
     @Transactional
     public ResultUtil update(SysRoleEntity entity) {
@@ -46,6 +49,7 @@ public class SysRoleService extends BaseService<SysRoleMapper, SysRoleQuery, Sys
         return super.update(entity);
     }
 
+    @SysLogTag(value = "系统角色", operation = "删除角色")
     @Override
     @Transactional
     public ResultUtil del(String[] ids) {

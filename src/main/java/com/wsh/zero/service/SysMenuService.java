@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.wsh.util.Consot;
 import com.wsh.util.ResultUtil;
 import com.wsh.util.Utils;
+import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.entity.SysMenuEntity;
 import com.wsh.zero.mapper.SysMenuMapper;
 import com.wsh.zero.vo.MenuTreeVO;
@@ -59,6 +60,7 @@ public class SysMenuService {
         }
     }
 
+    @SysLogTag(value = "菜单目录", operation = "保存菜单")
     @Transactional
     public ResultUtil save(SysMenuEntity entity) {
         //获取
@@ -69,6 +71,7 @@ public class SysMenuService {
         return ResultUtil.success("保存成功");
     }
 
+    @SysLogTag(value = "菜单目录", operation = "删除菜单")
     @Transactional
     public ResultUtil del(String id) {
         recursionDel(id);
