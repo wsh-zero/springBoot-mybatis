@@ -8,6 +8,7 @@ import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.entity.SysLogEntity;
 import com.wsh.zero.mapper.SysLogMapper;
 import org.apache.shiro.SecurityUtils;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
@@ -70,10 +71,9 @@ public class SysLogAspect {
 
     //@AfterThrowing: 异常通知
     @AfterThrowing(value = "Pointcut()", throwing = "e")
-    public void afterReturningMethod(ProceedingJoinPoint joinPoint, Exception e) {
+    public void afterReturningMethod(JoinPoint joinPoint, Exception e) {
         //当controller没有捕获到异常时会进入
         System.out.println("=====进入异常日志类======");
-        setEntity(joinPoint);
         dataMap.put("response", e);
         entity.setData(JSON.toJSONString(dataMap));
         entity.setLevel(ConsotEnum.ERROR);
