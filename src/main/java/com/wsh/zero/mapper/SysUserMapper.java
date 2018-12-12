@@ -1,5 +1,6 @@
 package com.wsh.zero.mapper;
 
+import com.wsh.util.ResultUtil;
 import com.wsh.zero.entity.SysUserEntity;
 import com.wsh.zero.mapper.base.BaseMapper;
 import com.wsh.zero.query.SysUserQuery;
@@ -16,4 +17,6 @@ public interface SysUserMapper extends BaseMapper<SysUserEntity, SysUserQuery, S
     boolean isExistUser(@Param("userAmount") String userAmount, @Param("userPwd") String userPwd);
 
     boolean getFrozenValueByUserName(@Param("userName") String userName);
+
+    String getUserNameByUserAmount(@Param("userAmount") Object userAmount);
 }

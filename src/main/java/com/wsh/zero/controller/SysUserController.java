@@ -31,4 +31,9 @@ public class SysUserController extends BaseController<SysUserService, SysUserQue
         return sysUserService.importExcel(file);
     }
 
+    @GetMapping("get/name")
+    public ResultUtil getUserNameByUserAmount() {
+        return sysUserService.getUserNameByUserAmount();
+    }
+
 }

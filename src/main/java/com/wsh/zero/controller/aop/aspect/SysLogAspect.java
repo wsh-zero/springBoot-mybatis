@@ -137,7 +137,7 @@ public class SysLogAspect {
         } else {
             userName = SecurityUtils.getSubject().getPrincipal();
         }
-        entity.setUserName(null == userName ? "游客" : (String) userName);
+        entity.setUserName(null == userName ? Consot.USER_NAME : (String) userName);
         entity.setClassMethod(classMethod);
 
         entity.setRequestUri(request.getRequestURL().toString());

@@ -1,10 +1,7 @@
 package com.wsh.zero.service;
 
 import com.google.common.base.Strings;
-import com.wsh.util.ExportExcelUtil;
-import com.wsh.util.ImportExcelUtil;
-import com.wsh.util.ResultUtil;
-import com.wsh.util.Utils;
+import com.wsh.util.*;
 import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.entity.SysUserEntity;
 import com.wsh.zero.mapper.SysUserMapper;
@@ -12,6 +9,8 @@ import com.wsh.zero.mapper.SysUserRoleMapper;
 import com.wsh.zero.query.SysUserQuery;
 import com.wsh.zero.service.base.BaseService;
 import com.wsh.zero.vo.SysUserVO;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +42,13 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
             System.out.println(list.get(0));
         }
         return ResultUtil.success("导入成功");
+
+    }
+
+    @SysLogTag(value = "系统用户", operation = "导入用户信息")
+    public ResultUtil getUserNameByUserAmount() {
+        String userName = sysUserMapper.getUserNameByUserAmount(SecurityUtils.getSubject().getPrincipal());
+        return ResultUtil.success(Strings.isNullOrEmpty(userName) ? Consot.USER_NAME : userName);
 
     }
 
