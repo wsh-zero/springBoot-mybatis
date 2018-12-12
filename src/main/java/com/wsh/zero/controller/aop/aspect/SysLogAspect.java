@@ -1,6 +1,8 @@
 package com.wsh.zero.controller.aop.aspect;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Strings;
 import com.wsh.util.Consot;
 import com.wsh.util.ConsotEnum;
 import com.wsh.util.Utils;
@@ -74,6 +76,9 @@ public class SysLogAspect {
     public void afterReturningMethod(JoinPoint joinPoint, Exception e) {
         //当controller没有捕获到异常时会进入
         System.out.println("=====进入异常日志类======");
+        if (null == entity || Strings.isNullOrEmpty(entity.getId())) {
+            setEntity(joinPoint);
+        }
         dataMap.put("response", e);
         entity.setData(JSON.toJSONString(dataMap));
         entity.setLevel(ConsotEnum.ERROR);
@@ -86,15 +91,31 @@ public class SysLogAspect {
     public Object Around(ProceedingJoinPoint pjp) throws Throwable {
         setEntity(pjp);
         Object object = pjp.proceed();
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(object));
+            switch (String.valueOf(jsonObject.get("code"))) {
+                case "0":
+                    entity.setLevel(ConsotEnum.INFO);
+                    break;
+                case "1":
+                    entity.setLevel(ConsotEnum.WARNING);
+                    break;
+                default:
+                    entity.setLevel(ConsotEnum.ERROR);
+                    break;
+            }
+        } catch (Exception e) {
+            entity.setLevel(ConsotEnum.ERROR);
+        }
         entity.setUseTime(System.currentTimeMillis() - startTime);
-        entity.setLevel(ConsotEnum.INFO);
+
         dataMap.put("response", object);
         entity.setData(JSON.toJSONString(dataMap));
         sysLogMapper.save(entity);
         return object;
     }
 
-    public void setEntity(ProceedingJoinPoint pjp) {
+    public void setEntity(JoinPoint pjp) {
         // 接收到请求，记录请求内容
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
