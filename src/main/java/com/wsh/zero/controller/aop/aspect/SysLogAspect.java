@@ -1,10 +1,9 @@
 package com.wsh.zero.controller.aop.aspect;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
 import com.wsh.util.Consot;
 import com.wsh.util.ConsotEnum;
+import com.wsh.util.ResultUtil;
 import com.wsh.util.Utils;
 import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.entity.SysLogEntity;
@@ -80,7 +79,7 @@ public class SysLogAspect {
             setEntity(joinPoint);
         }
         dataMap.put("response", e);
-        entity.setData(JSON.toJSONString(dataMap));
+        entity.setData(Utils.getGson().toJson(dataMap));
         entity.setLevel(ConsotEnum.ERROR);
         entity.setUseTime(System.currentTimeMillis() - startTime);
         sysLogMapper.save(entity);
@@ -92,12 +91,12 @@ public class SysLogAspect {
         setEntity(pjp);
         Object object = pjp.proceed();
         try {
-            JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(object));
-            switch (String.valueOf(jsonObject.get("code"))) {
-                case "0":
+            ResultUtil resultUtil = Utils.getGson().fromJson(Utils.getGson().toJson(object), ResultUtil.class);
+            switch (resultUtil.getCode()) {
+                case 0:
                     entity.setLevel(ConsotEnum.INFO);
                     break;
-                case "1":
+                case 1:
                     entity.setLevel(ConsotEnum.WARNING);
                     break;
                 default:
@@ -110,7 +109,7 @@ public class SysLogAspect {
         entity.setUseTime(System.currentTimeMillis() - startTime);
 
         dataMap.put("response", object);
-        entity.setData(JSON.toJSONString(dataMap));
+        entity.setData(Utils.getGson().toJson(dataMap));
         sysLogMapper.save(entity);
         return object;
     }
