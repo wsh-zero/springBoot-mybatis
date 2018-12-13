@@ -10,7 +10,6 @@ import com.wsh.zero.query.SysUserQuery;
 import com.wsh.zero.service.base.BaseService;
 import com.wsh.zero.vo.SysUserVO;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +44,6 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
 
     }
 
-    @SysLogTag(value = "系统用户", operation = "导入用户信息")
     public ResultUtil getUserNameByUserAmount() {
         String userName = sysUserMapper.getUserNameByUserAmount(SecurityUtils.getSubject().getPrincipal());
         return ResultUtil.success(Strings.isNullOrEmpty(userName) ? Consot.USER_NAME : userName);
@@ -87,7 +85,11 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
     public ResultUtil update(SysUserEntity sysUserEntity) {
         String userId = sysUserEntity.getId();
         sysUserRoleMapper.delByUserId(userId);
-        for (String roleId : sysUserEntity.getRoleIds()) sysUserRoleMapper.save(userId, roleId);
+        for (String roleId : sysUserEntity.getRoleIds()) {
+            if (!Strings.isNullOrEmpty(roleId)) {
+                sysUserRoleMapper.save(userId, roleId);
+            }
+        }
         return super.update(sysUserEntity);
     }
 

@@ -45,7 +45,11 @@ public class SysRoleService extends BaseService<SysRoleMapper, SysRoleQuery, Sys
     public ResultUtil update(SysRoleEntity entity) {
         String roleId = entity.getId();
         sysRolePowerMapper.delByRoleId(roleId);
-        for (String powerId : entity.getPowerIds()) sysRolePowerMapper.save(roleId, powerId);
+        for (String powerId : entity.getPowerIds()) {
+            if (!Strings.isNullOrEmpty(powerId)) {
+                sysRolePowerMapper.save(roleId, powerId);
+            }
+        }
         return super.update(entity);
     }
 

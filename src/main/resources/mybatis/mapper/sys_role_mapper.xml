@@ -30,12 +30,12 @@
     <select id="getRoleByUserId" resultMap="resultSysRoleVO">
         select
         <include refid="list_fields"/>
-        from sys_user su,sys_user_role sul,sys_role sr
-        where su.id=sul.user_id AND sul.role_id=sr.id
+        from sys_role sr
         <if test="userId !=null and userId !=''">
-            and su.id=#{userId}
+            left join sys_user_role sul on sr.id=sul.role_id
+            left join sys_user su on sul.user_id=su.id
+            where su.id=#{userId}
         </if>
-        group by sr.id
     </select>
     <insert id="save">
         insert into sys_role (id, role_name)
