@@ -1,14 +1,13 @@
 package com.wsh.zero.mapper;
 
-import com.wsh.util.ResultUtil;
 import com.wsh.zero.entity.SysUserEntity;
 import com.wsh.zero.mapper.base.BaseMapper;
 import com.wsh.zero.query.SysUserQuery;
 import com.wsh.zero.vo.SysUserVO;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
-@Mapper
+@Repository
 public interface SysUserMapper extends BaseMapper<SysUserEntity, SysUserQuery, SysUserVO> {
     SysUserEntity getUserInfoByUserAmount(@Param("userAmount") String userAmount);
 

@@ -5,11 +5,12 @@ import com.wsh.zero.vo.MenuTreeVO;
 import com.wsh.zero.vo.SysMenuVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Mapper
+@Repository
 public interface SysMenuMapper {
     List<SysMenuVO> getMenuList(@Param("parent") String parent, @Param("userAmount") String userAmount);
 

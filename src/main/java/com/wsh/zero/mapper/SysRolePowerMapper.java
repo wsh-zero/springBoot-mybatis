@@ -1,9 +1,9 @@
 package com.wsh.zero.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
-@Mapper
+@Repository
 public interface SysRolePowerMapper {
     int delByRoleId(@Param("roleId") String roleId);
 
