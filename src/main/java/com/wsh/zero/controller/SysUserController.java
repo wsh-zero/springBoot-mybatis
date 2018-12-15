@@ -1,8 +1,6 @@
 package com.wsh.zero.controller;
 
-import com.google.gson.reflect.TypeToken;
 import com.wsh.util.ResultUtil;
-import com.wsh.util.Utils;
 import com.wsh.zero.controller.base.BaseController;
 import com.wsh.zero.entity.SysUserEntity;
 import com.wsh.zero.entity.TestEntity;
@@ -15,10 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 @Api(tags = "用户")
 @RestController
@@ -44,10 +38,7 @@ public class SysUserController extends BaseController<SysUserService, SysUserQue
     }
 
     @RequestMapping("test")
-    public ResultUtil test(SysUserEntity entity,String query) {
-        Type type = new TypeToken<List<TestEntity>>() {}.getType();
-        List<String> strings = Collections.singletonList(query);
-        List<TestEntity> list = Utils.getGson().fromJson(query, type);
+    public ResultUtil test(@RequestBody TestEntity entity) {
         return ResultUtil.success("成功");
     }
 

@@ -92,17 +92,16 @@
             , search = router.search;
 
         form.render();
-        // var userList = [];
-        // userList.push({field: "name",value: "zero",splicing:"like"});
-        // userList.push({field: "age",value: 11,splicing:"like"});
-        // console.log(JSON.stringify(userList))
-        // var data={query:JSON.stringify(userList),id:"1222"};
+        // var userArray= [];
+        // userArray.push({field: "name",value: "zero",splicing:"like"});
+        // userArray.push({field: "name1",value: "zero",splicing:"like"});
+        // var user = {id:"dddddd",testEntity:userArray};
         // admin.req({
-        //     url: '/sys/user/test' //实际使用请改成服务端真实接口
+        //     url: '/sys/user/test'
         //     , type: 'post'
         //     , dataType: 'json'
-        //     // , contentType: 'application/json;charset=utf-8'
-        //     ,data: data
+        //     , contentType: 'application/json;charset=utf-8'
+        //     ,data: JSON.stringify(user)
         //     , success: function (res) {
         //         console.log("zero" + JSON.stringify(res))
         //     }
