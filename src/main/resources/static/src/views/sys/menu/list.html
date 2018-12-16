@@ -96,7 +96,10 @@
 <script>
     var init_id = '00000000-0000-0000-0000-000000000000';
     layui.use(['admin', 'table', 'form'], function () {
-        var admin = layui.admin, form = layui.form, jQ = layui.$, id = init_id;
+        var admin = layui.admin,
+            form = layui.form,
+            jQ = layui.$,
+            id = init_id;
 
         var setting = {
             async: {
@@ -143,17 +146,24 @@
             });
             if (treeNode.level > 0) {
                 //实现单击展开
-                var zTree = $.fn.zTree.getZTreeObj("tree");
-                zTree.expandNode(treeNode);
+                var treeObj = getTreeObj();
+                treeObj.expandNode(treeNode);
             }
         }
 
+        //取消双击展开功能
         function dblClickExpand(treeId, treeNode) {
-            return treeNode.level > 0;
+            return false;
         }
 
+        //设置图标
         function showIcon(treeId, treeNode) {
-            return treeNode.level === 0;
+            return true;
+        }
+
+        //获取树对象
+        function getTreeObj() {
+            return $.fn.zTree.getZTreeObj("tree");
         }
 
         admin.req({
@@ -174,22 +184,39 @@
 
         var active = {
             up: function () {
+                var treeObj = getTreeObj();
+                //选中的
+                var treeNode = treeObj.getSelectedNodes();
                 admin.req({
                     url: '/sys/menu/move'
                     , type: 'post'
                     , data: {id: id}
                     , done: function (res) {
                         layer.msg(res.msg)
+                        var node = treeNode[0];
+                        var preNode = node.getPreNode();
+                        if (preNode) {
+                            treeObj.moveNode(preNode, node, "prev");
+                        }
                     }
                 });
             }
             , down: function () {
+                var treeObj = getTreeObj();
+                //选中的
+                var treeNode = treeObj.getSelectedNodes();
                 admin.req({
                     url: '/sys/menu/move'
                     , type: 'post'
                     , data: {id: id, direction: 1}
+                    , async: false
                     , done: function (res) {
-                        layer.msg(res.msg)
+                        layer.msg(res.msg);
+                        var node = treeNode[0];
+                        var nextNode = node.getNextNode();
+                        if (nextNode) {
+                            treeObj.moveNode(nextNode, node, "next");
+                        }
                     }
                 });
             }
