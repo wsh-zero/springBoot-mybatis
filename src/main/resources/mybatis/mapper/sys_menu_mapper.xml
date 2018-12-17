@@ -42,7 +42,7 @@
     </select>
 
     <select id="getMaxLevelByParent" resultType="Integer">
-        select max(`level`) from sys_menu where parent=#{id}
+        select max(`level`) from sys_menu where parent=#{parent}
     </select>
     <select id="getLevelById" resultType="Integer">
         select `level` from sys_menu where id=#{id}

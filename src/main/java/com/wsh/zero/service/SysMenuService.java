@@ -72,13 +72,14 @@ public class SysMenuService {
     public ResultUtil save(SysMenuEntity entity) {
         if (null != entity) {
             if (Strings.isNullOrEmpty(entity.getId())) {
-                //新增
+                if (Strings.isNullOrEmpty(entity.getParent())) {
+                    return ResultUtil.failed(1, "获取父级编号失败");
+                }
                 Integer maxLevel = sysMenuMapper.getMaxLevelByParent(entity.getParent());
                 entity.setLevel(maxLevel == null ? 1 : maxLevel + 1);
                 entity.setId(Utils.UUID());
                 sysMenuMapper.save(entity);
             } else {
-                //修改
                 sysMenuMapper.update(entity);
             }
 
