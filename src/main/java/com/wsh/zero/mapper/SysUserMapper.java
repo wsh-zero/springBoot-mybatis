@@ -18,4 +18,6 @@ public interface SysUserMapper extends BaseMapper<SysUserEntity, SysUserQuery, S
     boolean getFrozenValueByUserName(@Param("userName") String userName);
 
     String getUserNameByUserAmount(@Param("userAmount") Object userAmount);
+
+    String getUserPwdByUserAmount(@Param("userAmount") String userAmount);
 }
