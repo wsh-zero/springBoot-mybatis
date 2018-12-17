@@ -32,13 +32,13 @@
         parent=(SELECT parent from sys_menu WHERE id=#{id}) and `level`
         <choose>
             <when test="direction == 1">
-                &gt;
+                &gt;  #{level} ORDER BY `level` asc
             </when>
             <otherwise>
-                &lt;
+                &lt; #{level} ORDER BY `level` desc
             </otherwise>
         </choose>
-        #{level} ORDER BY `level` asc limit 1
+        limit 1
     </select>
 
     <select id="getMaxLevelByParent" resultType="Integer">
