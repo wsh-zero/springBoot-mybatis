@@ -188,8 +188,11 @@
                 , type: 'post'
                 , data: data.field
                 , done: function (res) {
-                    var newNode = {name: data.field.title};
-                    treeObj.addNodes(treeNode[0], newNode);
+                    if (res.data.length > 0 || res.data) {
+                        //新增  {id:1, pId:0, name: "父节点1"}
+                        var newNode = {id: res.data, parent: data.field.parent, name: data.field.title};
+                        treeObj.addNodes(treeNode[0], newNode);
+                    }
                     layer.msg(res.msg);
                 }
             });

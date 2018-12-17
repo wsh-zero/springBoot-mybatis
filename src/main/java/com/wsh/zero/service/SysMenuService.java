@@ -71,6 +71,7 @@ public class SysMenuService {
     @Transactional
     public ResultUtil save(SysMenuEntity entity) {
         if (null != entity) {
+            String data = "";
             if (Strings.isNullOrEmpty(entity.getId())) {
                 if (Strings.isNullOrEmpty(entity.getParent())) {
                     return ResultUtil.failed(1, "获取父级编号失败");
@@ -79,11 +80,11 @@ public class SysMenuService {
                 entity.setLevel(maxLevel == null ? 1 : maxLevel + 1);
                 entity.setId(Utils.UUID());
                 sysMenuMapper.save(entity);
+                data = Utils.UUID();
             } else {
                 sysMenuMapper.update(entity);
             }
-
-            return ResultUtil.success("保存成功");
+            return ResultUtil.success("保存成功", data);
         }
         return ResultUtil.failed(1, "获取菜单数据失败");
     }
