@@ -26,35 +26,39 @@
         LEFT JOIN sys_menu sm on map.menu_id=sm.id where su.user_amount=#{userAmount}
         and sm.parent =#{parent} order by sm.`level`
     </select>
-    <update id="calculationLevel">
-        update sys_menu set
-        <choose>
-            <when test="direction == 1">
-                `level`=`level` + #{levelValue}
-            </when>
-            <otherwise>
-                `level`=`level` - #{levelValue}
-            </otherwise>
-        </choose>
-        where id=#{id}
-    </update>
-    <select id="isLimitLevel" resultType="boolean">
-        SELECT count(1) FROM sys_menu where id=#{id} and `level`
-        <choose>
-            <when test="direction == 1">
-                &gt;= (SELECT max(`level`)
-            </when>
-            <otherwise>
-                &lt;= (SELECT min(`level`)
-            </otherwise>
-        </choose>
-        FROM sys_menu where parent =(SELECT parent from sys_menu WHERE id=#{id}))
 
+    <select id="getBeforeOrAfterLevel" resultType="HashMap">
+        SELECT id,`level` FROM sys_menu WHERE
+        parent=(SELECT parent from sys_menu WHERE id=#{id}) and `level`
+        <choose>
+            <when test="direction == 1">
+                &gt;
+            </when>
+            <otherwise>
+                &lt;
+            </otherwise>
+        </choose>
+        #{level} ORDER BY `level` asc limit 1
     </select>
-    <update id="save">
+
+    <select id="getMaxLevelByParent" resultType="Integer">
+        select max(`level`) from sys_menu where parent=#{id}
+    </select>
+    <select id="getLevelById" resultType="Integer">
+        select `level` from sys_menu where id=#{id}
+    </select>
+
+    <update id="updateLevelById">
+        update sys_menu set `level`=#{level} where id=#{id}
+    </update>
+    <update id="update">
+        update sys_menu set name=#{name},title=#{title},icon=#{icon},jump=#{jump} where id=#{id}
+    </update>
+
+    <insert id="save">
         insert into sys_menu (id, `name`, title, icon, jump, spread, parent, `level`)
         values (#{id}, #{name}, #{title}, #{icon}, #{jump}, #{spread}, #{parent}, #{level})
-    </update>
+    </insert>
     <select id="getAll" resultMap="resultMenuTreeVO">
         select id, title as name, parent
         from sys_menu

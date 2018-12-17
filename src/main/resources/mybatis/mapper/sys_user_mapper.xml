@@ -85,4 +85,7 @@
     <select id="getUserNameByUserAmount" resultType="String">
         select user_name from sys_user where user_amount=#{userAmount}
     </select>
+    <select id="getUserPwdByUserAmount" resultType="String">
+        select user_pwd from sys_user where user_amount=#{userAmount}
+    </select>
 </mapper>

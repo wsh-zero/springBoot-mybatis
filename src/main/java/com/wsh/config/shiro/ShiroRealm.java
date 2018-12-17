@@ -1,5 +1,6 @@
 package com.wsh.config.shiro;
 
+import com.google.common.base.Strings;
 import com.wsh.zero.entity.SysPowerEntity;
 import com.wsh.zero.entity.SysRoleEntity;
 import com.wsh.zero.entity.SysUserEntity;
@@ -45,11 +46,11 @@ public class ShiroRealm extends AuthorizingRealm {
         }
         String userAmount = (String) token.getPrincipal();
         //从数据库查询出User信息及用户关联的角色，权限信息，以备权限分配时使用
-        SysUserEntity entity = sysUserMapper.getUserInfoByUserAmount(userAmount);
-        if (null == entity) return null;
+        String userPwd = sysUserMapper.getUserPwdByUserAmount(userAmount);
+        if (Strings.isNullOrEmpty(userPwd)) return null;
         return new SimpleAuthenticationInfo(
-                entity.getUserName(), //用户名
-                entity.getUserPwd(), //密码
+                userAmount, //登录账号
+                userPwd, //密码
                 getName()  //realm name
         );
     }

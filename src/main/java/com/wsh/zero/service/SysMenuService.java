@@ -1,5 +1,6 @@
 package com.wsh.zero.service;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.wsh.util.Consot;
 import com.wsh.util.ResultUtil;
@@ -15,9 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -34,12 +34,19 @@ public class SysMenuService {
         return ResultUtil.success("获取菜单成功", menuList);
     }
 
+    @SysLogTag(value = "菜单目录", operation = "移动菜单")
+    @Transactional
     public ResultUtil calculationLevel(String id, Integer direction) {
-        boolean limitLevel = sysMenuMapper.isLimitLevel(id, direction);
-        if (limitLevel) {
-            return ResultUtil.failed(1, "已经处于数据极限位置");
+        /**
+         * 向下移动查出当前的level值,查出比当前大的level值,进行交换
+         */
+        Integer level = sysMenuMapper.getLevelById(id);
+        Map<String, String> beforeOrAfterLevel = sysMenuMapper.getBeforeOrAfterLevel(id, level, direction);
+        if (null == beforeOrAfterLevel || beforeOrAfterLevel.size() == 0) {
+            return ResultUtil.success("已经处于数据极限位置");
         }
-        sysMenuMapper.calculationLevel(id, direction, Consot.LEVEL_VALUE);
+        sysMenuMapper.updateLevelById(id, Integer.valueOf(String.valueOf(beforeOrAfterLevel.get("level"))));
+        sysMenuMapper.updateLevelById(beforeOrAfterLevel.get("id"), level);
         return ResultUtil.success("移动成功");
     }
 
@@ -63,12 +70,21 @@ public class SysMenuService {
     @SysLogTag(value = "菜单目录", operation = "保存菜单")
     @Transactional
     public ResultUtil save(SysMenuEntity entity) {
-        //获取
-        BigDecimal maxLevelByParnt = sysMenuMapper.getMaxLevelByParnt(entity.getParent());
-        entity.setLevel(maxLevelByParnt.add(new BigDecimal(BigInteger.ONE)));
-        entity.setId(Utils.UUID());
-        sysMenuMapper.save(entity);
-        return ResultUtil.success("保存成功");
+        if (null != entity) {
+            if (Strings.isNullOrEmpty(entity.getId())) {
+                //新增
+                Integer maxLevel = sysMenuMapper.getMaxLevelByParent(entity.getParent());
+                entity.setLevel(maxLevel == null ? 1 : maxLevel + 1);
+                entity.setId(Utils.UUID());
+                sysMenuMapper.save(entity);
+            } else {
+                //修改
+                sysMenuMapper.update(entity);
+            }
+
+            return ResultUtil.success("保存成功");
+        }
+        return ResultUtil.failed(1, "获取菜单数据失败");
     }
 
     @SysLogTag(value = "菜单目录", operation = "删除菜单")
