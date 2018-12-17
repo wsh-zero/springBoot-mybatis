@@ -15,6 +15,8 @@ public interface SysMenuMapper {
 
     int save(SysMenuEntity entity);
 
+    int update(SysMenuEntity entity);
+
     int del(@Param("id") String id);
 
     int delByParent(@Param("parent") String parent);
@@ -23,7 +25,7 @@ public interface SysMenuMapper {
 
     List<MenuTreeVO> getAll();
 
-    Integer getMaxLevelByParnt(@Param("parent") String parent);
+    Integer getMaxLevelByParent(@Param("parent") String parent);
 
     SysMenuVO getByPrimaryKey(@Param("id") String id);
 

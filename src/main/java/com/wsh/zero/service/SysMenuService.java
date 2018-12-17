@@ -1,5 +1,6 @@
 package com.wsh.zero.service;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.wsh.util.Consot;
 import com.wsh.util.ResultUtil;
@@ -32,6 +33,7 @@ public class SysMenuService {
         handleData(menuList, userAmount);
         return ResultUtil.success("获取菜单成功", menuList);
     }
+
     @SysLogTag(value = "菜单目录", operation = "移动菜单")
     @Transactional
     public ResultUtil calculationLevel(String id, Integer direction) {
@@ -68,12 +70,21 @@ public class SysMenuService {
     @SysLogTag(value = "菜单目录", operation = "保存菜单")
     @Transactional
     public ResultUtil save(SysMenuEntity entity) {
-        //获取
-        Integer maxLevelByParnt = sysMenuMapper.getMaxLevelByParnt(entity.getParent());
-        entity.setLevel(maxLevelByParnt == null ? 1 : maxLevelByParnt + 1);
-        entity.setId(Utils.UUID());
-        sysMenuMapper.save(entity);
-        return ResultUtil.success("保存成功");
+        if (null != entity) {
+            if (Strings.isNullOrEmpty(entity.getId())) {
+                //新增
+                Integer maxLevel = sysMenuMapper.getMaxLevelByParent(entity.getParent());
+                entity.setLevel(maxLevel == null ? 1 : maxLevel + 1);
+                entity.setId(Utils.UUID());
+                sysMenuMapper.save(entity);
+            } else {
+                //修改
+                sysMenuMapper.update(entity);
+            }
+
+            return ResultUtil.success("保存成功");
+        }
+        return ResultUtil.failed(1, "获取菜单数据失败");
     }
 
     @SysLogTag(value = "菜单目录", operation = "删除菜单")

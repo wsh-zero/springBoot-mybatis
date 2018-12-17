@@ -41,12 +41,18 @@
         #{level} ORDER BY `level` asc limit 1
     </select>
 
+    <select id="getMaxLevelByParent" resultType="Integer">
+        select max(`level`) from sys_menu where parent=#{id}
+    </select>
     <select id="getLevelById" resultType="Integer">
         select `level` from sys_menu where id=#{id}
     </select>
 
     <update id="updateLevelById">
         update sys_menu set `level`=#{level} where id=#{id}
+    </update>
+    <update id="update">
+        update sys_menu set name=#{name},title=#{title},icon=#{icon},jump=#{jump} where id=#{id}
     </update>
 
     <insert id="save">
