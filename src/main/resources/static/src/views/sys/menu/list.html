@@ -188,10 +188,12 @@
                 , type: 'post'
                 , data: data.field
                 , done: function (res) {
-                    if (res.data.length > 0 || res.data) {
-                        //新增  {id:1, pId:0, name: "父节点1"}
+                    if (res.data) {
                         var newNode = {id: res.data, parent: data.field.parent, name: data.field.title};
                         treeObj.addNodes(treeNode[0], newNode);
+                    } else {
+                        //修改标题名称
+                        treeObj.setting.renameTitle = "dddddd"
                     }
                     layer.msg(res.msg);
                 }
@@ -267,19 +269,22 @@
                 }
             }
             , add: function () {
-                form.val("menu-model-filter", {
-                    id: "",
-                    name: "",
-                    title: "",
-                    icon: "",
-                    jump: "",
-                    spread: "",
-                    parent: "",
-                    level: ""
-                });
+                rest();
             }
         };
 
+        function rest() {
+            form.val("menu-model-filter", {
+                id: "",
+                name: "",
+                title: "",
+                icon: "",
+                jump: "",
+                spread: "",
+                parent: "",
+                level: ""
+            });
+        }
     });
 
 </script>
