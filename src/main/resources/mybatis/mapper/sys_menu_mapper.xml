@@ -59,7 +59,7 @@
         insert into sys_menu (id, `name`, title, icon, jump, spread, parent, `level`)
         values (#{id}, #{name}, #{title}, #{icon}, #{jump}, #{spread}, #{parent}, #{level})
     </insert>
-    <select id="getAll" resultMap="resultMenuTreeVO">
+    <select id="getMenuTree" resultMap="resultMenuTreeVO">
         select id, title as name, parent
         from sys_menu
         order by `level`

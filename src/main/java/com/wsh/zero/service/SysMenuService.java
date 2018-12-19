@@ -1,14 +1,12 @@
 package com.wsh.zero.service;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.wsh.util.Consot;
 import com.wsh.util.ResultUtil;
 import com.wsh.util.Utils;
 import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.entity.SysMenuEntity;
 import com.wsh.zero.mapper.SysMenuMapper;
-import com.wsh.zero.vo.MenuTreeVO;
 import com.wsh.zero.vo.SysMenuVO;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -18,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 
 @Service
@@ -118,30 +115,7 @@ public class SysMenuService {
      * @return
      */
     public ResultUtil getMenuTree() {
-        List<MenuTreeVO> queryList = sysMenuMapper.getAll();
-        List<MenuTreeVO> parentList = Lists.newLinkedList();
-        for (MenuTreeVO vo : queryList) {
-            if (Objects.equals(Consot.DEFAULT_UUID, vo.getId())) {
-                parentList.add(vo);
-            }
-        }
-        List<MenuTreeVO> returnList = Lists.newLinkedList();
-        for (MenuTreeVO parentMap : parentList) {
-            returnList.add(parentMap);
-            recursionChildren(parentMap, queryList, returnList);
-        }
-        return ResultUtil.success("获取成功", returnList);
-    }
-
-    // 递归获取子节点
-    private static void recursionChildren(MenuTreeVO parentMap,
-                                          List<MenuTreeVO> allList, List<MenuTreeVO> returnList) {
-        for (MenuTreeVO vo : allList) {
-            if (Objects.equals(vo.getParent(), parentMap.getId())) {
-                returnList.add(vo);
-                recursionChildren(vo, allList, returnList);
-            }
-        }
+        return ResultUtil.success("获取成功", sysMenuMapper.getMenuTree());
     }
 }
 

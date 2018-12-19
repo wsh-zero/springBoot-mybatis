@@ -23,7 +23,7 @@ public interface SysMenuMapper {
 
     String[] getIdsByParent(@Param("parent") String parent);
 
-    List<MenuTreeVO> getAll();
+    List<MenuTreeVO> getMenuTree();
 
     Integer getMaxLevelByParent(@Param("parent") String parent);
 
