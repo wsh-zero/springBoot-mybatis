@@ -2,12 +2,12 @@ package com.wsh.zero.entity;
 
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 public class SysRoleEntity {
     private String id;
     private String roleName;
     private String[] powerIds;
-    private List<SysPowerEntity> powerList;
+    private Set<SysPowerEntity> powerList;
 }

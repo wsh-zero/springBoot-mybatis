@@ -76,7 +76,6 @@
         left join sys_role_power srp on sr.id=srp.role_id
         left join sys_power sp on srp.power_id=sp.id
         WHERE su.user_amount=#{userAmount}
-        group by sp.id
     </select>
 
     <select id="isExistUserAmount" resultType="boolean">

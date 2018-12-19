@@ -3,6 +3,7 @@ package com.wsh.zero.entity;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class SysUserEntity {
@@ -12,5 +13,5 @@ public class SysUserEntity {
     private String userPwd;
     private Integer frozen;
     private String[] roleIds;
-    private List<SysRoleEntity> roleList;
+    private Set<SysRoleEntity> roleList;
 }
