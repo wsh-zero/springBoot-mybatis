@@ -5,9 +5,10 @@
         <id column="id" property="id"/>
         <result column="power_name" property="powerName"/>
         <result column="power_path" property="powerPath"/>
+        <result column="parent" property="parent"/>
     </resultMap>
     <sql id="list_fields">
-        id, power_name,power_path
+        id, power_name,power_path,parent
     </sql>
     <sql id="list_sql">
         <where>

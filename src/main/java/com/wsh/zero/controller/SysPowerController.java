@@ -8,6 +8,7 @@ import com.wsh.zero.service.SysPowerService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +23,11 @@ public class SysPowerController extends BaseController<SysPowerService, SysPower
     @GetMapping("get/powers")
     public ResultUtil getPowers() {
         return sysPowerService.getPowers();
+    }
+
+    @PostMapping("get_tree")
+    public ResultUtil getPowerTree() {
+        return sysPowerService.getPowerTree();
     }
 
 }

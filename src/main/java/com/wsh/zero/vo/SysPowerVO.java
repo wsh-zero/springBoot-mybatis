@@ -10,4 +10,5 @@ public class SysPowerVO {
     private String id;
     private String powerName;
     private String powerPath;
+    private String parent;
 }
