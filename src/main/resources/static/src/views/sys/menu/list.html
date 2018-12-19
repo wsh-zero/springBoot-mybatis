@@ -135,6 +135,7 @@
         };
 
         function onClick(event, treeId, treeNode, clickFlag) {
+            rest();
             id = treeNode.id;
             admin.req({
                 url: "/sys/menu/get"
