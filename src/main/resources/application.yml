@@ -8,7 +8,7 @@ spring:
 #    username: wsh_zero
 #    password: Zero15397608105
     url: jdbc:mysql:///zero?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
-    username: root
+    username: wsh_zero
     password: 1111
     # 使用druid数据源
     type: com.alibaba.druid.pool.DruidDataSource
