@@ -4,6 +4,10 @@
     <resultMap id="resultSysRoleVO" type="SysRoleVO">
         <id column="id" property="id"/>
         <result column="role_name" property="roleName"/>
+        <collection property="powerList" ofType="SysPowerVO" column="id">
+            <id column="pid" property="id"/>
+            <result column="power_name" property="powerName"/>
+        </collection>
     </resultMap>
     <sql id="list_fields">
         sr.id, sr.role_name
@@ -15,8 +19,10 @@
     </sql>
     <select id="getList" resultMap="resultSysRoleVO">
         select
-        <include refid="list_fields"/>
+        <include refid="list_fields"/>,sp.id as pid,sp.power_name
         from sys_role sr
+        left join sys_role_power srp on sr.id=srp.role_id
+        left join sys_power sp on srp.power_id=sp.id
         <include refid="list_sql"/>
         <if test="pageNum !=-1 and pageSize!=-1">
             limit #{pageNum},#{pageSize}
