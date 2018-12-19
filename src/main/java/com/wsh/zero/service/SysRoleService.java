@@ -22,8 +22,8 @@ public class SysRoleService extends BaseService<SysRoleMapper, SysRoleQuery, Sys
     @Autowired
     private SysRolePowerMapper sysRolePowerMapper;
 
-    public ResultUtil getRoleByUserId(String userId) {
-        return ResultUtil.success(sysRoleMapper.getRoleByUserId(userId));
+    public ResultUtil getRoles() {
+        return ResultUtil.success(sysRoleMapper.getRoles());
     }
 
     @SysLogTag(value = "系统角色", operation = "保存角色")

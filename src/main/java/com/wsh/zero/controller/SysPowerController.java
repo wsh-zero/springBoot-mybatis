@@ -19,9 +19,9 @@ public class SysPowerController extends BaseController<SysPowerService, SysPower
     @Autowired
     SysPowerService sysPowerService;
 
-    @GetMapping("get_by_role")
-    public ResultUtil getPowerByRoleId(String roleId) {
-        return sysPowerService.getPowerByRoleId(roleId);
+    @GetMapping("get/powers")
+    public ResultUtil getPowers() {
+        return sysPowerService.getPowers();
     }
 
 }

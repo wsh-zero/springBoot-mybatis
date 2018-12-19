@@ -16,8 +16,8 @@ public class SysPowerService extends BaseService<SysPowerMapper, SysPowerQuery, 
     @Autowired
     SysPowerMapper sysPowerMapper;
 
-    public ResultUtil getPowerByRoleId(String userId) {
-        return ResultUtil.success(sysPowerMapper.getPowerByRoleId(userId));
+    public ResultUtil getPowers() {
+        return ResultUtil.success(sysPowerMapper.getPowers());
     }
 
 }

@@ -32,15 +32,10 @@
     <select id="getPowerPathAll" resultType="String">
         select power_path from sys_power
     </select>
-    <select id="getPowerByRoleId" resultMap="resultSysPowerVO">
+    <select id="getPowers" resultMap="resultSysPowerVO">
         select
         <include refid="list_fields"/>
-        from sys_role sr,sys_role_power srp,sys_power sp
-        where sr.id=srp.role_id AND srp.power_id=sp.id
-        <if test="roleId !=null and roleId !=''">
-            and sr.id=#{roleId}
-        </if>
-        group by sp.id
+        from sys_power sp
     </select>
     <insert id="save">
         insert into sys_power (id, power_name)

@@ -19,9 +19,9 @@ public class SysRoleController extends BaseController<SysRoleService, SysRoleQue
     @Autowired
     SysRoleService sysRoleService;
 
-    @GetMapping("get_by_user")
-    public ResultUtil getRoleByUserId(String userId) {
-        return sysRoleService.getRoleByUserId(userId);
+    @GetMapping("get/roles")
+    public ResultUtil getRoles() {
+        return sysRoleService.getRoles();
     }
 
 }

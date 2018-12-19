@@ -146,7 +146,7 @@
 
                         $("#role_checkbox").html('');
                         admin.req({
-                            url: '/sys/role/get_by_user'
+                            url: '/sys/role/get/roles'
                             , async: false
                             , done: function (res) {
                                 var html = '';
@@ -159,16 +159,10 @@
                         //初始化弹框
                         form.render(null, 'model-filter');
                         if (data) {
-                            admin.req({
-                                url: '/sys/role/get_by_user'
-                                , async: false
-                                , data: {userId: data.id}
-                                , done: function (res) {
-                                    for (var item in res.data) {
-                                        $("[value='" + res.data[item].id + "']").prop("checked", 'true')
-                                    }
-                                }
-                            });
+                            var roles=data.roleList;
+                            for (var item in roles) {
+                                $("[value='" + roles[item].id + "']").prop("checked", 'true')
+                            }
                             //渲染数据
                             form.val('model-filter', data)
                             $("#user_pwd_div").addClass("layui-hide");

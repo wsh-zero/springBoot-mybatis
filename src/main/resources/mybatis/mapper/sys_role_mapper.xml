@@ -33,15 +33,10 @@
         select count(1) from sys_role
         <include refid="list_sql"/>
     </select>
-    <select id="getRoleByUserId" resultMap="resultSysRoleVO">
+    <select id="getRoles" resultMap="resultSysRoleVO">
         select
         <include refid="list_fields"/>
         from sys_role sr
-        <if test="userId !=null and userId !=''">
-            left join sys_user_role sul on sr.id=sul.role_id
-            left join sys_user su on sul.user_id=su.id
-            where su.id=#{userId}
-        </if>
     </select>
     <insert id="save">
         insert into sys_role (id, role_name)

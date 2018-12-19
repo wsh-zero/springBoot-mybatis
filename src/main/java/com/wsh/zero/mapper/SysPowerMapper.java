@@ -13,5 +13,5 @@ import java.util.List;
 public interface SysPowerMapper extends BaseMapper<SysPowerEntity, SysPowerQuery, SysPowerVO> {
     String[] getPowerPathAll();
 
-    List<SysPowerVO> getPowerByRoleId(@Param("userId") String roleId);
+    List<SysPowerVO> getPowers();
 }
