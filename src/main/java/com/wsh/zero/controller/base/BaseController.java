@@ -19,7 +19,7 @@ public class BaseController<S extends BaseService, Q, E> {
     @ApiOperation(value = "列表", notes = "获取列表信息")
     @ApiImplicitParams({@ApiImplicitParam(paramType = "query", dataType = "int", name = "page", value = "第几页", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "int", name = "limit", value = "显示多少行", required = true)})
-    public TableUtil getList(Q q, @RequestParam int page, @RequestParam int limit) {
+    public TableUtil getList(Q q, @RequestParam(value = "page",defaultValue = "1") int page, @RequestParam(value = "limit",defaultValue = "10") int limit) {
         return baseService.getList(q, page, limit);
     }
 
