@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface SysPowerMapper extends BaseMapper<SysPowerEntity, SysPowerQuery, SysPowerVO> {
-    String[] getPowerPathAll();
+    String[] getPowerPathByState(@Param("state") Integer state);
 
     List<SysPowerVO> getPowers();
 }

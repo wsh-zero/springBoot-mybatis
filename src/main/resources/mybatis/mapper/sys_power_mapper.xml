@@ -30,8 +30,8 @@
         <include refid="list_sql"/>
     </select>
 
-    <select id="getPowerPathAll" resultType="String">
-        select power_path from sys_power
+    <select id="getPowerPathByState" resultType="String">
+        select power_path from sys_power where state=#{state}
     </select>
     <select id="getPowers" resultMap="resultSysPowerVO">
         select
@@ -40,6 +40,10 @@
     </select>
     <insert id="save">
         insert into sys_power (id, power_name)
+        values (#{id}, #{powerName})
+    </insert>
+    <insert id="updateStateByIdOrParent">
+        update  into sys_power (id, power_name)
         values (#{id}, #{powerName})
     </insert>
 </mapper>

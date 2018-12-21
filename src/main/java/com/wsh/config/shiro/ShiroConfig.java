@@ -1,6 +1,7 @@
 package com.wsh.config.shiro;
 
 import com.google.common.base.Strings;
+import com.wsh.util.Consot;
 import com.wsh.zero.mapper.SysPowerMapper;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -58,7 +59,7 @@ public class ShiroConfig {
         map.put("/reset/pwd", "anon");
         map.put("/sys/menu/**", "anon");
         //自定义加载权限资源关系
-        String[] powerPath = sysPowerMapper.getPowerPathAll();
+        String[] powerPath = sysPowerMapper.getPowerPathByState(Consot.POWER_STATE_ZERO);
         if (null != powerPath && powerPath.length > 0) {
             for (String resources : powerPath) {
                 if (!Strings.isNullOrEmpty(resources)) {
