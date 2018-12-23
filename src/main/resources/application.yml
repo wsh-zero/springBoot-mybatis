@@ -4,9 +4,9 @@ server:
 spring:
   datasource:
     name: test
-#    url: jdbc:mysql://180.76.111.215:3306/zero?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
-#    username: wsh_zero
-#    password: Zero15397608105
+    #    url: jdbc:mysql://180.76.111.215:3306/zero?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    #    username: wsh_zero
+    #    password: Zero15397608105
     url: jdbc:mysql:///zero?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
     username: wsh_zero
     password: 1111
@@ -66,3 +66,25 @@ mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml  #注意：一定要对应mapper映射xml文件的所在路径
   type-aliases-package: com.wsh.zero.entity,com.wsh.zero.vo # 注意：对应实体类的路径
   #  config-location: classpath:mybatis/mybatis-config.xml  # mybatis配置文件
+
+person:
+  age: 18
+  name: zero
+  boss: false
+  birth: 2018/8/2
+  maps: {k1: mapKey1,k2: mapKey2}
+  list:
+    - list1
+    - list2
+    - list3
+  malePerson:
+    name: 1
+    javaPerson:
+      name: 2
+  malePersonList:
+    - name: male1
+      javaPerson:
+        name: javaPerson1
+    - name: male2
+      javaPerson:
+        name: javaPerson2
