@@ -12,7 +12,7 @@ layui.define(['laytpl', 'layer', 'element', 'util'], function (exports) {
         container: 'LAY_app' //容器ID
         , base: layui.cache.base //记录layuiAdmin文件夹所在路径
         , views: layui.cache.base + 'views/' //视图所在目录
-        , style: layui.cache.base + 'style/' //视图所在目录
+        , style: layui.cache.base + 'style/' //样式所在目录
         , entry: 'index' //默认视图文件名
         , engine: '.html' //视图文件后缀名
         , pageTabs: true //是否开启页面选项卡功能。单页版不推荐开启
@@ -53,7 +53,8 @@ layui.define(['laytpl', 'layer', 'element', 'util'], function (exports) {
         , extend: [
             'echarts'//echarts 核心包
             , 'echartsTheme' //echarts 主题
-            , "treetable"
+            , "dltable"
+            , "treeGrid"
         ]
 
         //主题配置

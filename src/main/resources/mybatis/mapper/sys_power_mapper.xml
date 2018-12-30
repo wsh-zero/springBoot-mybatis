@@ -39,11 +39,13 @@
         from sys_power sp
     </select>
     <insert id="save">
-        insert into sys_power (id, power_name)
-        values (#{id}, #{powerName})
+        insert into sys_power ( power_name,power_path,parent)
+        values ( #{powerName}, #{powerPath}, #{parent})
     </insert>
-    <insert id="updateStateByIdOrParent">
-        update  into sys_power (id, power_name)
-        values (#{id}, #{powerName})
-    </insert>
+    <update id="update">
+        update sys_power set power_name=#{powerName},power_path=#{powerPath} where id=#{id}
+    </update>
+    <delete id="delByPrimaryKey">
+        delete from sys_power where id=#{id}
+    </delete>
 </mapper>

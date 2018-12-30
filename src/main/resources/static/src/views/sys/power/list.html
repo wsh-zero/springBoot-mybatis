@@ -5,18 +5,7 @@
             <div class="layui-card">
                 <div class="layui-card-header">数据操作</div>
                 <div class="layui-card-body">
-                    <script type="text/html" id="power_operate_btn">
-                        <div class="layui-btn-container">
-                            <button class="layui-btn" lay-event="add">添加</button>
-                            <button class="layui-btn layui-btn-danger" lay-event="batchDel">批量删除</button>
-                        </div>
-                    </script>
-                    <table class="layui-hide" id="power_table" lay-filter="power-table-filter"></table>
-
-                    <script type="text/html" id="power-table-operate">
-                        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-                    </script>
+                    <table class="layui-hide" id="power_table" lay-filter="power-treeGrid-filter"></table>
                 </div>
             </div>
         </div>
@@ -24,76 +13,50 @@
 </div>
 
 <script>
-    layui.use(['admin', 'table','treetable'], function () {
-        var table = layui.table
-            , $ = layui.$
+    layui.use(['admin', 'treeGrid', 'form', 'view'], function () {
+        var $ = layui.$
             , admin = layui.admin
             , form = layui.form
             , view = layui.view
-            , treetable = layui.treetable
+            , treeGrid = layui.treeGrid
             , tableId = "power_table";
-        // console.log(treetable)
-        // table.render({
-        //     elem: '#' + tableId
-        //     , url: '/sys/power/list'
-        //     // ,width: admin.screen() > 1 ? 892 : ''
-        //     // ,height: 332
-        //     //开启头部工具栏
-        //     , toolbar: '#power_operate_btn'
-        //     , defaultToolbar:  ['filter', 'print', 'exports']
-        //     , cols: [[
-        //         {type: 'checkbox', fixed: 'left'}
-        //         , {field: 'id', title: 'ID', sort: true, fixed: 'left'}
-        //         , {field: 'powerName', title: '权限名称'}
-        //         , {width: 178, align: 'center', fixed: 'right', title: '操作', toolbar: '#power-table-operate'}
-        //     ]]
-        //     , page: true
-        //     , limit: 10
-        //     , limits: [10, 15, 20, 25, 30]
-        //     , text: '对不起，加载出现异常！'
-        // });
-        var renderTable = function () {
-            layer.load(2);
-            treetable.render({
-                treeColIndex: 1,
-                treeSpid: "00000000-0000-0000-0000-000000000000",
-                treeIdName: 'id',
-                treePidName: 'parent',
-                treeDefaultClose: true,
-                treeLinkage: false,
-                elem: '#'+tableId,
-                url: '/sys/power/list',
-                page: false,
-                //开启头部工具栏
-                 toolbar: '#power_operate_btn'
-                , defaultToolbar:  ['filter', 'print', 'exports'],
-                cols: [[
-                    {field: 'id', title: 'ID'},
-                    {field: 'powerName', title: '权限名称'},
-                    {field: 'parent', title: 'pId'}
-                    , {width: 178, align: 'center', fixed: 'right', title: '操作', toolbar: '#power-table-operate'}
-                ]],
-                done: function () {
-                    layer.closeAll('loading');
+        treeGrid.render({
+            id: tableId
+            , elem: '#' + tableId
+            , idField: 'id'
+            , url: '/sys/power/list'
+            // , cellMinWidth: 100
+            , treeId: 'id'//树形id字段名称
+            , treeUpId: 'parent'//树形父id字段名称
+            , treeShowName: 'powerName'//以树形式显示的字段
+            , cols: [[
+                {field: 'id', title: 'ID'}
+                , {field: 'powerName', title: '权限名称'}
+                , {field: 'powerPath', title: '权限路径'}
+                , {field: 'parent', title: 'pId'}
+                , {
+                    width: 178, title: '操作', align: 'right'/*toolbar: '#barDemo'*/
+                    , templet: function (d) {
+                        var add = '<a class="layui-btn layui-btn-xs" lay-event="add">添加</a>';
+                        var edit = '<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+                        var del = '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+                        if (d.parent == -1) {//父级id
+                            return add + edit + del;
+                        } else {
+                            return edit + del;
+                        }
+
+                    }
                 }
-            });
-        };
-
-        renderTable();
-
-        //监听工具条
-        table.on('tool(table1)', function (obj) {
-            var data = obj.data;
-            var layEvent = obj.event;
-
-            if (layEvent === 'del') {
-                layer.msg('删除' + data.id);
-            } else if (layEvent === 'edit') {
-                layer.msg('修改' + data.id);
-            }
+            ]]
+            // , page: true
+            // , limit: 10
+            // , limits: [10, 15, 20, 25, 30]
+            // , text: '对不起，加载出现异常！'
         });
+
         //监听工具条
-        table.on('tool(power-table-filter)', function (obj) {
+        treeGrid.on('tool(power-treeGrid-filter)', function (obj) {
             var data = obj.data;
             if (obj.event === 'del') {
                 layer.confirm('真的删除行么', function (index) {
@@ -109,40 +72,13 @@
                     });
                 });
             } else if (obj.event === 'edit') {
-                common('编辑权限信息', 'power-content-edit', '/sys/power/update', 'post', data);
+                common('编辑权限信息', 'power-content-edit', '/sys/power/update', 'post', data, true);
+            } else if (obj.event === 'add') {
+                common('添加权限信息', 'power-content-add', '/sys/power/save', 'post', data, false);
             }
         });
 
-        table.on('toolbar(power-table-filter)', function (obj) {
-            switch (obj.event) {
-                case 'batchDel':
-                    var checkStatus = table.checkStatus(tableId)
-                        , checkData = checkStatus.data; //得到选中的数据
-                    var length = checkData.length;
-                    if (length === 0) {
-                        return layer.msg('请选择数据');
-                    }
-                    var ids = ''
-                    for (item in checkData) ids += checkData[item]["id"] + ",";
-                    layer.confirm('确定删除这 ' + length + ' 条数据吗？', function () {
-                        admin.req({
-                            url: '/sys/power/del'
-                            , type: 'post'
-                            , data: {ids: ids}
-                            , done: function (res) {
-                                layer.msg(res.msg)
-                                table.reload(tableId);
-                            }
-                        });
-                    });
-                    break;
-                case 'add':
-                    common('添加权限信息', 'power-content-add', '/sys/power/save', 'post');
-                    break;
-            }
-        });
-
-        function common(title, id, url, ajaxType, data) {
+        function common(title, id, url, ajaxType, data, isEdit) {
             admin.popup({
                 title: title
                 , area: ['450px', '550px']
@@ -151,19 +87,20 @@
                     view(this.id).render('sys/power/model').done(function () {
                         //初始化弹框
                         form.render(null, 'power-model-filter');
-                        if (data) {
+                        if (isEdit) {
                             //渲染弹框
                             form.val('power-model-filter', data)
                         }
                         //监听提交
-                        form.on('submit(power-submit-filter)', function (data) {
+                        form.on('submit(power-submit-filter)', function (rtn) {
+                            rtn.field.parent = data.id;
                             admin.req({
                                 url: url
                                 , type: ajaxType
-                                , data: data.field
+                                , data: rtn.field
                                 , done: function (res) {
                                     layer.msg(res.msg);
-                                    table.reload(tableId); //重载表格
+                                    treeGrid.reload(tableId); //重载表格
                                     layer.close(index); //执行关闭
                                 }
                             });
