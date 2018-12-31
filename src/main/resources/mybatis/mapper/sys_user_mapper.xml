@@ -63,8 +63,11 @@
     </delete>
     <select id="getByPrimaryKey" resultMap="resultSysUserVO">
         select
-        <include refid="list_fields"/>
-        from sys_user su where su.id=#{id}
+        <include refid="list_fields"/>,sr.id as sid,sr.role_name
+        from sys_user su
+        left join sys_user_role sur on su.id=sur.user_id
+        left join sys_role sr on sur.role_id=sr.id
+        where su.id=#{id}
     </select>
     <select id="getUserInfoByUserAmount" resultMap="resultSysUserEntity">
         SELECT su.id,su.user_amount,su.user_name,su.user_pwd,su.frozen,

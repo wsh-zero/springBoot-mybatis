@@ -26,7 +26,6 @@
 <script>
     layui.use(['admin', 'table'], function () {
         var table = layui.table
-            , $ = layui.$
             , admin = layui.admin
             , form = layui.form
             , view = layui.view
@@ -115,6 +114,18 @@
                         }
                         //监听提交
                         form.on('submit(role-submit-filter)', function (data) {
+
+                            var treeObj = $.fn.zTree.getZTreeObj("powetZtree"),
+                                nodes = treeObj.getCheckedNodes(true),
+                                powerIds = "";
+                            for (var i = 0; i < nodes.length; i++) {
+                                if (nodes[i].id !== "0") {
+                                    powerIds += nodes[i].id + ","
+                                }
+                            }
+                            if (powerIds !== "") {
+                                data.field.powerIds = remove_last_char(powerIds)
+                            }
                             admin.req({
                                 url: url
                                 , type: ajaxType
@@ -130,6 +141,5 @@
                 }
             });
         }
-
     });
 </script>

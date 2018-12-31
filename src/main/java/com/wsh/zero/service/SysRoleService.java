@@ -31,12 +31,20 @@ public class SysRoleService extends BaseService<SysRoleMapper, SysRoleQuery, Sys
     @Transactional
     public ResultUtil save(SysRoleEntity entity) {
         String roleId = Utils.UUID();
-        for (String powerId : entity.getPowerIds())
-            if (!Strings.isNullOrEmpty(powerId)) {
-                sysRolePowerMapper.save(roleId, powerId);
-            }
+        String[] powerIds = entity.getPowerIds();
+        handleCenterTable(roleId, powerIds);
         entity.setId(roleId);
         return super.save(entity);
+    }
+
+    private void handleCenterTable(String roleId, String[] powerIds) {
+        if (null != powerIds && powerIds.length > 0) {
+            for (String powerId : powerIds) {
+                if (!Strings.isNullOrEmpty(powerId)) {
+                    sysRolePowerMapper.save(roleId, powerId);
+                }
+            }
+        }
     }
 
     @SysLogTag(value = "系统角色", operation = "修改角色")
@@ -44,12 +52,9 @@ public class SysRoleService extends BaseService<SysRoleMapper, SysRoleQuery, Sys
     @Transactional
     public ResultUtil update(SysRoleEntity entity) {
         String roleId = entity.getId();
+        String[] powerIds = entity.getPowerIds();
         sysRolePowerMapper.delByRoleId(roleId);
-        for (String powerId : entity.getPowerIds()) {
-            if (!Strings.isNullOrEmpty(powerId)) {
-                sysRolePowerMapper.save(roleId, powerId);
-            }
-        }
+        handleCenterTable(roleId, powerIds);
         return super.update(entity);
     }
 

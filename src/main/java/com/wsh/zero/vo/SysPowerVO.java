@@ -9,8 +9,13 @@ import lombok.Data;
 public class SysPowerVO {
     private String id;
     private String powerName;
+    private String name;
     private String powerPath;
     private String parent;
     private Integer powerType = 1;
-    private Integer powerState=0;
+    private Integer powerState = 0;
+
+    public String getName() {
+        return this.powerName;
+    }
 }

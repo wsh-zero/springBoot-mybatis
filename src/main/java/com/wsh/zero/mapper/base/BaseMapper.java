@@ -30,7 +30,7 @@ public interface BaseMapper<E, Q, V> {
      * @param id 通过主键获取一条数据
      * @return
      */
-    E getByPrimaryKey(String id);
+    V getByPrimaryKey(String id);
 
     /**
      * @param e 保存数据

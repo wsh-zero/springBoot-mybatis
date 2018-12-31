@@ -30,6 +30,19 @@
                                 <label class="layui-form-label">密码</label>
                                 <div class="layui-form-mid">{{d.data.userPwd}}</div>
                             </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">拥有角色</label>
+                                <div class="layui-form-mid">
+                                    {{# if(d.data.roleList){ }}
+                                    {{# layui.each(d.data.roleList, function(index, item){ }}
+                                    [{{ item.roleName }}]
+                                    {{# }); }}
+                                    {{# } else { }}
+                                    "3333"
+                                    {{# } }}
+
+                                </div>
+                            </div>
                         </div>
 
                     </div>

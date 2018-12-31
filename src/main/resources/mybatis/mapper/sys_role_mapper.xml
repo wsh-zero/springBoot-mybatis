@@ -42,4 +42,10 @@
         insert into sys_role (id, role_name)
         values (#{id}, #{roleName})
     </insert>
+    <update id="update">
+        update sys_role set role_name=#{roleName} where id=#{id}
+    </update>
+    <delete id="delByPrimaryKey">
+        delete from sys_role where id=#{id}
+    </delete>
 </mapper>
