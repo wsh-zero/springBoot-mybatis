@@ -50,6 +50,19 @@
                 , {field: 'id', title: 'ID', sort: true, fixed: 'left'}
                 , {field: 'userName', title: '用户名称'}
                 , {field: 'userAmount', title: '登录账号'}
+                , {
+                    field: 'roles', title: '拥有角色', templet: function (d) {
+                        var roles = "";
+                        var roleList = d.roleList;
+                        if (roleList) {
+                            for (var item in roleList) {
+                                roles += roleList[item].roleName + ",";
+                            }
+                            roles = remove_last_char(roles);
+                        }
+                        return roles;
+                    }
+                }
                 , {width: 178, align: 'center', fixed: 'right', title: '操作', toolbar: '#table-operate'}
             ]]
             , page: true
@@ -159,7 +172,7 @@
                         //初始化弹框
                         form.render(null, 'model-filter');
                         if (data) {
-                            var roles=data.roleList;
+                            var roles = data.roleList;
                             for (var item in roles) {
                                 $("[value='" + roles[item].id + "']").prop("checked", 'true')
                             }
