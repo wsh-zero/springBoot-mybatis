@@ -12,4 +12,12 @@ public interface Consot {
      */
     Integer POWER_STATE_ZERO = 0;
     Integer POWER_STATE_ONE = 1;
+    /**
+     * 状态(0必须拥有才能访问,1游客可以访问)
+     */
+    Integer POWER_TYPE = 2;//目录
+    /**
+     * 权限最上级
+     */
+    String POWER_MIN_ID = "0";
 }

@@ -11,6 +11,11 @@
         </div>
     </div>
 </div>
+<script type="text/html" id="test-table-switchTpl">
+    <input type="checkbox" name="powerState" lay-skin="switch" lay-text="启用|禁用" lay-filter="power-state-filter"
+           value="{{ d.powerState }}" data-json="{{ encodeURIComponent(JSON.stringify(d)) }}" {{ d.powerState== 0
+           ? 'checked' : '' }}>
+</script>
 
 <script>
     layui.use(['admin', 'treeGrid', 'form', 'view'], function () {
@@ -23,24 +28,42 @@
         treeGrid.render({
             id: tableId
             , elem: '#' + tableId
-            , idField: 'id'
             , url: '/sys/power/list'
-            // , cellMinWidth: 100
+            , idField: 'id'//必須字段
             , treeId: 'id'//树形id字段名称
             , treeUpId: 'parent'//树形父id字段名称
             , treeShowName: 'powerName'//以树形式显示的字段
+            , isFilter: false
+            , iconOpen: true//是否显示图标【默认显示】
+            , isOpenDefault: true//节点默认是展开还是折叠【默认展开】
+            , loading: true
+            , method: 'get'
+            , isPage: true
             , cols: [[
-                {field: 'id', title: 'ID'}
-                , {field: 'powerName', title: '权限名称'}
+                {field: 'powerName', title: '权限名称'}
                 , {field: 'powerPath', title: '权限路径'}
-                , {field: 'parent', title: 'pId'}
+                , {field: 'menuJump', title: '菜单URL'}
                 , {
-                    width: 178, title: '操作', align: 'right'/*toolbar: '#barDemo'*/
+                    field: 'powerType', title: '类型', templet: function (d) {
+                        if (d.powerType === 0) {
+                            return '<span class="layui-badge layui-bg-blue">目录</span>';
+                        } else if (d.powerType === 1) {
+                            return '<span class="layui-badge-rim">菜单</span>';
+                        } else if (d.powerType === 2) {
+                            return '<span class="layui-badge layui-bg-gray">按钮</span>';
+                        }
+                    }
+                }
+                , {field: 'powerState', title: '状态', width: 110, unresize: true, templet: '#test-table-switchTpl'}
+                , {
+                    title: '操作', align: 'right'
                     , templet: function (d) {
                         var add = '<a class="layui-btn layui-btn-xs" lay-event="add">添加</a>';
                         var edit = '<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
                         var del = '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
-                        if (d.parent == -1) {//父级id
+                        if (d.parent === "-1") {//父级id
+                            return add;
+                        } else if (d.parent === "0") {
                             return add + edit + del;
                         } else {
                             return edit + del;
@@ -49,10 +72,18 @@
                     }
                 }
             ]]
-            // , page: true
-            // , limit: 10
-            // , limits: [10, 15, 20, 25, 30]
-            // , text: '对不起，加载出现异常！'
+            , limit: 10
+            , limits: [10, 15, 20, 25, 30]
+            , text: '对不起，加载出现异常！'
+            , parseData: function (res) {//数据加载后回调
+                return res;
+            }
+            , onClickRow: function (index, o) {
+                // console.log(index, o, "单击！");
+            }
+            , onDblClickRow: function (index, o) {
+                // console.log(index, o, "双击");
+            }
         });
 
         //监听工具条
@@ -77,6 +108,52 @@
                 common('添加权限信息', 'power-content-add', '/sys/power/save', 'post', data, false);
             }
         });
+        form.on('switch(power-state-filter)', function (obj) {
+            var json = JSON.parse(decodeURIComponent($(this).data('json')));
+            var checked = obj.elem.checked;
+            var id = json.id;
+            var powerState = checked ? 0 : 1;
+
+            var data = {
+                id: id
+                , powerState: powerState
+            }
+            var msg = checked ? '<span style="color: green"> 启用 </span>' : '<span style="color: red"> 禁用 </span>';
+            if (id === "0") {
+                layer.open({
+                    content: '此操作将' + msg + '所有权限,是否继续?'
+                    , btn: ['确定', '取消']
+                    , yes: function () {
+                        updatePowerState(data, true)
+                    }
+                    , btn2: function () {
+                        obj.elem.checked = !checked;
+                        form.render();
+                    }
+                    , cancel: function () {
+                        obj.elem.checked = !checked;
+                        form.render();
+                    }
+                });
+            } else {
+                updatePowerState(data, false);
+            }
+
+        });
+
+        function updatePowerState(data, reload) {
+            admin.req({
+                url: "/sys/power/update/state"
+                , type: "post"
+                , data: data
+                , done: function (res) {
+                    if (reload) {
+                        treeGrid.reload(tableId); //重载表格
+                    }
+                    layer.msg(res.msg);
+                }
+            });
+        }
 
         function common(title, id, url, ajaxType, data, isEdit) {
             admin.popup({
@@ -91,9 +168,15 @@
                             //渲染弹框
                             form.val('power-model-filter', data)
                         }
+
                         //监听提交
                         form.on('submit(power-submit-filter)', function (rtn) {
-                            rtn.field.parent = data.id;
+                            if (!isEdit) {
+                                rtn.field.parent = data.id;
+                                if (data.parent !== "-1") {
+                                    rtn.field.powerType = 2
+                                }
+                            }
                             admin.req({
                                 url: url
                                 , type: ajaxType

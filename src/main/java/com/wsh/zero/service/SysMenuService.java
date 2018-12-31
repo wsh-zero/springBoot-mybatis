@@ -68,7 +68,6 @@ public class SysMenuService {
     @Transactional
     public ResultUtil save(SysMenuEntity entity) {
         if (null != entity) {
-            String data = null;
             if (Strings.isNullOrEmpty(entity.getId())) {
                 if (Strings.isNullOrEmpty(entity.getParent())) {
                     return ResultUtil.failed(1, "获取父级编号失败");

@@ -1,6 +1,7 @@
 package com.wsh.config.shiro;
 
 import com.google.common.base.Strings;
+import com.wsh.util.Consot;
 import com.wsh.zero.entity.SysPowerEntity;
 import com.wsh.zero.entity.SysRoleEntity;
 import com.wsh.zero.entity.SysUserEntity;
@@ -14,6 +15,8 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Objects;
 
 public class ShiroRealm extends AuthorizingRealm {
     @Autowired
@@ -31,7 +34,9 @@ public class ShiroRealm extends AuthorizingRealm {
             simpleAuthorizationInfo.addRole(role.getRoleName());
             for (SysPowerEntity power : role.getPowerList()) {
                 //添加权限
-                simpleAuthorizationInfo.addStringPermission(power.getPowerPath());
+                if (!Objects.equals(power.getPowerType(), Consot.POWER_TYPE)) {
+                    simpleAuthorizationInfo.addStringPermission(power.getPowerPath());
+                }
             }
         }
         return simpleAuthorizationInfo;

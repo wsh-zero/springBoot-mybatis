@@ -6,9 +6,11 @@
         <result column="power_name" property="powerName"/>
         <result column="power_path" property="powerPath"/>
         <result column="parent" property="parent"/>
+        <result column="power_type" property="powerType"/>
+        <result column="power_state" property="powerState"/>
     </resultMap>
     <sql id="list_fields">
-        id, power_name,power_path,parent
+        id, power_name,power_path,parent,power_type,power_state
     </sql>
     <sql id="list_sql">
         <where>
@@ -31,7 +33,7 @@
     </select>
 
     <select id="getPowerPathByState" resultType="String">
-        select power_path from sys_power where state=#{state}
+        select power_path from sys_power where power_state=#{powerState}
     </select>
     <select id="getPowers" resultMap="resultSysPowerVO">
         select
@@ -39,13 +41,25 @@
         from sys_power sp
     </select>
     <insert id="save">
-        insert into sys_power ( power_name,power_path,parent)
-        values ( #{powerName}, #{powerPath}, #{parent})
+        insert into sys_power ( power_name,power_path,parent,power_type)
+        values ( #{powerName}, #{powerPath}, #{parent}, #{powerType})
     </insert>
     <update id="update">
         update sys_power set power_name=#{powerName},power_path=#{powerPath} where id=#{id}
     </update>
+    <update id="updatePowerState">
+        update sys_power set power_state=#{powerState}
+        <if test="id!=null">
+            where id=#{id}
+        </if>
+    </update>
     <delete id="delByPrimaryKey">
         delete from sys_power where id=#{id}
+    </delete>
+    <delete id="delByNotPrimaryKey">
+        delete from sys_power where id!=#{id}
+    </delete>
+    <delete id="delByParent">
+        delete from sys_power where parent=#{parent}
     </delete>
 </mapper>

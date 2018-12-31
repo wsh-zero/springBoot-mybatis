@@ -53,7 +53,6 @@ layui.define(['laytpl', 'layer', 'element', 'util'], function (exports) {
         , extend: [
             'echarts'//echarts 核心包
             , 'echartsTheme' //echarts 主题
-            , "dltable"
             , "treeGrid"
         ]
 
