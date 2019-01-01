@@ -1,5 +1,6 @@
 package com.wsh.util;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -11,5 +12,9 @@ public class DateTimeUtil {
 
     public static String convertTimeToString(Long time, DateTimeFormatter formatter) {
         return formatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
+    }
+
+    public static Timestamp getCurrentTime() {
+        return new Timestamp(System.currentTimeMillis());
     }
 }
