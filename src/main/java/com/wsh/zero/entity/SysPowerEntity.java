@@ -11,4 +11,5 @@ public class SysPowerEntity extends BaseEntity {
     private String parent;
     private Integer powerType = 1;
     private Integer powerState = 0;
+    private String menuId;
 }

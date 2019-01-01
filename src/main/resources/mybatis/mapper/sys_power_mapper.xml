@@ -8,9 +8,11 @@
         <result column="parent" property="parent"/>
         <result column="power_type" property="powerType"/>
         <result column="power_state" property="powerState"/>
+        <result column="menu_id" property="menuId"/>
+        <result column="menu_jump" property="menuJump"/>
     </resultMap>
     <sql id="list_fields">
-        id, power_name,power_path,parent,power_type,power_state
+        sp.id, sp.power_name,sp.power_path,sp.parent,sp.power_type,sp.power_state
     </sql>
     <sql id="list_sql">
         <where>
@@ -19,9 +21,11 @@
     </sql>
     <select id="getList" resultMap="resultSysPowerVO">
         select
-        <include refid="list_fields"/>
-        from sys_power
+        <include refid="list_fields"/>,sm.jump as menu_jump
+        from sys_power sp
+        left join sys_menu sm on sp.menu_id=sm.id
         <include refid="list_sql"/>
+        order by sp.id
         <if test="pageNum !=-1 and pageSize!=-1">
             limit #{pageNum},#{pageSize}
         </if>
@@ -41,11 +45,11 @@
         from sys_power sp
     </select>
     <insert id="save">
-        insert into sys_power ( power_name,power_path,parent,power_type,gmtTime)
-        values ( #{powerName}, #{powerPath}, #{parent}, #{powerType}, #{gmtTime})
+        insert into sys_power ( power_name,power_path,parent,power_type,menu_id,gmtTime)
+        values ( #{powerName}, #{powerPath}, #{parent}, #{powerType},#{menuId}, #{gmtTime})
     </insert>
     <update id="update">
-        update sys_power set power_name=#{powerName},power_path=#{powerPath} where id=#{id}
+        update sys_power set power_name=#{powerName},power_path=#{powerPath},menu_id=#{menuId} where id=#{id}
     </update>
     <update id="updatePowerState">
         update sys_power set power_state=#{powerState}

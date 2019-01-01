@@ -165,8 +165,19 @@
                         //初始化弹框
                         form.render(null, 'power-model-filter');
                         if (isEdit) {
+                            if (data.parent === "0") {
+                                $("#menu_jump").removeClass("layui-hide");
+                            } else {
+                                $("#menu_jump").addClass("layui-hide");
+                            }
                             //渲染弹框
                             form.val('power-model-filter', data)
+                        } else {
+                            if (data.parent === "-1") {
+                                $("#menu_jump").removeClass("layui-hide");
+                            } else {
+                                $("#menu_jump").addClass("layui-hide");
+                            }
                         }
 
                         //监听提交

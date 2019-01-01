@@ -14,6 +14,8 @@ public class SysPowerVO {
     private String parent;
     private Integer powerType = 1;
     private Integer powerState = 0;
+    private String menuId;
+    private String menuJump;
 
     public String getName() {
         return this.powerName;

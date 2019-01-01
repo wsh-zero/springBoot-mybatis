@@ -39,7 +39,7 @@ public class SysPowerService extends BaseService<SysPowerMapper, SysPowerQuery, 
     @Transactional
     @Override
     public ResultUtil del(String[] id) {
-        if (Objects.equals(id, Consot.POWER_MIN_ID)) {
+        if (Objects.equals(id[0], Consot.POWER_MIN_ID)) {
             sysPowerMapper.delByNotPrimaryKey(id[0]);
         } else {
             sysPowerMapper.delByPrimaryKey(id[0]);
