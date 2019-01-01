@@ -14,6 +14,7 @@
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="parent" property="parent"/>
+        <result column="jump" property="jump"/>
     </resultMap>
     <sql id="list_fields">
         sm.id, sm.name, sm.title, sm.icon, sm.jump, sm.spread, sm.parent
@@ -32,7 +33,7 @@
         parent=(SELECT parent from sys_menu WHERE id=#{id}) and `level`
         <choose>
             <when test="direction == 1">
-                &gt;  #{level} ORDER BY `level` asc
+                &gt; #{level} ORDER BY `level` asc
             </when>
             <otherwise>
                 &lt; #{level} ORDER BY `level` desc
@@ -78,4 +79,7 @@
     <delete id="delByParent">
         delete from sys_menu  where parent=#{parent}
     </delete>
+    <select id="getPowerRelationMenuList" resultMap="resultMenuTreeVO">
+        select id,jump from sys_menu where parent !=#{parent} and parent !="-1"
+    </select>
 </mapper>

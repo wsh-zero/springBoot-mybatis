@@ -42,4 +42,6 @@ public interface SysMenuMapper {
     Map<String, String> getBeforeOrAfterLevel(@Param("id") String id, @Param("level") Integer level, @Param("direction") Integer direction);
 
     int updateLevelById(@Param("id") String id, @Param("level") Integer level);
+
+    List<MenuTreeVO> getPowerRelationMenuList(@Param("parent") String parent);
 }

@@ -12,7 +12,7 @@
         <result column="menu_jump" property="menuJump"/>
     </resultMap>
     <sql id="list_fields">
-        sp.id, sp.power_name,sp.power_path,sp.parent,sp.power_type,sp.power_state
+        sp.id, sp.power_name,sp.power_path,sp.parent,sp.power_type,sp.power_state,sp.menu_id
     </sql>
     <sql id="list_sql">
         <where>

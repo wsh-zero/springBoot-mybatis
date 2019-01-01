@@ -162,10 +162,12 @@
                 , id: id
                 , success: function (layero, index) {
                     view(this.id).render('sys/power/model').done(function () {
+                        $("#menu_jump_select").html('');
                         //初始化弹框
                         form.render(null, 'power-model-filter');
                         if (isEdit) {
                             if (data.parent === "0") {
+                                loadingRelationMenu();
                                 $("#menu_jump").removeClass("layui-hide");
                             } else {
                                 $("#menu_jump").addClass("layui-hide");
@@ -174,7 +176,9 @@
                             form.val('power-model-filter', data)
                         } else {
                             if (data.parent === "-1") {
+                                loadingRelationMenu();
                                 $("#menu_jump").removeClass("layui-hide");
+                                form.render();
                             } else {
                                 $("#menu_jump").addClass("layui-hide");
                             }
@@ -200,6 +204,24 @@
                             });
                         });
                     });
+                }
+            });
+        }
+
+        function loadingRelationMenu() {
+            admin.req({
+                url: '/sys/menu/power/relation'
+                , type: 'get'
+                , async: false
+                , done: function (res) {
+                    var relation = res.data;
+                    var html = '<option value="">请选择</option>';
+                    if (relation) {
+                        for (var item in relation) {
+                            html += '<option value="' + relation[item].id + '">' + relation[item].jump + '</option>';
+                        }
+                    }
+                    $("#menu_jump_select").html(html);
                 }
             });
         }

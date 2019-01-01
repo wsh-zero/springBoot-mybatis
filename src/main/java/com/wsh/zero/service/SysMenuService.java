@@ -26,7 +26,7 @@ public class SysMenuService {
     public ResultUtil getMenuList() {
         Subject subject = SecurityUtils.getSubject();
         String userAmount = (String) subject.getPrincipal();
-        List<SysMenuVO> menuList = sysMenuMapper.getMenuList(Consot.DEFAULT_UUID, userAmount);
+        List<SysMenuVO> menuList = sysMenuMapper.getMenuList(Consot.ALL_ZERO_UUID, userAmount);
         handleData(menuList, userAmount);
         return ResultUtil.success("获取菜单成功", menuList);
     }
@@ -115,6 +115,10 @@ public class SysMenuService {
      */
     public ResultUtil getMenuTree() {
         return ResultUtil.success("获取成功", sysMenuMapper.getMenuTree());
+    }
+
+    public ResultUtil getPowerRelationMenuList() {
+        return ResultUtil.success("获取成功", sysMenuMapper.getPowerRelationMenuList(Consot.ALL_ZERO_UUID));
     }
 }
 

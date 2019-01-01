@@ -40,6 +40,11 @@ public class SysMenuController {
         return sysMenuService.getMenuTree();
     }
 
+    @GetMapping("power/relation")
+    public ResultUtil getPowerRelationMenuList() {
+        return sysMenuService.getPowerRelationMenuList();
+    }
+
     @PostMapping("del")
     public ResultUtil del(@RequestParam String id) {
         return sysMenuService.del(id);
