@@ -32,7 +32,7 @@
                         </button>
                     </div>
                     <div class="layui-form" lay-filter="menu-model-filter">
-                        <div class="layui-form-item">
+                        <div class="layui-form-item layui-hide" id="menu_id">
                             <label class="layui-form-label">编号</label>
                             <div class="layui-input-block">
                                 <input type="text" name="id" placeholder="编号" class="layui-input" disabled/>
@@ -132,6 +132,7 @@
         };
 
         function onClick(event, treeId, treeNode, clickFlag) {
+            jQ("#menu_id").removeClass("layui-hide");
             rest();
             id = treeNode.id;
             admin.req({
@@ -143,16 +144,16 @@
                     form.val('menu-model-filter', res.data)
                 }
             });
-            if (treeNode.level > 0) {
-                //实现单击展开
-                var treeObj = getTreeObj();
-                treeObj.expandNode(treeNode);
-            }
+            // if (treeNode.level > 0) {
+            //     //实现单击展开
+            //     var treeObj = getTreeObj();
+            //     treeObj.expandNode(treeNode);
+            // }
         }
 
         //取消双击展开功能
         function dblClickExpand(treeId, treeNode) {
-            return false;
+            return true;
         }
 
         //设置图标
@@ -185,6 +186,7 @@
                 return;
             }
             data.field.parent = treeNode[0].id;
+            removeProperty(data.field);
             layer.confirm('确定提交吗？', function () {
                 admin.req({
                     url: "/sys/menu/save"
@@ -276,6 +278,7 @@
                 }
             }
             , add: function () {
+                jQ("#menu_id").addClass("layui-hide");
                 rest();
             }
         };
