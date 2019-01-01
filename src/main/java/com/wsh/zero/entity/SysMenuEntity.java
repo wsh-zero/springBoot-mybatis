@@ -1,9 +1,10 @@
 package com.wsh.zero.entity;
 
+import com.wsh.zero.entity.base.BaseEntity;
 import lombok.Data;
 
 @Data
-public class SysMenuEntity {
+public class SysMenuEntity extends BaseEntity {
     private String id;
     private String name;
     private String title;

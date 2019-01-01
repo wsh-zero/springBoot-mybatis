@@ -41,8 +41,8 @@
         from sys_power sp
     </select>
     <insert id="save">
-        insert into sys_power ( power_name,power_path,parent,power_type)
-        values ( #{powerName}, #{powerPath}, #{parent}, #{powerType})
+        insert into sys_power ( power_name,power_path,parent,power_type,gmtTime)
+        values ( #{powerName}, #{powerPath}, #{parent}, #{powerType}, #{gmtTime})
     </insert>
     <update id="update">
         update sys_power set power_name=#{powerName},power_path=#{powerPath} where id=#{id}

@@ -39,8 +39,8 @@
         from sys_role sr
     </select>
     <insert id="save">
-        insert into sys_role (id, role_name)
-        values (#{id}, #{roleName})
+        insert into sys_role (id, role_name, gmtTime)
+        values (#{id}, #{roleName}, #{gmtTime})
     </insert>
     <update id="update">
         update sys_role set role_name=#{roleName} where id=#{id}

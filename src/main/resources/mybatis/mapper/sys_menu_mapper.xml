@@ -56,8 +56,8 @@
     </update>
 
     <insert id="save">
-        insert into sys_menu (id, `name`, title, icon, jump, spread, parent, `level`)
-        values (#{id}, #{name}, #{title}, #{icon}, #{jump}, #{spread}, #{parent}, #{level})
+        insert into sys_menu (id, `name`, title, icon, jump, spread, parent, `level`, gmtTime)
+        values (#{id}, #{name}, #{title}, #{icon}, #{jump}, #{spread}, #{parent}, #{level}, #{gmtTime})
     </insert>
     <select id="getMenuTree" resultMap="resultMenuTreeVO">
         select id, title as name, parent

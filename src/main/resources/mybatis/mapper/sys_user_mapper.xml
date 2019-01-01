@@ -52,8 +52,8 @@
         <include refid="list_sql"/>
     </select>
     <insert id="save">
-        insert into sys_user(id,user_name,user_amount,user_pwd)
-        values (#{id},#{userName},#{userAmount},#{userPwd})
+        insert into sys_user(id,user_name,user_amount,user_pwd,gmtTime)
+        values (#{id},#{userName},#{userAmount},#{userPwd},#{gmtTime})
     </insert>
     <update id="update">
         update sys_user set user_amount=#{userAmount},user_name=#{userName} where id=#{id}

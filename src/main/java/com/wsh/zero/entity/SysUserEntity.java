@@ -1,12 +1,12 @@
 package com.wsh.zero.entity;
 
+import com.wsh.zero.entity.base.BaseEntity;
 import lombok.Data;
 
-import java.util.List;
 import java.util.Set;
 
 @Data
-public class SysUserEntity {
+public class SysUserEntity extends BaseEntity {
     private String id;
     private String userName;
     private String userAmount;
