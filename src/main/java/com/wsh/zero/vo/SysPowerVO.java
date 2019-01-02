@@ -1,12 +1,13 @@
 package com.wsh.zero.vo;
 
+import com.wsh.zero.vo.base.BaseVO;
 import lombok.Data;
 
 /**
  * 传输到页面的实体类
  */
 @Data
-public class SysPowerVO {
+public class SysPowerVO extends BaseVO {
     private String id;
     private String powerName;
     private String name;
