@@ -66,4 +66,12 @@
     <delete id="delByParent">
         delete from sys_power where parent=#{parent}
     </delete>
+    <select id="getPowerPathByUserAmount" resultType="String">
+        SELECT sp.power_path FROM sys_user su
+        left join sys_user_role sur on su.id=sur.user_id
+        left join sys_role sr on sur.role_id=sr.id
+        left join sys_role_power srp on sr.id=srp.role_id
+        left join sys_power sp on srp.power_id=sp.id
+        WHERE su.user_amount=#{userAmount} and sp.parent =0
+    </select>
 </mapper>

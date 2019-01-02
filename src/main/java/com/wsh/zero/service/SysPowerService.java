@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Set;
 
 
 @Service
@@ -46,5 +47,9 @@ public class SysPowerService extends BaseService<SysPowerMapper, SysPowerQuery, 
             sysPowerMapper.delByParent(id[0]);
         }
         return ResultUtil.success("删除成功!");
+    }
+
+    public Set<String> getPowerPathByUserAmount(String userAmount) {
+        return sysPowerMapper.getPowerPathByUserAmount(userAmount);
     }
 }

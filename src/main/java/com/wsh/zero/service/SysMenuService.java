@@ -8,23 +8,65 @@ import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.entity.SysMenuEntity;
 import com.wsh.zero.mapper.SysMenuMapper;
 import com.wsh.zero.vo.SysMenuVO;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
 public class SysMenuService {
     @Autowired
     private SysMenuMapper sysMenuMapper;
+    @Autowired
+    private SysPowerService sysPowerService;
 
     public ResultUtil getMenuList() {
+        //获取登录用户
+        Subject subject = SecurityUtils.getSubject();
+        String userAmount = (String) subject.getPrincipal();
+        if (Strings.isNullOrEmpty(userAmount)) {
+            return ResultUtil.failed(1001, "您还没有登录！");
+        }
+        Set<String> loginUserPowerPath = sysPowerService.getPowerPathByUserAmount(userAmount);
         List<SysMenuVO> menuList = sysMenuMapper.getMenuList(Consot.ALL_ZERO_UUID);
-        handleData(menuList);
+        handleData(menuList, loginUserPowerPath);
         return ResultUtil.success("获取菜单成功", menuList);
+    }
+
+    private void handleData(List<SysMenuVO> menuList, Set<String> loginUserPowerPath) {
+
+        if (null != menuList && menuList.size() > 0) {
+            Iterator<SysMenuVO> it = menuList.iterator();
+            while (it.hasNext()) {
+                SysMenuVO vo = it.next();
+                //按照用户权限过滤菜单
+                if (!Objects.equals(vo.getParent(), Consot.ALL_ZERO_UUID) && !loginUserPowerPath.contains(vo.getJump())) {
+                    it.remove();
+                }
+                List<SysMenuVO> childrenMenu = sysMenuMapper.getMenuList(vo.getId());
+                if (null != childrenMenu && childrenMenu.size() > 0) {
+                    if (Strings.isNullOrEmpty(vo.getJump())) {
+                        /**
+                         * 判断用户拥有权限,在子列表中是否存在
+                         */
+                        Set<String> jumps = childrenMenu.stream().map(SysMenuVO::getJump).collect(Collectors.toSet());
+                        int size = jumps.size();
+                        jumps.removeAll(loginUserPowerPath);
+                        if (size == jumps.size()) {
+                            it.remove();
+                        }
+                    }
+                    vo.setList(childrenMenu);
+                }
+                handleData(childrenMenu, loginUserPowerPath);
+            }
+
+        }
     }
 
     @SysLogTag(value = "菜单目录", operation = "移动菜单")
@@ -47,18 +89,6 @@ public class SysMenuService {
         return ResultUtil.success("获取成功", sysMenuMapper.getByPrimaryKey(id));
     }
 
-    private void handleData(List<SysMenuVO> menuList) {
-        if (null != menuList && menuList.size() > 0) {
-            for (SysMenuVO item : menuList) {
-                List<SysMenuVO> childrenMenu = sysMenuMapper.getMenuList(item.getId());
-                if (null != childrenMenu && childrenMenu.size() > 0) {
-                    item.setList(childrenMenu);
-                }
-                handleData(childrenMenu);
-            }
-
-        }
-    }
 
     @SysLogTag(value = "菜单目录", operation = "保存菜单")
     @Transactional
