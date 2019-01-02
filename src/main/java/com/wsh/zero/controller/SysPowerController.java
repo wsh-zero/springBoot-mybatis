@@ -7,7 +7,9 @@ import com.wsh.zero.query.SysPowerQuery;
 import com.wsh.zero.service.SysPowerService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Api(tags = "权限")
 @RestController
@@ -21,10 +23,4 @@ public class SysPowerController extends BaseController<SysPowerService, SysPower
     public ResultUtil getPowers() {
         return sysPowerService.getPowers();
     }
-
-    @PostMapping("update/state")
-    public ResultUtil updatePowerState(@RequestParam Integer powerState, @RequestParam String id) {
-        return sysPowerService.updatePowerState(powerState, id);
-    }
-
 }

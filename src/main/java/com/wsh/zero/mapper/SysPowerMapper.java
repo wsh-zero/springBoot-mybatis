@@ -12,9 +12,7 @@ import java.util.Set;
 
 @Repository
 public interface SysPowerMapper extends BaseMapper<SysPowerEntity, SysPowerQuery, SysPowerVO> {
-    String[] getPowerPathByState(@Param("powerState") Integer powerState);
-
-    int updatePowerState(@Param("powerState") Integer powerState, @Param("id") String id);
+    String[] getAllPowerPath();
 
     List<SysPowerVO> getPowers();
 

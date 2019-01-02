@@ -59,7 +59,7 @@ public class ShiroConfig {
         map.put("/reset/pwd", "anon");
         map.put("/sys/menu/**", "anon");
         //自定义加载权限资源关系
-        String[] powerPath = sysPowerMapper.getPowerPathByState(Consot.POWER_STATE_ZERO);
+        String[] powerPath = sysPowerMapper.getAllPowerPath();
         if (null != powerPath && powerPath.length > 0) {
             for (String resources : powerPath) {
                 if (!Strings.isNullOrEmpty(resources)) {

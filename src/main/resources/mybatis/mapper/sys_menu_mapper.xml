@@ -14,7 +14,6 @@
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="parent" property="parent"/>
-        <result column="jump" property="jump"/>
     </resultMap>
     <sql id="list_fields">
         sm.id, sm.name, sm.title, sm.icon, sm.jump, sm.spread, sm.parent
@@ -76,7 +75,4 @@
     <delete id="delByParent">
         delete from sys_menu  where parent=#{parent}
     </delete>
-    <select id="getPowerRelationMenuList" resultMap="resultMenuTreeVO">
-        select id,jump from sys_menu where parent !=#{parent} and parent !="-1"
-    </select>
 </mapper>

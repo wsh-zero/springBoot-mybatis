@@ -7,12 +7,9 @@
         <result column="power_path" property="powerPath"/>
         <result column="parent" property="parent"/>
         <result column="power_type" property="powerType"/>
-        <result column="power_state" property="powerState"/>
-        <result column="menu_id" property="menuId"/>
-        <result column="menu_jump" property="menuJump"/>
     </resultMap>
     <sql id="list_fields">
-        sp.id, sp.power_name,sp.power_path,sp.parent,sp.power_type,sp.power_state,sp.menu_id
+        sp.id, sp.power_name,sp.power_path,sp.parent,sp.power_type
     </sql>
     <sql id="list_sql">
         <where>
@@ -21,9 +18,8 @@
     </sql>
     <select id="getList" resultMap="resultSysPowerVO">
         select
-        <include refid="list_fields"/>,sm.jump as menu_jump
+        <include refid="list_fields"/>
         from sys_power sp
-        left join sys_menu sm on sp.menu_id=sm.id
         <include refid="list_sql"/>
         order by sp.id
         <if test="pageNum !=-1 and pageSize!=-1">
@@ -36,8 +32,8 @@
         <include refid="list_sql"/>
     </select>
 
-    <select id="getPowerPathByState" resultType="String">
-        select power_path from sys_power where power_state=#{powerState}
+    <select id="getAllPowerPath" resultType="String">
+        select distinct power_path from sys_power WHERE power_path !=''
     </select>
     <select id="getPowers" resultMap="resultSysPowerVO">
         select
@@ -45,17 +41,11 @@
         from sys_power sp
     </select>
     <insert id="save">
-        insert into sys_power ( power_name,power_path,parent,power_type,menu_id,gmtTime)
-        values ( #{powerName}, #{powerPath}, #{parent}, #{powerType},#{menuId}, #{gmtTime})
+        insert into sys_power ( power_name,power_path,parent,power_type,gmtTime)
+        values ( #{powerName}, #{powerPath}, #{parent}, #{powerType}, #{gmtTime})
     </insert>
     <update id="update">
-        update sys_power set power_name=#{powerName},power_path=#{powerPath},menu_id=#{menuId} where id=#{id}
-    </update>
-    <update id="updatePowerState">
-        update sys_power set power_state=#{powerState}
-        <if test="id!=null">
-            where id=#{id}
-        </if>
+        update sys_power set power_name=#{powerName},power_path=#{powerPath} where id=#{id}
     </update>
     <delete id="delByPrimaryKey">
         delete from sys_power where id=#{id}

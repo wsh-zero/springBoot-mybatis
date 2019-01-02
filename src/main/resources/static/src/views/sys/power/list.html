@@ -11,11 +11,6 @@
         </div>
     </div>
 </div>
-<script type="text/html" id="test-table-switchTpl">
-    <input type="checkbox" name="powerState" lay-skin="switch" lay-text="启用|禁用" lay-filter="power-state-filter"
-           value="{{ d.powerState }}" data-json="{{ encodeURIComponent(JSON.stringify(d)) }}" {{ d.powerState== 0
-           ? 'checked' : '' }}>
-</script>
 
 <script>
     layui.use(['admin', 'treeGrid', 'form', 'view'], function () {
@@ -42,7 +37,6 @@
             , cols: [[
                 {field: 'powerName', title: '权限名称'}
                 , {field: 'powerPath', title: '权限路径'}
-                , {field: 'menuJump', title: '菜单URL'}
                 , {
                     field: 'powerType', title: '类型', templet: function (d) {
                         if (d.powerType === 0) {
@@ -54,7 +48,6 @@
                         }
                     }
                 }
-                , {field: 'powerState', title: '状态', width: 110, unresize: true, templet: '#test-table-switchTpl'}
                 , {
                     title: '操作', align: 'right'
                     , templet: function (d) {
@@ -108,52 +101,6 @@
                 common('添加权限信息', 'power-content-add', '/sys/power/save', 'post', data, false);
             }
         });
-        form.on('switch(power-state-filter)', function (obj) {
-            var json = JSON.parse(decodeURIComponent($(this).data('json')));
-            var checked = obj.elem.checked;
-            var id = json.id;
-            var powerState = checked ? 0 : 1;
-
-            var data = {
-                id: id
-                , powerState: powerState
-            }
-            var msg = checked ? '<span style="color: green"> 启用 </span>' : '<span style="color: red"> 禁用 </span>';
-            if (id === "0") {
-                layer.open({
-                    content: '此操作将' + msg + '所有权限,是否继续?'
-                    , btn: ['确定', '取消']
-                    , yes: function () {
-                        updatePowerState(data, true)
-                    }
-                    , btn2: function () {
-                        obj.elem.checked = !checked;
-                        form.render();
-                    }
-                    , cancel: function () {
-                        obj.elem.checked = !checked;
-                        form.render();
-                    }
-                });
-            } else {
-                updatePowerState(data, false);
-            }
-
-        });
-
-        function updatePowerState(data, reload) {
-            admin.req({
-                url: "/sys/power/update/state"
-                , type: "post"
-                , data: data
-                , done: function (res) {
-                    if (reload) {
-                        treeGrid.reload(tableId); //重载表格
-                    }
-                    layer.msg(res.msg);
-                }
-            });
-        }
 
         function common(title, id, url, ajaxType, data, isEdit) {
             admin.popup({
@@ -162,12 +109,10 @@
                 , id: id
                 , success: function (layero, index) {
                     view(this.id).render('sys/power/model').done(function () {
-                        $("#menu_jump_select").html('');
                         //初始化弹框
                         form.render(null, 'power-model-filter');
                         if (isEdit) {
                             if (data.parent === "0") {
-                                loadingRelationMenu();
                                 $("#menu_jump").removeClass("layui-hide");
                             } else {
                                 $("#menu_jump").addClass("layui-hide");
@@ -176,9 +121,7 @@
                             form.val('power-model-filter', data)
                         } else {
                             if (data.parent === "-1") {
-                                loadingRelationMenu();
                                 $("#menu_jump").removeClass("layui-hide");
-                                form.render();
                             } else {
                                 $("#menu_jump").addClass("layui-hide");
                             }
@@ -207,24 +150,5 @@
                 }
             });
         }
-
-        function loadingRelationMenu() {
-            admin.req({
-                url: '/sys/menu/power/relation'
-                , type: 'get'
-                , async: false
-                , done: function (res) {
-                    var relation = res.data;
-                    var html = '<option value="">请选择</option>';
-                    if (relation) {
-                        for (var item in relation) {
-                            html += '<option value="' + relation[item].id + '">' + relation[item].jump + '</option>';
-                        }
-                    }
-                    $("#menu_jump_select").html(html);
-                }
-            });
-        }
-
     });
 </script>

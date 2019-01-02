@@ -8,6 +8,4 @@ public class MenuTreeVO {
     private String id;
     private String name;
     private String parent;
-    private String jump;
-    private String menuId;
 }

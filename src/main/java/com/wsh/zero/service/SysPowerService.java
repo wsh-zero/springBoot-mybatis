@@ -26,16 +26,6 @@ public class SysPowerService extends BaseService<SysPowerMapper, SysPowerQuery, 
         return ResultUtil.success(sysPowerMapper.getPowers());
     }
 
-    @SysLogTag(value = "权限信息", operation = "修改状态")
-    public ResultUtil updatePowerState(Integer powerState, String id) {
-        if (Objects.equals(id, Consot.POWER_MIN_ID)) {
-            sysPowerMapper.updatePowerState(powerState, null);
-        } else {
-            sysPowerMapper.updatePowerState(powerState, id);
-        }
-        return ResultUtil.success("修改成功");
-    }
-
     @SysLogTag(value = "权限信息", operation = "删除权限")
     @Transactional
     @Override

@@ -142,9 +142,5 @@ public class SysMenuService {
     public ResultUtil getMenuTree() {
         return ResultUtil.success("获取成功", sysMenuMapper.getMenuTree());
     }
-
-    public ResultUtil getPowerRelationMenuList() {
-        return ResultUtil.success("获取成功", sysMenuMapper.getPowerRelationMenuList(Consot.ALL_ZERO_UUID));
-    }
 }
 
