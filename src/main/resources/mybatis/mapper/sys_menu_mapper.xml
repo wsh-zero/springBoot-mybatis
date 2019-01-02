@@ -22,10 +22,7 @@
     <select id="getMenuList" resultMap="resultSysMenuVO">
         SELECT
         <include refid="list_fields"/>
-        FROM sys_user su
-        LEFT JOIN sys_user_menu map ON su.id=map.user_id
-        LEFT JOIN sys_menu sm on map.menu_id=sm.id where su.user_amount=#{userAmount}
-        and sm.parent =#{parent} order by sm.`level`
+        FROM sys_menu sm where sm.parent =#{parent} order by sm.`level`
     </select>
 
     <select id="getBeforeOrAfterLevel" resultType="HashMap">
@@ -57,8 +54,8 @@
     </update>
 
     <insert id="save">
-        insert into sys_menu (id, `name`, title, icon, jump, spread, parent, `level`, gmtTime)
-        values (#{id}, #{name}, #{title}, #{icon}, #{jump}, #{spread}, #{parent}, #{level}, #{gmtTime})
+        insert into sys_menu (id, `name`, title, icon, jump, spread, parent, `level`)
+        values (#{id}, #{name}, #{title}, #{icon}, #{jump}, #{spread}, #{parent}, #{level})
     </insert>
     <select id="getMenuTree" resultMap="resultMenuTreeVO">
         select id, title as name, parent

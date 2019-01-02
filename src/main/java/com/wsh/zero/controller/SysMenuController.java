@@ -16,7 +16,7 @@ public class SysMenuController {
     SysMenuService sysMenuService;
 
     @GetMapping("list")
-    public ResultUtil list() {
+    public ResultUtil getMenuList() {
         return sysMenuService.getMenuList();
     }
 

@@ -4,13 +4,14 @@
     <resultMap id="resultSysRoleVO" type="SysRoleVO">
         <id column="id" property="id"/>
         <result column="role_name" property="roleName"/>
+        <result column="gmtTime" property="gmtTime"/>
         <collection property="powerList" ofType="SysPowerVO" column="id">
             <id column="pid" property="id"/>
             <result column="power_name" property="powerName"/>
         </collection>
     </resultMap>
     <sql id="list_fields">
-        sr.id, sr.role_name
+        sr.id, sr.role_name, sr.gmtTime
     </sql>
     <sql id="list_sql">
         <where>
@@ -24,6 +25,7 @@
         left join sys_role_power srp on sr.id=srp.role_id
         left join sys_power sp on srp.power_id=sp.id
         <include refid="list_sql"/>
+        order by sr.gmtTime
         <if test="pageNum !=-1 and pageSize!=-1">
             limit #{pageNum},#{pageSize}
         </if>
@@ -43,9 +45,13 @@
         values (#{id}, #{roleName}, #{gmtTime})
     </insert>
     <update id="update">
-        update sys_role set role_name=#{roleName} where id=#{id}
+        update sys_role
+        set role_name = #{roleName}
+        where id = #{id}
     </update>
     <delete id="delByPrimaryKey">
-        delete from sys_role where id=#{id}
+        delete
+        from sys_role
+        where id = #{id}
     </delete>
 </mapper>

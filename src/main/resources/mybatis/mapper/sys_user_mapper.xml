@@ -7,6 +7,7 @@
         <result column="user_amount" property="userAmount"/>
         <result column="user_pwd" property="userPwd"/>
         <result column="frozen" property="frozen"/>
+        <result column="gmtTime" property="gmtTime"/>
         <collection property="roleList" ofType="SysRoleEntity" column="id">
             <id column="sid" property="id"/>
             <result column="role_name" property="roleName"/>
@@ -28,7 +29,7 @@
         </collection>
     </resultMap>
     <sql id="list_fields">
-        su.id, su.user_name,su.user_amount,su.user_pwd
+        su.id, su.user_name,su.user_amount,su.user_pwd,su.gmtTime
     </sql>
     <sql id="list_sql">
         <where>
@@ -42,6 +43,7 @@
         left join sys_user_role sur on su.id=sur.user_id
         left join sys_role sr on sur.role_id=sr.id
         <include refid="list_sql"/>
+        order by su.gmtTime
         <if test="pageNum !=-1 and pageSize!=-1">
             limit #{pageNum},#{pageSize}
         </if>

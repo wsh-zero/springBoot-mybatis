@@ -8,8 +8,6 @@ import com.wsh.zero.controller.aop.anno.SysLogTag;
 import com.wsh.zero.entity.SysMenuEntity;
 import com.wsh.zero.mapper.SysMenuMapper;
 import com.wsh.zero.vo.SysMenuVO;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +22,8 @@ public class SysMenuService {
     private SysMenuMapper sysMenuMapper;
 
     public ResultUtil getMenuList() {
-        Subject subject = SecurityUtils.getSubject();
-        String userAmount = (String) subject.getPrincipal();
-        List<SysMenuVO> menuList = sysMenuMapper.getMenuList(Consot.ALL_ZERO_UUID, userAmount);
-        handleData(menuList, userAmount);
+        List<SysMenuVO> menuList = sysMenuMapper.getMenuList(Consot.ALL_ZERO_UUID);
+        handleData(menuList);
         return ResultUtil.success("获取菜单成功", menuList);
     }
 
@@ -51,14 +47,14 @@ public class SysMenuService {
         return ResultUtil.success("获取成功", sysMenuMapper.getByPrimaryKey(id));
     }
 
-    private void handleData(List<SysMenuVO> menuList, String userAmount) {
+    private void handleData(List<SysMenuVO> menuList) {
         if (null != menuList && menuList.size() > 0) {
             for (SysMenuVO item : menuList) {
-                List<SysMenuVO> childrenMenu = sysMenuMapper.getMenuList(item.getId(), userAmount);
+                List<SysMenuVO> childrenMenu = sysMenuMapper.getMenuList(item.getId());
                 if (null != childrenMenu && childrenMenu.size() > 0) {
                     item.setList(childrenMenu);
                 }
-                handleData(childrenMenu, userAmount);
+                handleData(childrenMenu);
             }
 
         }
