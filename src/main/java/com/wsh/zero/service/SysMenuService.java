@@ -45,22 +45,24 @@ public class SysMenuService {
             while (it.hasNext()) {
                 SysMenuVO vo = it.next();
                 //按照用户权限过滤菜单
-                if (!Objects.equals(vo.getParent(), Consot.ALL_ZERO_UUID) && !loginUserPowerPath.contains(vo.getJump())) {
+                if (!Objects.equals(vo.getParent(), Consot.ALL_ZERO_UUID)
+                        && !Strings.isNullOrEmpty(vo.getJump())
+                        && !loginUserPowerPath.contains(vo.getJump())) {
                     it.remove();
                 }
                 List<SysMenuVO> childrenMenu = sysMenuMapper.getMenuList(vo.getId());
                 if (null != childrenMenu && childrenMenu.size() > 0) {
-                    if (Strings.isNullOrEmpty(vo.getJump())) {
-                        /**
-                         * 判断用户拥有权限,在子列表中是否存在
-                         */
-                        Set<String> jumps = childrenMenu.stream().map(SysMenuVO::getJump).collect(Collectors.toSet());
-                        int size = jumps.size();
-                        jumps.removeAll(loginUserPowerPath);
-                        if (size == jumps.size()) {
-                            it.remove();
-                        }
-                    }
+//                    if (Strings.isNullOrEmpty(vo.getJump())) {
+//                        /**
+//                         * 判断用户拥有权限,在子列表中是否存在
+//                         */
+//                        Set<String> jumps = childrenMenu.stream().map(SysMenuVO::getJump).collect(Collectors.toSet());
+//                        int size = jumps.size();
+//                        jumps.removeAll(loginUserPowerPath);
+//                        if (size == jumps.size()) {
+//                            it.remove();
+//                        }
+//                    }
                     vo.setList(childrenMenu);
                 }
                 handleData(childrenMenu, loginUserPowerPath);
