@@ -1,6 +1,7 @@
 package com.wsh.zero.controller;
 
 import com.wsh.util.ResultUtil;
+import com.wsh.util.Utils;
 import com.wsh.zero.controller.base.BaseController;
 import com.wsh.zero.entity.SysUserEntity;
 import com.wsh.zero.entity.TestEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 @Api(tags = "用户")
 @RestController
@@ -38,8 +40,8 @@ public class SysUserController extends BaseController<SysUserService, SysUserQue
     }
 
     @RequestMapping("test")
-    public ResultUtil test(@RequestBody TestEntity entity) {
-        return ResultUtil.success("成功");
+    public ResultUtil test( @Valid @RequestBody TestEntity entity) {
+        return ResultUtil.success("成功", Utils.getGson().toJson(entity));
     }
 
 }

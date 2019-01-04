@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+    <script src="https://cdn.bootcss.com/axios/0.19.0-beta.1/axios.js"></script>
+    <script src="https://cdn.bootcss.com/qs/6.5.2/qs.min.js"></script>
+    <title>My WebSocket</title>
+</head>
+
+<body>
+axios request
+</body>
+
+<script type="text/javascript">
+    var zeroList=new Array();
+    zeroList.push({field: "zzz1", value: "eee1",splicing:"111"});
+    var data={
+        id:"1",
+        name:"ww",
+        // zero:{field: "zzz", value: "eee",splicing:"1"},
+        zeroList:zeroList
+    }
+    postAxios("http://localhost:8081/user/save", data).then((res) => {
+        console.log(res.data)
+    });
+
+    function postAxios(url, data) {
+        return axios({
+            method: 'post',
+            url: url,
+            data: data,
+            headers: {
+                'Content-type': 'application/json;charset=utf-8'
+                // 'Content-type': 'application/x-www-form-urlencoded'
+            }
+        });
+    }
+</script>
+</html>
