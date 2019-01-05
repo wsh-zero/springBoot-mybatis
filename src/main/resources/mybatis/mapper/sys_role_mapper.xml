@@ -21,14 +21,14 @@
     <select id="getList" resultMap="resultSysRoleVO">
         select
         <include refid="list_fields"/>,sp.id as pid,sp.power_name
-        from sys_role sr
-        left join sys_role_power srp on sr.id=srp.role_id
-        left join sys_power sp on srp.power_id=sp.id
-        <include refid="list_sql"/>
-        order by sr.gmtTime
+        from (select
+        <include refid="list_fields"/>
+        from sys_role sr order by sr.gmtTime
         <if test="pageNum !=-1 and pageSize!=-1">
             limit #{pageNum},#{pageSize}
-        </if>
+        </if>) as sr
+        left join sys_role_power srp on sr.id=srp.role_id
+        left join sys_power sp on srp.power_id=sp.id
     </select>
 
     <select id="getCount" resultType="int">

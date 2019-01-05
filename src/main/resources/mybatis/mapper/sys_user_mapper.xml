@@ -39,14 +39,14 @@
     <select id="getList" resultMap="resultSysUserVO">
         select
         <include refid="list_fields"/>,sr.id as sid,sr.role_name
-        from sys_user su
-        left join sys_user_role sur on su.id=sur.user_id
-        left join sys_role sr on sur.role_id=sr.id
-        <include refid="list_sql"/>
-        order by su.gmtTime
+        from (select
+        <include refid="list_fields"/>
+        from sys_user su order by su.gmtTime
         <if test="pageNum !=-1 and pageSize!=-1">
             limit #{pageNum},#{pageSize}
-        </if>
+        </if>) as su
+        left join sys_user_role sur on su.id=sur.user_id
+        left join sys_role sr on sur.role_id=sr.id
     </select>
 
     <select id="getCount" resultType="int">

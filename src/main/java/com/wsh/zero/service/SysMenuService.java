@@ -52,17 +52,17 @@ public class SysMenuService {
                 }
                 List<SysMenuVO> childrenMenu = sysMenuMapper.getMenuList(vo.getId());
                 if (null != childrenMenu && childrenMenu.size() > 0) {
-//                    if (Strings.isNullOrEmpty(vo.getJump())) {
-//                        /**
-//                         * 判断用户拥有权限,在子列表中是否存在
-//                         */
-//                        Set<String> jumps = childrenMenu.stream().map(SysMenuVO::getJump).collect(Collectors.toSet());
-//                        int size = jumps.size();
-//                        jumps.removeAll(loginUserPowerPath);
-//                        if (size == jumps.size()) {
-//                            it.remove();
-//                        }
-//                    }
+                    if (Strings.isNullOrEmpty(vo.getJump())) {
+                        /**
+                         * 判断用户拥有权限,在子列表中是否存在
+                         */
+                        Set<String> jumps = childrenMenu.stream().map(SysMenuVO::getJump).collect(Collectors.toSet());
+                        int size = jumps.size();
+                        jumps.removeAll(loginUserPowerPath);
+                        if (size == jumps.size()) {
+                            it.remove();
+                        }
+                    }
                     vo.setList(childrenMenu);
                 }
                 handleData(childrenMenu, loginUserPowerPath);
