@@ -1,6 +1,12 @@
 package com.wsh.util;
 
 public class FileUtil {
+
+    /**
+     * 文件上传根目录
+     */
+    public static final String ROOT_PATH = "D:/resoures/file/";
+
     /**
      * 获取文件后缀
      *

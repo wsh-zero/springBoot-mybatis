@@ -11,7 +11,6 @@ import com.wsh.zero.service.base.BaseService;
 import com.wsh.zero.vo.SysUserVO;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,8 +26,6 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
     private SysUserMapper sysUserMapper;
     @Autowired
     private SysUserRoleMapper sysUserRoleMapper;
-    @Value("${web.upload-path}")
-    private String filePath;
 
     @SysLogTag(value = "系统用户", operation = "导出用户信息")
     public ResultUtil exportExcel(HttpServletResponse response) {
@@ -66,11 +63,7 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
             }
             String uuid = Utils.UUID();
             String fileName = FileUtil.getFileName(uuid, originalFilename);
-            File dest = new File(filePath + fileName);
-
-            String imgPath = "http://127.0.0.1:80" + "/resoures/file/" + fileName;
-
-            System.out.println("拼接好的图片上传路径为：" + imgPath);
+            File dest = new File(FileUtil.ROOT_PATH + fileName);
             // 检测是否存在目录
             if (!dest.getParentFile().exists()) {
                 dest.getParentFile().mkdirs();

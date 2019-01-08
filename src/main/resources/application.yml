@@ -76,10 +76,6 @@ servlet:
     max-file-size: 5Mb
     max-request-size: 50Mb
 
-#自定义文件上传路径
-web:
-  upload-path: D:/resoures/file/
-
 person:
   age: 18
   name: zero
