@@ -43,6 +43,19 @@
 
                                 </div>
                             </div>
+                            <div class="layui-form-item">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">拖拽上传</div>
+                                    <div class="layui-card-body">
+                                        <div class="layui-upload-drag" id="test-upload-drag">
+                                            <i class="layui-icon"></i>
+                                            <p>点击上传，或将文件拖拽到此处</p>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" class="layui-btn" id="test-upload-change-action">开始上传</button>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -50,4 +63,23 @@
             </div>
         </div>
     </div>
+</script>
+
+
+<script>
+    layui.use(['admin', 'upload'], function () {
+        var $ = layui.jquery
+            , upload = layui.upload;
+
+        //拖拽上传
+        upload.render({
+            elem: '#test-upload-drag'
+            , url: '/test/upload/'
+            , auto: false
+            , bindAction: '#test-upload-change-action'
+            , done: function (res) {
+                console.log(res)
+            }
+        });
+    });
 </script>
