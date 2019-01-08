@@ -11,11 +11,13 @@ import com.wsh.zero.service.base.BaseService;
 import com.wsh.zero.vo.SysUserVO;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.util.List;
 
 
@@ -25,6 +27,8 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
     private SysUserMapper sysUserMapper;
     @Autowired
     private SysUserRoleMapper sysUserRoleMapper;
+    @Value("${web.upload-path}")
+    private String filePath;
 
     @SysLogTag(value = "系统用户", operation = "导出用户信息")
     public ResultUtil exportExcel(HttpServletResponse response) {
@@ -47,6 +51,36 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
     public ResultUtil getUserNameByUserAmount() {
         String userName = sysUserMapper.getUserNameByUserAmount(SecurityUtils.getSubject().getPrincipal());
         return ResultUtil.success(Strings.isNullOrEmpty(userName) ? Consot.USER_NAME : userName);
+
+    }
+
+    public ResultUtil upload(MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                return ResultUtil.failed(1, "文件为空");
+            }
+            // 获取文件名
+            String originalFilename = file.getOriginalFilename();
+            if (Strings.isNullOrEmpty(originalFilename)) {
+                return ResultUtil.failed(1, "文件名为空");
+            }
+            String uuid = Utils.UUID();
+            String fileName = FileUtil.getFileName(uuid, originalFilename);
+            File dest = new File(filePath + fileName);
+
+            String imgPath = "http://127.0.0.1:80" + "/resoures/file/" + fileName;
+
+            System.out.println("拼接好的图片上传路径为：" + imgPath);
+            // 检测是否存在目录
+            if (!dest.getParentFile().exists()) {
+                dest.getParentFile().mkdirs();
+            }
+            file.transferTo(dest);
+            return ResultUtil.success("上传成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultUtil.failed(1, "上传失败", e.getMessage());
+        }
 
     }
 
