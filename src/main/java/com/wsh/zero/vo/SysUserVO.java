@@ -1,5 +1,6 @@
 package com.wsh.zero.vo;
 
+import com.wsh.util.FileUtil;
 import com.wsh.zero.vo.base.BaseVO;
 import lombok.Data;
 
@@ -14,5 +15,10 @@ public class SysUserVO extends BaseVO {
     private String userName;
     private String userAmount;
     private String userPwd;
+    private String picture;
     private List<SysRoleVO> roleList;
+
+    public String getPicture() {
+        return FileUtil.RELATIVE_PATH + picture;
+    }
 }

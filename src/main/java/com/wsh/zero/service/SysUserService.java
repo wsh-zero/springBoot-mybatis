@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.util.List;
 
 
@@ -51,30 +50,24 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
 
     }
 
-    public ResultUtil upload(MultipartFile file) {
-        try {
-            if (file.isEmpty()) {
-                return ResultUtil.failed(1, "文件为空");
+    @SysLogTag(value = "系统用户", operation = "修改用户")
+    @Transactional
+    public ResultUtil eidt(SysUserEntity entity, MultipartFile file) {
+        String userId = entity.getId();
+        sysUserRoleMapper.delByUserId(userId);
+        for (String roleId : entity.getRoleIds()) {
+            if (!Strings.isNullOrEmpty(roleId)) {
+                sysUserRoleMapper.save(userId, roleId);
             }
-            // 获取文件名
-            String originalFilename = file.getOriginalFilename();
-            if (Strings.isNullOrEmpty(originalFilename)) {
-                return ResultUtil.failed(1, "文件名为空");
-            }
-            String uuid = Utils.UUID();
-            String fileName = FileUtil.getFileName(uuid, originalFilename);
-            File dest = new File(FileUtil.ROOT_PATH + fileName);
-            // 检测是否存在目录
-            if (!dest.getParentFile().exists()) {
-                dest.getParentFile().mkdirs();
-            }
-            file.transferTo(dest);
-            return ResultUtil.success("上传成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultUtil.failed(1, "上传失败", e.getMessage());
         }
-
+        String picture = entity.getPicture();
+        String fileName = Utils.UUID() + FileUtil.SUFFIX_JPG;
+        entity.setPicture(fileName);
+        super.update(entity);
+        //删除
+        FileUtil.deleteFile(picture);
+        FileUtil.uploadPicture(fileName, file);
+        return ResultUtil.success("修改成功");
     }
 
     public ResultUtil loginDataBaseCheck(String userAmount, String userPwd) {
@@ -104,20 +97,6 @@ public class SysUserService extends BaseService<SysUserMapper, SysUserQuery, Sys
             }
         sysUserEntity.setId(userId);
         return super.save(sysUserEntity);
-    }
-
-    @SysLogTag(value = "系统用户", operation = "修改用户")
-    @Override
-    @Transactional
-    public ResultUtil update(SysUserEntity sysUserEntity) {
-        String userId = sysUserEntity.getId();
-        sysUserRoleMapper.delByUserId(userId);
-        for (String roleId : sysUserEntity.getRoleIds()) {
-            if (!Strings.isNullOrEmpty(roleId)) {
-                sysUserRoleMapper.save(userId, roleId);
-            }
-        }
-        return super.update(sysUserEntity);
     }
 
     @SysLogTag(value = "系统用户", operation = "删除用户")

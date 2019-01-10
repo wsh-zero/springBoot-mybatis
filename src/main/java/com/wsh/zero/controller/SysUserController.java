@@ -39,9 +39,14 @@ public class SysUserController extends BaseController<SysUserService, SysUserQue
         return sysUserService.getUserNameByUserAmount();
     }
 
-    @RequestMapping("test")
-    public ResultUtil test( @Valid @RequestBody TestEntity entity) {
+    @PostMapping("test")
+    public ResultUtil test(@Valid @RequestBody TestEntity entity) {
         return ResultUtil.success("成功", Utils.getGson().toJson(entity));
+    }
+
+    @PostMapping("eidt")
+    public ResultUtil eidt(SysUserEntity entity, MultipartFile file) {
+        return sysUserService.eidt(entity, file);
     }
 
 }

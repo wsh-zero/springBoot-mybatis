@@ -8,6 +8,7 @@
         <result column="user_pwd" property="userPwd"/>
         <result column="frozen" property="frozen"/>
         <result column="gmtTime" property="gmtTime"/>
+        <result column="picture" property="picture"/>
         <collection property="roleList" ofType="SysRoleEntity" column="id">
             <id column="sid" property="id"/>
             <result column="role_name" property="roleName"/>
@@ -29,7 +30,7 @@
         </collection>
     </resultMap>
     <sql id="list_fields">
-        su.id, su.user_name,su.user_amount,su.user_pwd,su.gmtTime
+        su.id, su.user_name,su.user_amount,su.user_pwd,su.gmtTime,su.picture
     </sql>
     <sql id="list_sql">
         <where>
@@ -58,7 +59,7 @@
         values (#{id},#{userName},#{userAmount},#{userPwd},#{gmtTime})
     </insert>
     <update id="update">
-        update sys_user set user_amount=#{userAmount},user_name=#{userName} where id=#{id}
+        update sys_user set user_amount=#{userAmount},user_name=#{userName},picture=#{picture} where id=#{id}
     </update>
     <delete id="delByPrimaryKey">
         delete from sys_user where id=#{id}

@@ -12,6 +12,7 @@ public class SysUserEntity extends BaseEntity {
     private String userAmount;
     private String userPwd;
     private Integer frozen;
+    private String picture;
     private String[] roleIds;
     private Set<SysRoleEntity> roleList;
 }

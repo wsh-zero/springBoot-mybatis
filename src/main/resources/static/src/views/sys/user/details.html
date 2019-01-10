@@ -14,6 +14,35 @@
                     <div class="layui-card-header">查看用户详情</div>
                     <div class="layui-card-body">
                         <div class="layui-form" lay-filter="">
+
+                            <div class="layui-form-item">
+                                <!--<label class="layui-form-label">图片信息</label>-->
+                                <div class="layui-form-mid">
+                                    <img  class="layui-upload-img" src="{{d.data.picture}}">
+
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-col-md12">
+                                    <div class="layui-card">
+                                        <div class="layui-card-header">拖拽上传</div>
+                                        <div class="layui-card-body">
+                                            <div class="layui-upload-drag" id="test-upload-drag">
+                                                <i class="layui-icon"></i>
+                                                <p>点击上传，或将文件拖拽到此处</p>
+                                            </div>
+                                            <div class="layui-upload-list">
+                                                <img id="test-upload-normal-img" class="layui-upload-img">
+                                                <p id="test-upload-demoText"></p>
+                                            </div>
+                                        </div>
+
+
+                                        <button type="button" class="layui-btn" id="test-upload-change-action">开始上传
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">编号</label>
                                 <div class="layui-form-mid">{{d.data.id}}</div>
@@ -38,24 +67,12 @@
                                     [{{ item.roleName }}]
                                     {{# }); }}
                                     {{# } else { }}
-                                    "3333"
+                                    ""
                                     {{# } }}
 
                                 </div>
                             </div>
-                            <div class="layui-form-item">
-                                <div class="layui-card">
-                                    <div class="layui-card-header">拖拽上传</div>
-                                    <div class="layui-card-body">
-                                        <div class="layui-upload-drag" id="test-upload-drag">
-                                            <i class="layui-icon"></i>
-                                            <p>点击上传，或将文件拖拽到此处</p>
-                                        </div>
-                                    </div>
 
-                                    <button type="button" class="layui-btn" id="test-upload-change-action">开始上传</button>
-                                </div>
-                            </div>
                         </div>
 
                     </div>
@@ -65,7 +82,12 @@
     </div>
 </script>
 
-
+<style>
+    .layui-upload-img {
+        width: 272px;
+        height: auto;
+    }
+</style>
 <script>
     layui.use(['admin', 'upload'], function () {
         var $ = layui.jquery
@@ -77,6 +99,12 @@
             , url: '/test/upload/'
             , auto: false
             , bindAction: '#test-upload-change-action'
+            , choose: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#test-upload-normal-img').attr('src', result); //图片链接（base64）
+                });
+            }
             , done: function (res) {
                 console.log(res)
             }

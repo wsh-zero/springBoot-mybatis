@@ -172,7 +172,11 @@
                         });
                         //初始化弹框
                         form.render(null, 'model-filter');
+                        var picture_html;
                         if (data) {
+                            console.log(data)
+                            //修改
+                            picture_html = '<img  class="layui-upload-img" style="width:272px;height:auto;" src="' + data.picture + '">';
                             var roles = data.roleList;
                             for (var item in roles) {
                                 $("[value='" + roles[item].id + "']").prop("checked", 'true')
@@ -181,8 +185,10 @@
                             form.val('model-filter', data)
                             $("#user_pwd_div").addClass("layui-hide");
                         } else {
+                            picture_html = "";
                             $("#user_pwd_div").removeClass("layui-hide");
                         }
+                        $("#picture_model").html(picture_html);
                         //重新渲染弹框
                         form.render();
                         //监听提交
