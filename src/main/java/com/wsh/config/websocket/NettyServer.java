@@ -13,14 +13,9 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.TimeUnit;
-
-
-/**
- * @author jhz
- * @date 18-10-21 下午9:45
- */
+@Slf4j
 public class NettyServer {
     private final int port;
 
@@ -29,8 +24,8 @@ public class NettyServer {
     }
 
     public void start() {
+        log.info(String.format("webSocket端口：%s", this.port));
         EventLoopGroup bossGroup = new NioEventLoopGroup();
-
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             ServerBootstrap sb = new ServerBootstrap();
@@ -42,20 +37,18 @@ public class NettyServer {
 
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            System.out.println("收到新连接");
                             //websocket协议本身是基于http协议的，所以这边也要使用http解编码器
-                            ch.pipeline().addLast(new HttpServerCodec());
-                            //以块的方式来写的处理器
-                            ch.pipeline().addLast(new ChunkedWriteHandler());
-                            ch.pipeline().addLast(new HttpObjectAggregator(8192));
+
+                            ch.pipeline().addLast(new HttpServerCodec());// WebSocket通信支持
+                            ch.pipeline().addLast(new ChunkedWriteHandler());// Http消息编码解码
+                            ch.pipeline().addLast(new HttpObjectAggregator(65536));// Http消息组装
                             ch.pipeline().addLast(new WebSocketServerProtocolHandler("/ws"));
-                            // 进行设置心跳检测
-                            ch.pipeline().addLast(new IdleStateHandler(60,30,60*30, TimeUnit.SECONDS));
+                            ch.pipeline().addLast(new IdleStateHandler(60, 0, 0)); //心跳(60秒)
+                            //自定义处理
                             ch.pipeline().addLast(new WebSocketHandler());
                         }
                     });
             ChannelFuture cf = sb.bind().sync(); // 服务器异步创建绑定
-            System.out.println(NettyServer.class + " 启动正在监听： " + cf.channel().localAddress());
             cf.channel().closeFuture().sync(); // 关闭服务器通道
         } catch (Exception e) {
             e.printStackTrace();
