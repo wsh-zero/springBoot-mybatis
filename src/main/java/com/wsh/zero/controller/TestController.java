@@ -16,9 +16,9 @@ public class TestController {
     @Autowired
     SysUserService sysUserService;
 
-    @PostMapping(value = "upload")
-    public ResultUtil upload(MultipartFile file) {
-        return sysUserService.upload(file);
-
-    }
+//    @PostMapping(value = "upload")
+//    public ResultUtil upload(MultipartFile file) {
+////        return sysUserService.upload(file);
+//
+//    }
 }

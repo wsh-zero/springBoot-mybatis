@@ -1,5 +1,6 @@
 package com.wsh.config;
 
+import com.wsh.config.websocket.NettyServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,11 @@ public class MyCommandRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        openChrome();
+        initWebSocket();
+    }
+
+    private void openChrome() {
         if (isOpen) {
             String cmd = googleExcutePath + " " + loginUrl;
             Runtime run = Runtime.getRuntime();
@@ -35,5 +41,9 @@ public class MyCommandRunner implements CommandLineRunner {
                 logger.error(e.getMessage());
             }
         }
+    }
+
+    private void initWebSocket() {
+        new NettyServer(12345).start();
     }
 }
