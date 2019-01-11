@@ -11,7 +11,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @MapperScan("com.wsh.zero.mapper")
 //扫描位置要清楚，shiro swagger2没神效都是因为扫描位置配置范围错误引起
-@ComponentScan({"com.wsh.zero.controller", "com.wsh.zero.service", "com.wsh.config"})
+@ComponentScan({"com.wsh.zero.controller", "com.wsh.zero.service", "com.wsh.config", "com.wsh.util"})
 @EnableTransactionManagement//事务管理
 @EnableSwagger2
 public class SpringBootMybatisApplication {

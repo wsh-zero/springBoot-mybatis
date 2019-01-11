@@ -136,6 +136,11 @@
             <artifactId>netty-all</artifactId>
             <version>4.1.16.Final</version>
         </dependency>
+        <!-- springboot整合redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

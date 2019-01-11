@@ -42,8 +42,15 @@ spring:
     googleexcute: C:\Users\25435\AppData\Local\Google\Chrome\Application\chrome.exe
     #redis
   redis:
-    host: localhost
+#    database: 1
+    host: 127.0.0.1
     port: 6379
+    timeout: 2000
+    jedis:
+      pool:
+        min-idle: 0
+        max-active: 8
+        max-wait: -1
   #实体类转json时过滤掉空值
   #  * Include.Include.ALWAYS 默认
   #  * Include.NON_DEFAULT 属性为默认值不序列化
