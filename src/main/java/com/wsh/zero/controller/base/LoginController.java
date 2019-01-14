@@ -68,7 +68,8 @@ public class LoginController {
         // 执行认证登陆
         subject.login(token);
         Map<String, String> map = new LinkedHashMap<>();
-        map.put("access_token", "111111");
+        String sessionId = (String) subject.getSession().getId();
+        map.put("access_token", sessionId);
         return ResultUtil.success("登录成功！", map);
     }
 }
