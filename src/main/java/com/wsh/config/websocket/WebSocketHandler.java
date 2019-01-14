@@ -12,10 +12,7 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * @author jhz
- * @date 18-10-21 下午9:51
- */
+
 @Slf4j
 public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
@@ -39,10 +36,11 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
         ResultUtil resultUtil;
         try {
             WebSocketVO webSocketVO = gson.fromJson(text, WebSocketVO.class);
-            resultUtil = ResultUtil.success("成功", webSocketVO);
-
+            resultUtil = ResultUtil.success("success", webSocketVO);
+            log.info(gson.toJson(resultUtil));
         } catch (Exception e) {
             resultUtil = ResultUtil.failed(1, "JSON格式化失败！！", text);
+            log.warn(gson.toJson(resultUtil));
         }
 
         ctx.writeAndFlush(new TextWebSocketFrame(gson.toJson(resultUtil)));
