@@ -1,6 +1,7 @@
 package com.wsh.zero.service;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.wsh.util.Consot;
 import com.wsh.util.ResultUtil;
 import com.wsh.util.Utils;
@@ -14,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -34,41 +38,29 @@ public class SysMenuService {
             return ResultUtil.failed(1001, "您还没有登录！");
         }
         Set<String> loginUserPowerPath = sysPowerService.getPowerPathByUserAmount(userAmount);
-        List<SysMenuVO> menuList = sysMenuMapper.getMenuList(Consot.ALL_ZERO_UUID);
-        handleData(menuList, loginUserPowerPath);
-        return ResultUtil.success("获取菜单成功", menuList);
+        List<SysMenuVO> allList = sysMenuMapper.getMenuList();
+        List<SysMenuVO> parentList = Lists.newLinkedList();
+        for (SysMenuVO vo : allList) {
+            if (Objects.equals(Consot.ALL_ZERO_UUID, vo.getParent())) {
+                parentList.add(vo);
+            }
+        }
+        allList.removeAll(parentList);
+        List<SysMenuVO> returnList = Lists.newLinkedList();
+        for (SysMenuVO sysMenuVO : parentList) {
+            recursionChildren(sysMenuVO, allList);
+            returnList.add(sysMenuVO);
+        }
+        return ResultUtil.success("获取菜单成功", returnList);
     }
 
-    private void handleData(List<SysMenuVO> menuList, Set<String> loginUserPowerPath) {
-
-        if (null != menuList && menuList.size() > 0) {
-            Iterator<SysMenuVO> it = menuList.iterator();
-            while (it.hasNext()) {
-                SysMenuVO vo = it.next();
-                //按照用户权限过滤菜单
-                if (!Objects.equals(vo.getParent(), Consot.ALL_ZERO_UUID)
-                        && !Strings.isNullOrEmpty(vo.getJump())
-                        && !loginUserPowerPath.contains(vo.getJump())) {
-                    it.remove();
-                }
-                List<SysMenuVO> childrenMenu = sysMenuMapper.getMenuList(vo.getId());
-                if (null != childrenMenu && childrenMenu.size() > 0) {
-                    if (Strings.isNullOrEmpty(vo.getJump())) {
-                        /**
-                         * 判断用户拥有权限,在子列表中是否存在
-                         */
-                        Set<String> jumps = childrenMenu.stream().map(SysMenuVO::getJump).collect(Collectors.toSet());
-                        int size = jumps.size();
-                        jumps.removeAll(loginUserPowerPath);
-                        if (size == jumps.size()) {
-                            it.remove();
-                        }
-                    }
-                    vo.setList(childrenMenu);
-                }
-                handleData(childrenMenu, loginUserPowerPath);
-            }
-
+    // 递归获取子节点
+    private void recursionChildren(SysMenuVO sysMenuVO, List<SysMenuVO> allList) {
+        List<SysMenuVO> collect = allList.stream().filter(vo -> Objects.equals(vo.getParent(), sysMenuVO.getId())).collect(Collectors.toList());
+        sysMenuVO.setList(collect);
+        allList.removeAll(collect);
+        for (SysMenuVO vo : collect) {
+            recursionChildren(vo, allList);
         }
     }
 
@@ -132,16 +124,6 @@ public class SysMenuService {
         sysMenuMapper.del(id);
     }
 
-    /**
-     * 数据结构：
-     * var nodes = [
-     * {id:1, pId:0, name: "父节点1"},
-     * {id:11, pId:1, name: "子节点1"},
-     * {id:12, pId:1, name: "子节点2"}
-     * ];
-     *
-     * @return
-     */
     public ResultUtil getMenuTree() {
         return ResultUtil.success("获取成功", sysMenuMapper.getMenuTree());
     }

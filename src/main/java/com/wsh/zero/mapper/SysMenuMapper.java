@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Repository
 public interface SysMenuMapper {
-    List<SysMenuVO> getMenuList(@Param("parent") String parent);
+    List<SysMenuVO> getMenuList();
 
     int save(SysMenuEntity entity);
 

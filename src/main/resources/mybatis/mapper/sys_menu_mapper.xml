@@ -21,7 +21,7 @@
     <select id="getMenuList" resultMap="resultSysMenuVO">
         SELECT
         <include refid="list_fields"/>
-        FROM sys_menu sm where sm.parent =#{parent} order by sm.`level`
+        FROM sys_menu sm order by sm.`level`
     </select>
 
     <select id="getBeforeOrAfterLevel" resultType="HashMap">
