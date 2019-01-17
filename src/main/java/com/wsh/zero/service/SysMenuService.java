@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -38,20 +35,56 @@ public class SysMenuService {
             return ResultUtil.failed(1001, "您还没有登录！");
         }
         Set<String> loginUserPowerPath = sysPowerService.getPowerPathByUserAmount(userAmount);
+
         List<SysMenuVO> allList = sysMenuMapper.getMenuList();
+        /**
+         * 拥有菜单
+         */
+        List<SysMenuVO> haveList = Lists.newArrayList();
+        /**
+         * 处理后的数据(包括父级节点信息)
+         */
+        Set<SysMenuVO> handleAllSet = new LinkedHashSet<>();
+        /**
+         * 根目录
+         */
         List<SysMenuVO> parentList = Lists.newLinkedList();
+        /**
+         * 循环所有得到拥有的菜单对象
+         */
         for (SysMenuVO vo : allList) {
+            if (loginUserPowerPath.contains(vo.getJump())) {
+                haveList.add(vo);
+            }
+        }
+        for (SysMenuVO vo : haveList) {
+            handleAllList(vo, allList, handleAllSet);
+        }
+        for (SysMenuVO vo : handleAllSet) {
             if (Objects.equals(Consot.ALL_ZERO_UUID, vo.getParent())) {
                 parentList.add(vo);
             }
         }
-        allList.removeAll(parentList);
         List<SysMenuVO> returnList = Lists.newLinkedList();
         for (SysMenuVO sysMenuVO : parentList) {
-            recursionChildren(sysMenuVO, allList);
+            recursionChildren(sysMenuVO, new ArrayList<>(handleAllSet));
             returnList.add(sysMenuVO);
         }
+        //排序
+        Collections.sort(returnList);
         return ResultUtil.success("获取菜单成功", returnList);
+    }
+
+    public void handleAllList(SysMenuVO category, List<SysMenuVO> allList, Set<SysMenuVO> handleAllSet) {
+        if (Objects.equals(category.getParent(), "-1")) {
+            handleAllSet.add(category);
+            return;
+        }
+        SysMenuVO tblCategory = allList.stream().filter(
+                x -> Objects.equals(x.getId(), category.getParent())
+        ).findFirst().get();
+        handleAllSet.add(category);
+        handleAllList(tblCategory, allList, handleAllSet);
     }
 
     // 递归获取子节点

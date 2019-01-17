@@ -9,6 +9,7 @@
         <result column="spread" property="spread"/>
         <result column="jump" property="jump"/>
         <result column="parent" property="parent"/>
+        <result column="level" property="level"/>
     </resultMap>
     <resultMap id="resultMenuTreeVO" type="MenuTreeVO">
         <id column="id" property="id"/>
@@ -16,7 +17,7 @@
         <result column="parent" property="parent"/>
     </resultMap>
     <sql id="list_fields">
-        sm.id, sm.name, sm.title, sm.icon, sm.jump, sm.spread, sm.parent
+        sm.id, sm.name, sm.title, sm.icon, sm.jump, sm.spread, sm.parent, sm.level
     </sql>
     <select id="getMenuList" resultMap="resultSysMenuVO">
         SELECT
