@@ -42,7 +42,7 @@ spring:
     googleexcute: C:\Users\25435\AppData\Local\Google\Chrome\Application\chrome.exe
     #redis
   redis:
-#    database: 1
+    #    database: 1
     host: 127.0.0.1
     port: 6379
     timeout: 2000
@@ -77,12 +77,6 @@ mybatis:
   type-aliases-package: com.wsh.zero.entity,com.wsh.zero.vo # 注意：对应实体类的路径
   #  config-location: classpath:mybatis/mybatis-config.xml  # mybatis配置文件
 
-#配置上传文件的最大值
-servlet:
-  multipart:
-    max-file-size: 5Mb
-    max-request-size: 50Mb
-
 person:
   age: 18
   name: zero
@@ -90,17 +84,17 @@ person:
   birth: 2018/8/2
   maps: {k1: mapKey1,k2: mapKey2}
   list:
-  - list1
-  - list2
-  - list3
+    - list1
+    - list2
+    - list3
   malePerson:
     name: 1
     javaPerson:
       name: 2
   malePersonList:
-  - name: male1
-    javaPerson:
-      name: javaPerson1
-  - name: male2
-    javaPerson:
-      name: javaPerson2
+    - name: male1
+      javaPerson:
+        name: javaPerson1
+    - name: male2
+      javaPerson:
+        name: javaPerson2
