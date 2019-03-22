@@ -3,16 +3,18 @@ package com.wsh.zero.controller;
 import com.wsh.util.RedisUtil;
 import com.wsh.util.ResultUtil;
 import com.wsh.util.SpringContextUtils;
+import com.wsh.util.mail.JavaMailUtil;
+import com.wsh.util.mail.MailBean;
 import com.wsh.zero.service.SysUserService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Api(tags = "测试")
 @RestController
-@RequestMapping("/test/")
 public class TestController {
     @Autowired
     SysUserService sysUserService;
@@ -25,5 +27,10 @@ public class TestController {
         System.out.println(redisUtil.hget("zero", "222"));
         return ResultUtil.success("设置值成功");
 
+    }
+
+    @RequestMapping(value = "mail")
+    public ResultUtil upload(@Validated MailBean mailBean) {
+        return JavaMailUtil.sendMail(mailBean);
     }
 }
