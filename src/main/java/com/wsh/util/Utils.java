@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 public class Utils {
@@ -15,6 +16,15 @@ public class Utils {
 
     public static Gson getGson() {
         return new Gson();
+    }
+
+    public static String getNonceStr(int digit) {
+        Random rand = new Random();
+        StringBuilder flag = new StringBuilder();
+        for (int i = 0; i < digit; i++) {
+            flag.append("0123456789".charAt(rand.nextInt(9)));
+        }
+        return flag.toString();
     }
 
     /**

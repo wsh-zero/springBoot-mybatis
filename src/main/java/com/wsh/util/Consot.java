@@ -12,4 +12,8 @@ public interface Consot {
      * 权限最上级
      */
     String POWER_MIN_ID = "0";
+    /**
+     * 容联云验证码redis
+     */
+    String RLY = "rlySms";
 }
