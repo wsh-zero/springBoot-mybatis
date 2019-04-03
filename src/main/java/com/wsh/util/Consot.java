@@ -16,4 +16,9 @@ public interface Consot {
      * 容联云验证码redis
      */
     String RLY = "rlySms";
+    /**
+     * 短信验证码手机号获取次数(用来控制同一个手机一天最多发送几次)
+     */
+    String GET_LIMIT = "getLimit";
+    int SMS_LIMIT = 3;
 }
