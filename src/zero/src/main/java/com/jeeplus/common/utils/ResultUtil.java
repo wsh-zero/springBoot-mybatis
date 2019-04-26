@@ -1,0 +1,74 @@
+package com.jeeplus.common.utils;
+
+public class ResultUtil {
+    private int code;
+    private String msg;
+    private Object data;
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+    private ResultUtil(int code, String msg, Object data) {
+        this(code, msg);
+        this.data = data;
+    }
+
+    private ResultUtil(int code, String msg) {
+        this(msg);
+        this.code = code;
+    }
+
+    private ResultUtil(String msg, Object data) {
+        this(msg);
+        this.data = data;
+    }
+
+    private ResultUtil(String msg) {
+        this.msg = msg;
+    }
+
+    private ResultUtil(Object data) {
+        this.data = data;
+    }
+
+    public static ResultUtil success(String msg, Object data) {
+        return new ResultUtil(msg, data);
+    }
+
+    public static ResultUtil success(String msg) {
+        return new ResultUtil(msg);
+    }
+
+    public static ResultUtil success(Object data) {
+        return new ResultUtil(data);
+    }
+
+    public static ResultUtil failed(int code, String msg) {
+        return new ResultUtil(code, msg);
+    }
+
+    public static ResultUtil failed(int code, String msg, Object data) {
+        return new ResultUtil(code, msg, data);
+    }
+}

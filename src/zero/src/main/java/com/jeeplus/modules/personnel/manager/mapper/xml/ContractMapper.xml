@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.manager.mapper.ContractMapper">
+    
+	<sql id="contractColumns">
+		a.id AS "id",
+		a.staff_id AS "staff.id",
+		a.contract_code AS "contractCode",
+		a.staff_name AS "staffName.id",
+		a.contract_start AS "contractStart",
+		a.contract_end AS "contractEnd",
+		a.create_by AS "createBy.id",
+		a.contract_type AS "contractType.id",
+		a.secret_code AS "secretCode",
+		a.secret_start AS "secretStart",
+		a.secret_end AS "secretEnd",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.sign_number AS "signNumber",
+		a.number AS "number",
+		a.file AS "file",
+		staffName.name AS "staffName.name",
+		contractType.name AS "contractType.name"
+	</sql>
+	<sql id="contractJoins">
+		LEFT JOIN contract_type contractType ON contractType.id = a.contract_type
+		LEFT JOIN staff staffName ON staffName.id = a.staff_name
+	</sql>
+
+	<select id="get" resultType="Contract" >
+		SELECT
+		<include refid="contractColumns"/>
+		FROM contract a
+		<include refid="contractJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+
+	<select id="getName" resultType="Contract" >
+		SELECT
+		<include refid="contractColumns"/>
+		FROM contract a
+		<include refid="contractJoins"/>
+		WHERE a.staff_name = #{staffName}
+		and a.del_flag = 0
+	</select>
+
+	<select id="find" resultType="Contract" >
+		SELECT
+		<include refid="contractColumns"/>
+		FROM contract a
+		<include refid="contractJoins"/>
+		WHERE
+		<if test="contractCode !=null and contractCode!='' ">
+			 a.contract_code = #{contractCode}
+		</if>
+		<if test="secretCode !=null and secretCode!='' ">
+			 a.secret_code = #{secretCode}
+		</if>
+		<if test="contractType != null and contractType.id != null and contractType.id != ''">
+			a.contract_type = #{contractType.id}
+		</if>
+		and a.del_flag = 0
+	</select>
+
+	<select id="count" resultType="int" >
+		SELECT
+		count(*)
+		FROM contract a
+		<include refid="contractJoins"/>
+		WHERE
+		<if test="contractCode !=null and contractCode!='' ">
+			a.contract_code = #{contractCode}
+		</if>
+		<if test="secretCode !=null and secretCode!='' ">
+			 a.secret_code = #{secretCode}
+		</if>
+		<if test="contractType != null and contractType.id != null and contractType.id != ''">
+			a.contract_type = #{contractType.id}
+		</if>
+		and a.del_flag = 0
+	</select>
+	
+	<select id="findList" resultType="Contract" >
+		SELECT 
+			<include refid="contractColumns"/>
+		FROM contract a
+		<include refid="contractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="contractCode != null and contractCode != ''">
+				AND a.contract_code = #{contractCode}
+			</if>
+			<if test="contractType != null and contractType.id != null and contractType.id != ''">
+				AND a.contract_type = #{contractType.id}
+			</if>
+			<if test="staffName != null and staffName.id != null and staffName.id != ''">
+				AND a.staff_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{staffName.id}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{staffName.id}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{staffName.id},'%')</if>
+			</if>
+			<if test="staffCode != null and staffCode.code != null and staffCode.code != ''">
+				AND staffName.code = #{staffCode.code}
+			</if>
+			<if test="depart != null and depart.id != null and depart.id != ''">
+				AND staffName.depart = #{depart.id}
+			</if>
+			<if test="station != null and station.id != null and station.id != ''">
+				AND staffName.station = #{station.id}
+			</if>
+			<if test="idCard != null and idCard.idCard != null and idCard.idCard != ''">
+				AND staffName.id_card = #{idCard.idCard}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Contract" >
+		SELECT 
+			<include refid="contractColumns"/>
+		FROM contract a
+		<include refid="contractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO contract(
+			id,
+			staff_id,
+			contract_code,
+			staff_name,
+			contract_type,
+			contract_start,
+			contract_end,
+			create_by,
+			secret_code,
+			secret_start,
+			secret_end,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			sign_number,
+			number,
+			file
+		) VALUES (
+			#{id},
+			#{staff.id},
+			#{contractCode},
+			#{staffName.id},
+			#{contractType.id},
+			#{contractStart},
+			#{contractEnd},
+			#{createBy.id},
+			#{secretCode},
+			#{secretStart},
+			#{secretEnd},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{signNumber},
+			#{number},
+			#{file}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE contract SET 	
+			staff_id = #{staff.id},
+			contract_code = #{contractCode},
+			staff_name = #{staffName.id},
+			contract_type = #{contractType.id},
+			contract_start = #{contractStart},
+			contract_end = #{contractEnd},
+			secret_code = #{secretCode},
+			secret_start = #{secretStart},
+			secret_end = #{secretEnd},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			sign_number = #{signNumber},
+			number = #{number},
+			file = #{file}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM contract
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE contract SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Contract" statementType="STATEMENT">
+		select * FROM contract  where ${propertyName} = '${value}'
+	</select>
+	<!--查询编号最大数字-->
+	<select id="getMaxcode" resultType="java.lang.Integer">
+		select nullif(max(distinct number),0) maxcode from contract
+	</select>
+</mapper>

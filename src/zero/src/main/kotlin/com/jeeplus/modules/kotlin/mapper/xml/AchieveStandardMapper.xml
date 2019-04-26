@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.kotlin.mapper.AchieveStandardMapper">
+
+    <sql id="achieveStandardColumns">
+		a.id AS "id",
+		a.achieve_config_id AS "achieveConfigId",
+		a.name AS "name",
+		a.score AS "score"
+	</sql>
+
+    <sql id="achieveStandardJoins">
+
+    </sql>
+
+
+    <select id="get" resultType="AchieveStandard">
+        SELECT
+        <include refid="achieveStandardColumns"/>
+        FROM achieve_standard a
+        <include refid="achieveStandardJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="AchieveStandard">
+        SELECT
+        <include refid="achieveStandardColumns"/>
+        FROM achieve_standard a
+        <include refid="achieveStandardJoins"/>
+        where a.achieve_config_id=#{achieveConfigId,jdbcType=VARCHAR}
+        <where>
+
+            ${dataScope}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="AchieveStandard">
+        SELECT
+        <include refid="achieveStandardColumns"/>
+        FROM achieve_standard a
+        <include refid="achieveStandardJoins"/>
+        <where>
+
+            ${dataScope}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+		INSERT INTO achieve_standard(
+			id,
+			achieve_config_id,
+			name,
+			score
+		) VALUES (
+			#{id},
+			#{achieveConfigId},
+			#{name},
+			#{score}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE achieve_standard SET 	
+			achieve_config_id = #{achieveConfigId},
+			name = #{name},
+			score = #{score}
+		WHERE id = #{id}
+	</update>
+
+    <delete id="deleteByForeignKey">
+		DELETE FROM achieve_standard
+		WHERE achieve_config_id = #{foreignKey}
+	</delete>
+
+    <select id="isExitData" resultType="boolean">
+        select count(1) from achieve_standard
+        <foreach collection="map" index="key" item="value" separator="and" open="where" close="">
+            <choose>
+                <when test="'id'==key">
+                    ${key} !=#{value}
+                </when>
+                <otherwise>
+                    ${key}=#{value}
+                </otherwise>
+            </choose>
+        </foreach>
+    </select>
+
+    <!--物理删除-->
+    <update id="delete">
+		DELETE FROM achieve_standard
+		WHERE id = #{id}
+	</update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+		UPDATE achieve_standard SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+
+    <!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+    <select id="findUniqueByProperty" resultType="AchieveStandard" statementType="STATEMENT">
+		select * FROM achieve_standard  where ${propertyName} = '${value}'
+	</select>
+
+    <select id="getAchieveStandardNameByAchieveConfigId" resultType="String">
+		SELECT `name` FROM `achieve_standard` where achieve_config_id=#{achieveConfigId} ORDER BY score DESC;
+	</select>
+
+</mapper>

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.official.meeting.mapper.MeetsummaryMapper">
+    
+	<sql id="meetsummaryColumns">
+		a.id AS "id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.meettitle AS "meettitle",
+		a.meetcontent AS "meetcontent",
+		a.appendix AS "appendix",
+		a.status AS "status",
+		a.starttime AS "startTime",
+		a.endtime AS "endTime",
+		a.meetperson AS "meetperson.id",
+		a.inviteperson AS "inviteperson",
+		a.meettype AS "meettype",
+		b.read_num as "readNum",
+		b.un_read_num as "unReadNum"
+	</sql>
+	
+	<sql id="meetsummaryJoins">
+		
+		LEFT JOIN sys_user meetperson ON meetperson.id = a.meetperson
+	</sql>
+
+	<sql id="oaNotifyJoins">
+		<!-- 查询已读和未读条数 -->
+		LEFT JOIN (
+		SELECT r.meetid,
+		sum(case when r.read_flag = '1' then 1 else 0 end) read_num,
+		sum(case when r.read_flag != '1' then 1 else 0 end) un_read_num
+		FROM meetsummary_record r GROUP BY r.meetid
+		) b ON b.meetid = a.id
+	</sql>
+	
+    
+	<select id="get" resultType="Meetsummary" >
+		SELECT
+		a.id AS "id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.meettitle AS "meettitle",
+		a.meetcontent AS "meetcontent",
+		a.appendix AS "appendix",
+		a.status AS "status",
+		a.starttime AS "startTime",
+		a.endtime AS "endTime",
+		a.meetperson AS "meetperson.id",
+		a.inviteperson AS "inviteperson",
+		a.invitedate as "invitedate",
+		a.meettype AS "meettype",
+		b.read_num as "readNum",
+		b.un_read_num as "unReadNum"
+		FROM meetsummary a
+		<include refid="oaNotifyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findByUserId"  resultType="Meetsummary">
+		select a.id AS "id"
+		 from meetsummary a where a.inviteperson=#{userid}
+	</select>
+	
+	<select id="findList" resultType="Meetsummary" >
+		SELECT
+		a.id AS "id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.meettitle AS "meettitle",
+		a.meetcontent AS "meetcontent",
+		a.appendix AS "appendix",
+		a.status AS "status",
+		a.starttime AS "startTime",
+		a.endtime AS "endTime",
+		a.meetperson AS "meetperson.id",
+		a.inviteperson AS "inviteperson",
+		a.invitedate as "invitedate",
+		a.meettype AS "meettype",
+        r.read_flag as "readFlag",
+		b.read_num as "readNum",
+		b.un_read_num as "unReadNum"
+		FROM meetsummary a
+		LEFT JOIN (
+		SELECT r.meetid,
+		sum(case when r.read_flag = '1' then 1 else 0 end) read_num,
+		sum(case when r.read_flag != '1' then 1 else 0 end) un_read_num
+		FROM meetsummary_record r GROUP BY r.meetid
+		) b ON b.meetid = a.id
+		<!-- 我的通知 -->
+		<if test="isSelf==false">
+			<if test="inviteperson!=null and inviteperson!=''">
+				join sys_user u on u.id=#{currentUser.id}
+				JOIN meetsummary_record r ON r.meetid = a.id
+				and r.user_id!=#{currentUser.id}
+				AND a.inviteperson = #{inviteperson}
+				<if test="readFlag != null and readFlag != ''">
+					AND r.read_flag = #{readFlag}
+				</if>
+			</if>
+			<!--<if test="inviteperson==null or inviteperson==''">
+				join sys_user u on u.id=#{currentUser.id}
+				JOIN meetsummary_record r ON r.meetid = a.id
+				and r.user_id!=#{currentUser.id}
+				AND a.inviteperson != #{inviteperson}
+				<if test="readFlag != null and readFlag != ''">
+					AND r.read_flag = #{readFlag}
+				</if>
+			</if>-->
+		</if>
+		<if test="isSelf==true">
+			<if test="inviteperson==null or inviteperson==''">
+				join sys_user u on u.id=#{currentUser.id}
+				JOIN meetsummary_record r ON r.meetid = a.id
+				and r.user_id=#{currentUser.id}
+				and a.status='1'
+				<if test="readFlag != null and readFlag != ''">
+					AND r.read_flag = #{readFlag}
+				</if>
+			</if>
+		</if>
+		<where>
+			${dataScope}
+			<if test="meettitle != null and meettitle != ''">
+				AND a.meettitle = #{meettitle}
+			</if>
+		</where>
+		group by a.id
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Meetsummary" >
+		SELECT 
+			<include refid="meetsummaryColumns"/>
+		FROM meetsummary a
+		<include refid="meetsummaryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO meetsummary(
+			id,
+			remarks,
+			del_flag,
+			meettitle,
+			meetcontent,
+			appendix,
+			status,
+			starttime,
+			endtime,
+			meetperson,
+			inviteperson,
+			invitedate,
+			meettype
+		) VALUES (
+			#{id},
+			#{remarks},
+			#{delFlag},
+			#{meettitle},
+			#{meetcontent},
+			#{appendix},
+			#{status},
+			#{startTime},
+			#{endTime},
+			#{meetperson.id},
+			#{inviteperson},
+			#{invitedate},
+			#{meettype}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE meetsummary SET 	
+			remarks = #{remarks},
+			meettitle = #{meettitle},
+			meetcontent = #{meetcontent},
+			appendix = #{appendix},
+			status = #{status},
+			starttime = #{startTime},
+			endtime = #{endTime},
+			meetperson = #{meetperson.id},
+			inviteperson = #{inviteperson},
+			meettype = #{meettype}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM meetsummary
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE meetsummary SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Meetsummary" statementType="STATEMENT">
+		select * FROM meetsummary  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

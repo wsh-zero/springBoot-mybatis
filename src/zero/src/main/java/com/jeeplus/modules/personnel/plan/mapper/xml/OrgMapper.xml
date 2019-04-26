@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.plan.mapper.OrgMapper">
+
+	<resultMap id="orgResult" type="Org">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="sort" column="sort" />
+		<result property="parentIds" column="parentIds" />
+		<result property="departCode" column="departCode" />
+		<result property="establish" column="establish" />
+		<result property="address" column="address" />
+		<result property="detailAddress" column="detailAddress" />
+		<association property="hasChildren" column="id" select="hasChildren" />
+		<association property="orgType" column="org_type" resultMap="OrgType"/>
+		<association property="master" column="master" resultMap="Master"/>
+	</resultMap>
+
+	<sql id="orgColumns">
+		a.id AS "id",
+		a.parent_id AS "parent.id",
+		a.parent_ids AS "parentIds",
+		a.name AS "name",
+		a.sort AS "sort",
+		a.depart_code AS "departCode",
+		a.org_type AS "orgType.id",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.master AS "master.id",
+		a.establish AS "establish",
+		a.address AS "address",
+		a.detail_address AS "detailAddress",
+		orgType.name AS "orgType.name",
+		master.name AS "master.name"
+	</sql>
+
+	<sql id="orgJoins">
+		LEFT JOIN org_type orgType ON orgType.id = a.org_type
+		LEFT JOIN staff master ON master.id = a.master
+		LEFT JOIN sys_area address ON address.id = a.address
+	</sql>
+
+
+
+	<select id="get" resultType="Org">
+		SELECT
+		<include refid="orgColumns"/>
+		FROM org a
+		<include refid="orgJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="find" resultType="Org" >
+		SELECT
+		<include refid="orgColumns"/>
+		FROM org a
+		<include refid="orgJoins"/>
+		WHERE
+		<if test="name !=null and name!='' ">
+			a.name = #{name}
+		</if>
+		<if test="departCode !=null and departCode!='' ">
+			 a.depart_code = #{departCode}
+		</if>
+		and a.del_flag = 0
+	</select>
+
+	<select id="count" resultType="int" >
+		SELECT
+		count(*)
+		FROM org a
+		<include refid="orgJoins"/>
+		WHERE
+		<if test="name !=null and name!='' ">
+			a.name = #{name}
+		</if>
+		<if test="departCode !=null and departCode!='' ">
+			 a.depart_code = #{departCode}
+		</if>
+		and a.del_flag = 0
+	</select>
+
+
+	<select id="findList" resultType="Org">
+		SELECT
+		<include refid="orgColumns"/>
+		FROM org a
+		<include refid="orgJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="parent != null and parent.id != null and parent.id != ''">
+				AND a.parent_id = #{parent.id}
+			</if>
+			<if test="parentIds != null and parentIds != ''">
+				AND a.parent_ids LIKE
+				<if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		ORDER BY a.sort ASC
+	</select>
+
+	<select id="findAllList" resultType="Org">
+		SELECT
+		<include refid="orgColumns"/>
+		FROM org a
+		<include refid="orgJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>
+		ORDER BY a.sort ASC
+	</select>
+
+	<select id="getChildren" parameterType="String" resultMap="orgResult">
+		select * from org where parent_id = #{id} ORDER BY sort
+	</select>
+	<resultMap id="OrgType" type="com.jeeplus.modules.personnel.plan.entity.OrgType">
+		<result column="id" property="id"/>
+	</resultMap>
+	<resultMap id="Master" type="com.jeeplus.modules.personnel.manager.entity.Staff">
+		<result column="id" property="id"/>
+	</resultMap>
+	<select id="hasChildren" parameterType="String" resultType="Boolean">
+		select case when exists(select 1 from org where parent_id = #{id}) then 1 else 0 end ${dual}
+	</select>
+
+	<select id="findByParentIdsLike" resultType="Org">
+		SELECT
+		a.id,
+		a.parent_id AS "parent.id",
+		a.parent_ids
+		FROM org a
+		<include refid="orgJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.parent_ids LIKE #{parentIds}
+		</where>
+		ORDER BY a.sort ASC
+	</select>
+
+	<insert id="insert">
+		INSERT INTO org(
+		id,
+		parent_id,
+		parent_ids,
+		name,
+		sort,
+		depart_code,
+		org_type,
+		remarks,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		del_flag,
+		master,
+		establish,
+		address,
+		detail_address
+		) VALUES (
+		#{id},
+		#{parent.id},
+		#{parentIds},
+		#{name},
+		#{sort},
+		#{departCode},
+		#{orgType.id},
+		#{remarks},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{delFlag},
+		#{master.id},
+		#{establish},
+		#{address},
+		#{detailAddress}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE org SET
+			parent_id = #{parent.id},
+			parent_ids = #{parentIds},
+			name = #{name},
+			sort = #{sort},
+			depart_code = #{departCode},
+			org_type = #{orgType.id},
+			remarks = #{remarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			master = #{master.id},
+			establish = #{establish},
+			address = #{address},
+			detail_address = #{detailAddress}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateParentIds">
+		UPDATE org SET 
+			parent_id = #{parent.id}, 
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM org
+		WHERE id = #{id} OR parent_ids LIKE
+		<if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
+		<if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
+		<if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+	</update>
+
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE org SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id} OR parent_ids LIKE
+		<if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
+		<if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
+		<if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+	</update>
+
+</mapper>

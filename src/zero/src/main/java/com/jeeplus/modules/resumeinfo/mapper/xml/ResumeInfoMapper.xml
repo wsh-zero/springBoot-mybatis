@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.resumeinfo.mapper.ResumeInfoMapper">
+    
+	<sql id="resumeInfoColumns">
+		a.id AS "id",
+		a.number AS "number",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.mobile AS "mobile",
+		a.email AS "email",
+		a.post AS "post",
+		a.dept AS "dept",
+		a.viewer AS "viewer",
+		a.interview_time AS "interviewTime",
+		a.remark AS "remark",
+		a.interview_result AS "interviewResult",
+		a.status AS "status",
+		a.content AS "content",
+		a.work_years AS "workYears",
+		a.birth AS "birth",
+		a.residence AS "residence",
+		a.edu_back AS "edu_back",
+		a.domicile AS "domicile",
+		a.self_eval AS "selfEval"
+	</sql>
+	
+	<sql id="resumeInfoJoins">
+		
+	</sql>
+
+	<select id="get" resultType="ResumeInfo" >
+		SELECT 
+			<include refid="resumeInfoColumns"/>
+		FROM resume_info a
+		<include refid="resumeInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getJobIntension" resultType="com.jeeplus.modules.resumeinfo.entity.JobIntension">
+		SELECT
+			id AS "id",
+			resume_id AS "resumeId",
+			work_place AS "workPlace",
+			work_nature AS "workNature",
+			job AS "job",
+			min_salary AS "minSalary",
+			max_salary AS "maxSalary",
+			unit AS "unit",
+			cur_status AS "curStatus",
+			expect_industry AS "expectIndustry"
+		FROM job_intension
+		WHERE resume_id = #{resumeId} limit 1
+	</select>
+
+	<select id="getWorpExp" resultType="com.jeeplus.modules.resumeinfo.entity.WorkExp">
+		SELECT
+			id AS "id",
+  			resume_id AS "resumeId",
+  			company AS "company",
+  			start_date AS "startDate",
+			end_date AS "endDate",
+			post AS "post",
+			salary AS "salary",
+			industry_type AS "industryType",
+			_describe AS "describe"
+		FROM work_exp
+		WHERE resume_id = #{resumeId}
+	</select>
+
+	<select id="getProjectExp" resultType="com.jeeplus.modules.resumeinfo.entity.ProjectExp">
+		SELECT
+			id AS "id",
+  			resume_id AS "resumeId",
+			_name AS "name",
+			intro AS "intro",
+			time AS "time"
+		FROM project_exp
+		WHERE resume_id = #{resumeId}
+	</select>
+
+	<select id="getEduBack" resultType="com.jeeplus.modules.resumeinfo.entity.EduBackground">
+		SELECT
+			id AS "id",
+  			resume_id AS "resumeId",
+			time AS "time",
+			school AS "school",
+			major AS "major",
+			degree AS "degree"
+		FROM edu_background
+		WHERE resume_id = #{resumeId}
+	</select>
+	
+	<select id="findList" resultType="ResumeInfo" >
+		SELECT 
+			<include refid="resumeInfoColumns"/>
+		FROM resume_info a
+		<include refid="resumeInfoJoins"/>
+		<where>
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ResumeInfo" >
+		SELECT 
+			<include refid="resumeInfoColumns"/>
+		FROM resume_info a
+		<include refid="resumeInfoJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO resume_info(
+			number,
+			name,
+			sex,
+			mobile,
+			email,
+			post,
+			dept,
+			viewer,
+			interview_time,
+			remark,
+			interview_result,
+			status,
+			content,
+			work_years,
+			birth,
+			residence,
+			edu_back,
+			domicile,
+			self_eval
+		) VALUES (
+			#{number},
+			#{name},
+			#{sex},
+			#{mobile},
+			#{email},
+			#{post},
+			#{dept},
+			#{viewer},
+			#{interviewTime},
+			#{remark},
+			#{interviewResult},
+			#{status},
+			#{content},
+			#{workYears},
+			#{birth},
+			#{residence},
+			#{eduBack},
+			#{domicile},
+			#{selfEval}
+		)
+	</insert>
+
+	<insert id="insertWorkExp">
+		INSERT INTO work_exp(
+  			resume_id,
+  			company,
+  			start_date,
+			end_date,
+			post,
+			salary,
+			industry_type,
+			_describe
+		)
+		VALUES
+		<foreach collection="exps" item="exp" separator=",">
+			(
+				#{resumeId},
+				#{exp.company},
+				#{exp.startDate},
+				#{exp.endDate},
+				#{exp.post},
+				#{exp.salary},
+				#{exp.industryType},
+				#{exp.describe}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="insertProjectExp">
+		INSERT INTO project_exp(
+			resume_id,
+			_name,
+			intro,
+			time
+		)
+		VALUES
+		<foreach collection="exps" item="exp" separator=",">
+			(
+				#{resumeId},
+				#{exp.name},
+				#{exp.intro},
+				#{exp.time}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="insertEduBackground">
+		INSERT INTO edu_background(
+			resume_id,
+			time,
+			school,
+			major,
+			degree
+		)
+		VALUES
+		<foreach collection="edus" item="edu" separator=",">
+			(
+				#{resumeId},
+				#{edu.time},
+				#{edu.school},
+				#{edu.major},
+				#{edu.degree}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="insertJobIntension">
+		INSERT INTO job_intension(
+			resume_id,
+			work_place,
+			work_nature,
+			job,
+			min_salary,
+			max_salary,
+			unit,
+			cur_status,
+			expect_industry
+		)
+		VALUES
+			(
+				#{resumeId},
+				#{job.workPlace},
+				#{job.workNature},
+				#{job.job},
+				#{job.minSalary},
+				#{job.maxSalary},
+				#{job.unit},
+				#{job.curStatus},
+				#{job.expectIndustry}
+			)
+	</insert>
+	
+	<update id="update">
+		UPDATE resume_info SET 	
+			number = #{number},
+			name = #{name},
+			sex = #{sex},
+			mobile = #{mobile},
+			post = #{post},
+			dept = #{dept},
+			viewer = #{viewer},
+			interview_time = #{interviewTime},
+			remark = #{remark},
+			interview_result = #{interviewResult},
+			status = #{status},
+			content = #{content}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM resume_info
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE resume_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="ResumeInfo" statementType="STATEMENT">
+		select * FROM resume_info  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

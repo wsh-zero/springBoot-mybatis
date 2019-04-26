@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.kotlin.mapper.AchieveObjMapper">
+
+    <sql id="achieveObjColumns">
+		a.id AS "id",
+		a.rank_id AS "rankId",
+		a.name AS "name"
+	</sql>
+
+    <sql id="achieveObjJoins">
+
+    </sql>
+
+
+    <select id="get" resultType="AchieveObj">
+        SELECT
+        <include refid="achieveObjColumns"/>
+        FROM achieve_obj a
+        <include refid="achieveObjJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="AchieveObj">
+        SELECT
+        <include refid="achieveObjColumns"/>
+        FROM achieve_obj a
+        <include refid="achieveObjJoins"/>
+        <where>
+
+            ${dataScope}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="AchieveObj">
+        SELECT
+        <include refid="achieveObjColumns"/>
+        FROM achieve_obj a
+        <include refid="achieveObjJoins"/>
+        <where>
+
+            ${dataScope}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+		INSERT INTO achieve_obj(
+			id,
+			rank_id,
+			name
+		) VALUES (
+			#{id},
+			#{rankId},
+			#{name}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE achieve_obj SET 	
+			rank_id = #{rankId},
+			name = #{name}
+		WHERE id = #{id}
+	</update>
+
+
+    <!--物理删除-->
+    <update id="delete">
+		DELETE FROM achieve_obj
+		WHERE id = #{id}
+	</update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+		UPDATE achieve_obj SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+
+    <!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+    <select id="findUniqueByProperty" resultType="AchieveObj" statementType="STATEMENT">
+		select * FROM achieve_obj  where ${propertyName} = '${value}'
+	</select>
+    <select id="getDeptNameByAchieveObjId" resultType="MapDto">
+		SELECT so.id as `key` ,so.name as `value`  FROM  achieve_obj_dept aod,sys_office so
+		where aod.dept_id=so.id AND aod.obj_id=#{id}
+	</select>
+    <delete id="deleteAchieveObjDeptByObjId">
+		delete FROM  achieve_obj_dept where obj_id=#{objId}
+	</delete>
+    <insert id="saveAchieveObjDept">
+		INSERT INTO achieve_obj_dept(
+			obj_id,
+			dept_id
+		) VALUES (
+			#{objId},
+			#{deptId}
+		)
+	</insert>
+
+    <select id="isExitData" resultType="boolean">
+        select count(1) from achieve_obj
+        <foreach collection="map" index="key" item="value" separator="and" open="where" close="">
+            <choose>
+                <when test="'id'==key">
+                    ${key} !=#{value}
+                </when>
+                <otherwise>
+                    ${key}=#{value}
+                </otherwise>
+            </choose>
+        </foreach>
+    </select>
+
+
+    <select id="getIdAndName" resultType="MapDto">
+		SELECT id as `key` ,name as `value`  FROM  achieve_obj
+	</select>
+</mapper>

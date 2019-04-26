@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.plan.mapper.GradeBonusMapper">
+    
+	<sql id="gradeBonusColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.grade AS "grade",
+		a.bonus AS "bonus"
+	</sql>
+	
+	<sql id="gradeBonusJoins">
+		
+	</sql>
+	<select id="find" resultType="GradeBonus" >
+		SELECT
+		<include refid="gradeBonusColumns"/>
+		FROM grade_bonus a
+		<include refid="gradeBonusJoins"/>
+		WHERE
+		<if test="grade != null and grade != ''">
+			a.grade = #{grade}
+		</if>
+		and a.del_flag = 0
+	</select>
+
+
+	<select id="getGrade" resultType="GradeBonus" >
+		SELECT
+		<include refid="gradeBonusColumns"/>
+		FROM grade_bonus a
+		<include refid="gradeBonusJoins"/>
+		WHERE 1=1
+	</select>
+
+
+	<select id="count" resultType="int" >
+		SELECT
+		count(*)
+		FROM grade_bonus a
+		<include refid="gradeBonusJoins"/>
+		WHERE
+		<if test="grade != null and grade != ''">
+			a.grade = #{grade}
+		</if>
+		and a.del_flag = 0
+	</select>
+    
+	<select id="get" resultType="GradeBonus" >
+		SELECT 
+			<include refid="gradeBonusColumns"/>
+		FROM grade_bonus a
+		<include refid="gradeBonusJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="GradeBonus" >
+		SELECT 
+			<include refid="gradeBonusColumns"/>
+		FROM grade_bonus a
+		<include refid="gradeBonusJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="GradeBonus" >
+		SELECT 
+			<include refid="gradeBonusColumns"/>
+		FROM grade_bonus a
+		<include refid="gradeBonusJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO grade_bonus(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			grade,
+			bonus
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{grade},
+			#{bonus}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE grade_bonus SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			grade = #{grade},
+			bonus = #{bonus}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM grade_bonus
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE grade_bonus SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="GradeBonus" statementType="STATEMENT">
+		select * FROM grade_bonus  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

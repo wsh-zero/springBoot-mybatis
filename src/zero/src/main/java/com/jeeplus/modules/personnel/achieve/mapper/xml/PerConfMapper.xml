@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.achieve.mapper.PerConfMapper">
+    
+	<sql id="perConfColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="perConfJoins">
+		
+	</sql>
+	
+    
+	<select id="get" resultType="PerConf" >
+		SELECT 
+			<include refid="perConfColumns"/>
+		FROM per_conf a
+		<include refid="perConfJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="find" resultType="PerConf" >
+		SELECT
+		<include refid="perConfColumns"/>
+		FROM per_conf a
+		<include refid="perConfJoins"/>
+		WHERE a.name = #{name} and del_flag = 0
+	</select>
+
+	
+	<select id="findList" resultType="PerConf" >
+		SELECT 
+			<include refid="perConfColumns"/>
+		FROM per_conf a
+		<include refid="perConfJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PerConf" >
+		SELECT 
+			<include refid="perConfColumns"/>
+		FROM per_conf a
+		<include refid="perConfJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO per_conf(
+			id,
+			name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE per_conf SET 	
+			name = #{name},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM per_conf
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE per_conf SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="PerConf" statementType="STATEMENT">
+		select * FROM per_conf  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

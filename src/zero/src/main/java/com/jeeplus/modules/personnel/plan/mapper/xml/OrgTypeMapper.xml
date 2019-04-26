@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.plan.mapper.OrgTypeMapper">
+    
+	<sql id="orgTypeColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="orgTypeJoins">
+		
+	</sql>
+	<select id="find" resultType="OrgType" >
+		SELECT
+		<include refid="orgTypeColumns"/>
+		FROM org_type a
+		<include refid="orgTypeJoins"/>
+		WHERE
+		<if test="name !=null and name!='' ">
+			a.name = #{name}
+		</if>
+		and a.del_flag = 0
+	</select>
+
+	<select id="count" resultType="int" >
+		SELECT
+		count(*)
+		FROM org_type a
+		<include refid="orgTypeJoins"/>
+		WHERE
+		<if test="name !=null and name!='' ">
+			a.name = #{name}
+		</if>
+		and a.del_flag = 0
+	</select>
+    
+	<select id="get" resultType="OrgType" >
+		SELECT 
+			<include refid="orgTypeColumns"/>
+		FROM org_type a
+		<include refid="orgTypeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OrgType" >
+		SELECT 
+			<include refid="orgTypeColumns"/>
+		FROM org_type a
+		<include refid="orgTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OrgType" >
+		SELECT 
+			<include refid="orgTypeColumns"/>
+		FROM org_type a
+		<include refid="orgTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO org_type(
+			id,
+			name,
+			remarks,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{remarks},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE org_type SET 	
+			name = #{name},
+			remarks = #{remarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM org_type
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE org_type SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="OrgType" statementType="STATEMENT">
+		select * FROM org_type  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.kotlin.mapper.AchieveJudgeMapper">
+    
+	<sql id="achieveJudgeColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.achieve_config_id AS "achieveConfigId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate"
+	</sql>
+	
+	<sql id="achieveJudgeJoins">
+		
+	</sql>
+	
+    
+	<select id="get" resultType="AchieveJudge" >
+		SELECT 
+			<include refid="achieveJudgeColumns"/>
+		FROM achieve_judge a
+		<include refid="achieveJudgeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AchieveJudge" >
+		SELECT 
+			<include refid="achieveJudgeColumns"/>
+		FROM achieve_judge a
+		<include refid="achieveJudgeJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AchieveJudge" >
+		SELECT 
+			<include refid="achieveJudgeColumns"/>
+		FROM achieve_judge a
+		<include refid="achieveJudgeJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO achieve_judge(
+			id,
+			name,
+			achieve_config_id,
+			create_by,
+			create_date
+		) VALUES (
+			#{id},
+			#{name},
+			#{achieveConfigId},
+			#{createBy.id},
+			#{createDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE achieve_judge SET 	
+			name = #{name},
+			achieve_config_id = #{achieveConfigId}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM achieve_judge
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE achieve_judge SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="AchieveJudge" statementType="STATEMENT">
+		select * FROM achieve_judge  where ${propertyName} = '${value}'
+	</select>
+	<select id="isExitData" resultType="boolean">
+		select count(1) from achieve_judge
+		<foreach collection="map" index="key" item="value" separator="and" open="where" close="">
+			<choose>
+				<when test="'id'==key">
+					${key} !=#{value}
+				</when>
+				<otherwise>
+					${key}=#{value}
+				</otherwise>
+			</choose>
+		</foreach>
+	</select>
+
+	<select id="getIdAndName" resultType="MapDto">
+		SELECT id as `key` ,name as `value`  FROM  achieve_judge
+	</select>
+	
+</mapper>

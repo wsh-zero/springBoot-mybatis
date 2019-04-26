@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.train.mapper.TrainMapper">
+    
+	<sql id="trainColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.venue AS "venue",
+		a.cost AS "cost",
+		a.title AS "title",
+		a.type AS "type.id",
+		a.content AS "content",
+		a.initiator AS "initiator.id",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.file AS "file",
+		a.STATUS AS "status",
+		type.name AS "type.name",
+		initiator.name AS "initiator.name",
+
+
+		 b.read_num AS "readNum",
+	     b.un_read_num AS "unReadNum",
+	     b.qualify_num AS "qualifyNum",
+	     b.un_qualify_num AS "unQualifyNum"
+	</sql>
+	
+	<sql id="trainJoins">
+		<!-- 查询已读和未读条数 -->
+		LEFT JOIN (
+		SELECT r.train_id,
+		sum(case when r.read_flag = '1' then 1 else 0 end) read_num,
+		sum(case when r.read_flag IN (0,1) then 1 else 0 end) un_read_num,
+		sum(case when r.qualify_flag = '1' then 1 else 0 end) qualify_num,
+		count(*) un_qualify_num
+		FROM train_record r GROUP BY r.train_id
+		) b ON b.train_id = a.id
+		LEFT JOIN train_type type ON type.id = a.type
+		LEFT JOIN staff initiator ON initiator.id = a.initiator
+	</sql>
+	
+    <resultMap type="Train" id="TrainResult" autoMapping="true">
+    	<result column="content" property="content"   typeHandler="com.jeeplus.core.mapper.ConvertBlobTypeHandler"/>
+    </resultMap>
+	<select id="count" resultType="int" >
+		SELECT
+		count(*)
+		FROM train a
+		<include refid="trainJoins"/>
+		WHERE
+		<if test="type.id !=null and type.id!='' ">
+			a.type = #{type.id}
+		</if>
+		and a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
+	<select id="get" resultMap="TrainResult" >
+		SELECT 
+			<include refid="trainColumns"/>
+		FROM train a
+		<include refid="trainJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultMap="TrainResult" >
+		SELECT 
+			<include refid="trainColumns"/>
+		<if test="isSelf">,
+			r.read_flag  AS "readFlag",
+			r.qualify_flag AS "qualifyFlag"
+		</if>
+		FROM train a
+		<include refid="trainJoins"/>
+		<!-- 我的通知 -->
+		<if test="isSelf">
+			JOIN train_record r ON r.train_id = a.id AND r.user_id = #{currentUser.id}
+			<if test="readFlag != null and readFlag != ''">
+				AND r.read_flag = #{readFlag}
+			</if>
+		</if>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="type != null and type.id != null and type.id != ''">
+				AND a.type = #{type.id}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.STATUS = #{status}
+			</if>
+			<if test="isSelf">
+			AND a.STATUS = '1'
+		    </if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findMyList" resultMap="TrainResult" >
+		SELECT
+		<include refid="trainColumns"/>
+		<if test="isSelf">,
+			r.read_flag  AS "readFlag",
+			r.qualify_flag AS "qualifyFlag"
+		</if>
+		FROM train a
+		<include refid="trainJoins"/>
+		<!-- 我的通知 -->
+		<if test="isSelf">
+			JOIN train_record r ON r.train_id = a.id AND r.user_id = #{currentUser.id}
+			<if test="readFlag != null and readFlag != ''">
+				AND r.read_flag = #{readFlag}
+			</if>
+		</if>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="title != null and title != ''">
+				AND a.title LIKE
+				<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="type != null and type.id != null and type.id != ''">
+				AND a.type = #{type.id}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.STATUS = #{status}
+			</if>
+			<if test="isSelf">
+				AND a.STATUS = '1'
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultMap="TrainResult" >
+		SELECT 
+			<include refid="trainColumns"/>
+		FROM train a
+		<include refid="trainJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findCount" resultType="Long">
+		SELECT
+		count(1)
+		FROM train a
+		<if test="isSelf">
+			JOIN train_record r ON r.train_id = a.id AND r.user_id = #{currentUser.id}
+			<if test="readFlag != null and readFlag != ''">
+				AND r.read_flag = #{readFlag}
+			</if>
+		</if>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="isSelf">
+			AND a.STATUS = '1'
+		</if>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO train(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			title,
+			venue,
+			cost,
+			type,
+			STATUS,
+			content,
+			initiator,
+			start_time,
+			end_time,
+			file
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{title},
+			#{venue},
+			#{cost},
+			#{type.id},
+			#{status},
+			#{content},
+			#{initiator.id},
+			#{startTime},
+			#{endTime},
+			#{file}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE train SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			title = #{title},
+			venue = #{venue},
+			cost = #{cost},
+			type = #{type.id},
+			STATUS = #{status},
+			content = #{content},
+			initiator = #{initiator.id},
+			start_time = #{startTime},
+			end_time = #{endTime},
+			file = #{file}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM train
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE train SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Train" statementType="STATEMENT">
+		select * FROM train  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

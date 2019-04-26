@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.salary.mapper.WageDateMapper">
+    
+	<sql id="wageDateColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.wage_date AS "wageDate",
+		a.slip_date AS "slipeDate",
+		a.scheduleJob AS "scheduleJob"
+	</sql>
+	
+	<sql id="wageDateJoins">
+		
+	</sql>
+	
+    
+	<select id="get" resultType="WageDate" >
+		SELECT 
+			<include refid="wageDateColumns"/>
+		FROM wage_pay_date a
+		<include refid="wageDateJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WageDate" >
+		SELECT 
+			<include refid="wageDateColumns"/>
+		FROM wage_pay_date a
+		<include refid="wageDateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WageDate" >
+		SELECT 
+			<include refid="wageDateColumns"/>
+		FROM wage_pay_date a
+		<include refid="wageDateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wage_pay_date(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			wage_date,
+			slip_date,
+			scheduleJob
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{wageDate},
+			#{slipeDate},
+			#{scheduleJob}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wage_pay_date SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			wage_date = #{wageDate},
+			slip_date = #{slipeDate},
+		<choose>
+		<when test="scheduleJob!= null and scheduleJob != ''">
+			scheduleJob = #{scheduleJob}
+		</when>
+		</choose>
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wage_pay_date
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wage_pay_date SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="WageDate" statementType="STATEMENT">
+		select * FROM wage_pay_date  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

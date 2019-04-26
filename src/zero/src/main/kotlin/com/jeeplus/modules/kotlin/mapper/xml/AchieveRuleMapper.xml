@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.kotlin.mapper.AchieveRuleMapper">
+    
+	<sql id="achieveRuleColumns">
+		a.id AS "id",
+		a.number AS "number",
+		a.name AS "name",
+		a.achieve_obj_id AS "achieveObjId",
+		a.achieve_judge_id AS "achieveJudgeId",
+		a.assessor AS "assessor",
+		a.assessor_cycle AS "assessorCycle",
+		a.total_score_0 AS "totalScore0",
+		a.total_score_1 AS "totalScore1",
+		a.total_score_3 AS "totalScore3",
+		a.state AS "state",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate"
+	</sql>
+	
+	<sql id="achieveRuleJoins">
+		
+	</sql>
+	
+    
+	<select id="get" resultType="AchieveRule" >
+		SELECT 
+			<include refid="achieveRuleColumns"/>
+		FROM achieve_rule a
+		<include refid="achieveRuleJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AchieveRule" >
+		SELECT 
+			<include refid="achieveRuleColumns"/>
+		FROM achieve_rule a
+		<include refid="achieveRuleJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AchieveRule" >
+		SELECT 
+			<include refid="achieveRuleColumns"/>
+		FROM achieve_rule a
+		<include refid="achieveRuleJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO achieve_rule(
+			id,
+			number,
+			name,
+			achieve_obj_id,
+			achieve_judge_id,
+			assessor,
+			assessor_cycle,
+			total_score_0,
+			total_score_1,
+			total_score_3,
+			state,
+			create_by,
+			create_date
+		) VALUES (
+			#{id},
+			#{number},
+			#{name},
+			#{achieveObjId},
+			#{achieveJudgeId},
+			#{assessor},
+			#{assessorCycle},
+			#{totalScore0},
+			#{totalScore1},
+			#{totalScore3},
+			#{state},
+			#{createBy.id},
+			#{createDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE achieve_rule SET 	
+			number = #{number},
+			name = #{name},
+			achieve_obj_id = #{achieveObjId},
+			assessor = #{assessor},
+			assessor_cycle = #{assessorCycle},
+			state = #{state}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM achieve_rule
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE achieve_rule SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="AchieveRule" statementType="STATEMENT">
+		select * FROM achieve_rule  where ${propertyName} = '${value}'
+	</select>
+
+
+	<select id="isExitData" resultType="boolean">
+		select count(1) from achieve_rule
+		<foreach collection="map" index="key" item="value" separator="and" open="where" close="">
+			<choose>
+				<when test="'id'==key">
+					${key} !=#{value}
+				</when>
+				<otherwise>
+					${key}=#{value}
+				</otherwise>
+			</choose>
+		</foreach>
+	</select>
+
+
+	<select id="getTotalScoreByType" resultType="String">
+		select
+		<choose>
+			<when test="type==0">
+				 total_score_0
+			</when>
+			<when test="type==1">
+				 total_score_1
+			</when>
+			<when test="type==3">
+				 total_score_3
+			</when>
+		</choose>
+		from achieve_rule where id=#{id}
+	</select>
+
+</mapper>

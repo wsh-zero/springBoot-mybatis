@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.official.meeting.mapper.MeetsummaryRecordMapper">
+    
+	<sql id="annouceRecordColumns">
+		a.id AS "id",
+		a.meetid AS "meetsummary.id",
+		a.user_id AS "user.id",
+		a.read_flag AS "readFlag",
+		a.read_date AS "readDate",
+		meet.meettitle AS "meetsummary.meettitle",
+		user.name AS "user.name",
+		office.name AS "user.office.name"
+	</sql>
+	
+	<sql id="annouceRecordJoins">
+		 JOIN meetsummary meet ON meet.id = a.meetid
+		 JOIN sys_user user ON user.id = a.user_id
+		 JOIN sys_office office ON office.id = user.office_id
+	</sql>
+	
+    
+	<select id="get" resultType="MeetsummmaryRecord" >
+		SELECT 
+			<include refid="annouceRecordColumns"/>
+		FROM meetsummary_record a
+		<include refid="annouceRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MeetsummmaryRecord" >
+		SELECT
+		a.id AS "id",
+		a.meetid AS "meetsummary.id",
+		a.user_id AS "user.id",
+		a.read_flag AS "readFlag",
+		a.read_date AS "readDate",
+		meet.meettitle AS "meetsummary.meettitle",
+		user.name AS "user.name",
+		office.name AS "user.office.name"
+		FROM meetsummary_record a
+		<include refid="annouceRecordJoins"/>
+		<where>
+			1=1
+		</where>
+		<if test="meetsummary != null and meetsummary.id != null and meetsummary.id != ''">
+			AND a.meetid = #{meetsummary.id}
+		</if>
+		ORDER BY a.read_flag ASC
+	</select>
+	<!--
+	<execute id="findAllList" resultType="AnnouceRecord" >
+		SELECT 
+			<include refid="annouceRecordColumns"/>
+		FROM annouce_record a
+		<include refid="annouceRecordJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</execute>-->
+	
+	<!--<insert id="insert">
+		INSERT INTO annouce_record(
+			id,
+			annouceid,
+			user_id,
+			read_flag,
+			read_date
+		) VALUES (
+			#{id},
+			#{annouce.id},
+			#{user.id},
+			#{readFlag},
+			#{readDate}
+		)
+	</insert>-->
+
+	<insert id="insertAll" parameterType="List">
+		INSERT INTO meetsummary_record(
+		id,
+		meetid,
+		user_id,
+		read_flag,
+		read_date
+		)
+		<foreach collection="list" item="e" separator=" UNION ALL ">
+			SELECT
+			#{e.id},
+			#{e.meetsummary.id},
+			#{e.user.id},
+			#{e.readFlag},
+			#{e.readDate}
+			${dual}
+		</foreach>
+	</insert>
+	
+	<update id="updateReadFlag">
+		UPDATE meetsummary_record SET
+			read_flag = #{readFlag},
+			read_date = #{readDate}
+		WHERE meetid = #{meetsummary.id}
+		and user_id=#{user.id}
+			and read_flag!='1'
+	</update>
+	
+	
+	<!--物理删除-->
+	<!--<update id="delete">
+		DELETE FROM annouce_record
+		WHERE id = #{id}
+	</update>
+	
+	&lt;!&ndash;逻辑删除&ndash;&gt;
+	<update id="deleteByLogic">
+		UPDATE annouce_record SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	&lt;!&ndash; 根据实体名称和字段名称和字段值获取唯一记录 &ndash;&gt;
+	<execute id="findUniqueByProperty" resultType="AnnouceRecord" statementType="STATEMENT">
+		execute * FROM annouce_record  where ${propertyName} = '${value}'
+	</execute>-->
+
+	<delete id="deleteByMeetId">
+		DELETE FROM  meetsummary_record
+		WHERE meetid = #{meetid}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.salary.mapper.StaSallaryMapper">
+    
+	<sql id="staSallaryColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.name AS "name.id",
+		a.allocation AS "allocation.id",
+		name.name AS "name.name",
+		allocation.allocation_name AS "allocation.allocation"
+	</sql>
+	
+	<sql id="staSallaryJoins">
+
+		LEFT JOIN staff name ON name.id = a.name
+		LEFT JOIN sa_all allocation ON allocation.id = a.allocation
+	</sql>
+
+	<select id="find" resultType="StaSallary" >
+		SELECT
+		<include refid="staSallaryColumns"/>
+		FROM sta_sallary a
+		<include refid="staSallaryJoins"/>
+		WHERE
+		<if test="name != null and name.id != null and name.id != ''">
+			a.name = #{name.id}
+		</if>
+		and a.del_flag = 0
+	</select>
+	<select id="count" resultType="int" >
+		SELECT
+		count(*)
+		FROM sta_sallary a
+		<include refid="staSallaryJoins"/>
+		WHERE
+		<if test="name != null and name.id != null and name.id != ''">
+			a.name = #{name.id}
+		</if>
+		and a.del_flag = 0
+	</select>
+	<select id="get" resultType="StaSallary" >
+		SELECT 
+			<include refid="staSallaryColumns"/>
+		FROM sta_sallary a
+		<include refid="staSallaryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="StaSallary" >
+		SELECT 
+			<include refid="staSallaryColumns"/>
+		FROM sta_sallary a
+		<include refid="staSallaryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="name != null and name.id != null and name.id != ''">
+				AND a.name LIKE
+					<if test="dbName == 'oracle'">'%'||#{name.id}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name.id}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name.id},'%')</if>
+			</if>
+			<if test="status != null and status.id != null and status.id != ''">
+				AND name.status = #{status.id}
+			</if>
+			<if test="depart != null and depart.id != null and depart.id != ''">
+				AND name.depart = #{depart.id}
+			</if>
+			<if test="allocation != null and allocation.id != null and allocation.id != ''">
+				AND a.allocation LIKE 
+					<if test="dbName == 'oracle'">'%'||#{allocation.id}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{allocation.id}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{allocation.id},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="StaSallary" >
+		SELECT 
+			<include refid="staSallaryColumns"/>
+		FROM sta_sallary a
+		<include refid="staSallaryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sta_sallary(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			name,
+			allocation
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{name.id},
+			#{allocation.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sta_sallary SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			name = #{name.id},
+			allocation = #{allocation.id}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM sta_sallary
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sta_sallary SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="StaSallary" statementType="STATEMENT">
+		select * FROM sta_sallary  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

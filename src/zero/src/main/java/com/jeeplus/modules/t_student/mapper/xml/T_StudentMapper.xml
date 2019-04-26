@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.t_student.mapper.T_StudentMapper">
+    
+	<sql id="t_StudentColumns">
+		a.id AS "id",
+		a.name AS "name"
+	</sql>
+	
+	<sql id="t_StudentJoins">
+		
+	</sql>
+	
+    
+	<select id="get" resultType="T_Student" >
+		SELECT 
+			<include refid="t_StudentColumns"/>
+		FROM t_student a
+		<include refid="t_StudentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="T_Student" >
+		SELECT 
+			<include refid="t_StudentColumns"/>
+		FROM t_student a
+		<include refid="t_StudentJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="T_Student" >
+		SELECT 
+			<include refid="t_StudentColumns"/>
+		FROM t_student a
+		<include refid="t_StudentJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_student(
+			id,
+			name
+		) VALUES (
+			#{id},
+			#{name}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_student SET 	
+			name = #{name}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM t_student
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE t_student SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="T_Student" statementType="STATEMENT">
+		select * FROM t_student  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

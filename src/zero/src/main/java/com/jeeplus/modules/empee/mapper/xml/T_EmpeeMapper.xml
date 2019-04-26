@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.empee.mapper.T_EmpeeMapper">
+    
+	<sql id="t_EmpeeColumns">
+		a.id AS "id",
+		a.com_id AS "company.id",
+		a.name AS "name",
+				
+		company.name AS "company.name"
+	</sql>
+	
+	<sql id="t_EmpeeJoins">
+		
+		LEFT JOIN t_company company ON company.id = a.com_id
+	</sql>
+	
+    
+	<select id="get" resultType="T_Empee" >
+		SELECT 
+			<include refid="t_EmpeeColumns"/>
+		FROM t_empee a
+		<include refid="t_EmpeeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="T_Empee" >
+		SELECT 
+			<include refid="t_EmpeeColumns"/>
+		FROM t_empee a
+		<include refid="t_EmpeeJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="T_Empee" >
+		SELECT 
+			<include refid="t_EmpeeColumns"/>
+		FROM t_empee a
+		<include refid="t_EmpeeJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_empee(
+			id,
+			com_id,
+			name
+		) VALUES (
+			#{id},
+			#{company.id},
+			#{name}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_empee SET 	
+			com_id = #{company.id},
+			name = #{name}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM t_empee
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE t_empee SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="T_Empee" statementType="STATEMENT">
+		select * FROM t_empee  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.activiti.mapper.T_OA_LeaveMapper">
+    
+	<sql id="t_OA_LeaveColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.proc_ins_id AS "procInsId",
+		a.leave_type AS "leaveType",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.reason AS "reason"
+	</sql>
+	
+	<sql id="t_OA_LeaveJoins">
+		
+	</sql>
+	
+    <resultMap type="T_OA_Leave" id="T_OA_LeaveResult" autoMapping="true">
+    	<result column="reason" property="reason"   typeHandler="com.jeeplus.core.mapper.ConvertBlobTypeHandler"/>
+    </resultMap>
+    
+	<select id="get" resultMap="T_OA_LeaveResult" >
+		SELECT 
+			<include refid="t_OA_LeaveColumns"/>
+		FROM t_oaactiviti_leave a
+		<include refid="t_OA_LeaveJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultMap="T_OA_LeaveResult" >
+		SELECT 
+			<include refid="t_OA_LeaveColumns"/>
+		FROM t_oaactiviti_leave a
+		<include refid="t_OA_LeaveJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultMap="T_OA_LeaveResult" >
+		SELECT 
+			<include refid="t_OA_LeaveColumns"/>
+		FROM t_oaactiviti_leave a
+		<include refid="t_OA_LeaveJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_oaactiviti_leave(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			proc_ins_id,
+			leave_type,
+			start_time,
+			end_time,
+			reason
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{procInsId},
+			#{leaveType},
+			#{startTime},
+			#{endTime},
+			#{reason}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_oaactiviti_leave SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			proc_ins_id = #{procInsId},
+			leave_type = #{leaveType},
+			start_time = #{startTime},
+			end_time = #{endTime},
+			reason = #{reason}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM t_oaactiviti_leave
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE t_oaactiviti_leave SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="T_OA_Leave" statementType="STATEMENT">
+		select * FROM t_oaactiviti_leave  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

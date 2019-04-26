@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.official.internal.mapper.InternalOfficialMapper">
+    
+	<sql id="internalOfficialColumns">
+		a.id AS "id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.officialtype AS "officialType.id",
+		a.internalno AS "internalno",
+		a.internalname AS "internalname",
+		a.publishtime AS "publishtime",
+		a.publishperson AS "publishperson",
+		a.publishdepart AS "publishdepart",
+		a.appendix AS "appendix",
+		a.proc_ins_id AS "procInsId",
+		officialType.typename AS "officialType.typename"
+	</sql>
+	
+	<sql id="internalOfficialJoins">
+		
+		LEFT JOIN officialtype officialType ON officialType.id = a.officialtype
+		LEFT JOIN sys_office publishdepart ON publishdepart.id = a.publishdepart
+	</sql>
+
+	<select id="get" resultMap="listMap">
+		SELECT 
+			<include refid="internalOfficialColumns"/>,
+			r.readed AS "readed",
+			r.read_time AS "read_time",
+			su.id AS "su.id",
+			su.name AS "su.name"
+		FROM internalofficial a
+		<include refid="internalOfficialJoins"/>
+		LEFT JOIN sys_user u ON u.id = a.publishperson
+		LEFT JOIN internalofficial_record r ON r.official_id = a.id
+		LEFT JOIN sys_user su ON r.userId = su.id
+		WHERE a.id = #{id}
+	</select>
+
+	<resultMap id="listMap" type="InternalOfficial">
+		<result column="a.id" property="id"></result>
+		<result column="remarks" property="remarks"></result>
+		<result column="delFlag" property="delFlag"></result>
+		<result column="officialType.id" property="officialType.id"></result>
+		<result column="internalno" property="internalno"></result>
+		<result column="internalname" property="internalname"></result>
+		<result column="publishtime" property="publishtime"></result>
+		<result column="publishperson" property="publishperson"></result>
+		<result column="publishdepart" property="publishdepart"></result>
+		<result column="appendix" property="appendix"></result>
+		<result column="procInsId" property="procInsId"></result>
+		<result column="officialType.typename" property="officialType.typename"></result>
+
+		<collection property="targets" javaType="com.jeeplus.modules.official.internalrecord.entity.InternalOfficalRecord">
+			<result property="userId.id" column="su.id"></result>
+			<result property="userId.name" column="su.name"></result>
+			<result column="readed" property="readed"></result>
+			<result column="read_time" property="readTime"></result>
+		</collection>
+	</resultMap>
+
+	<select id="findListCount" resultType="Integer">
+		SELECT count(a.id) FROM internalofficial a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="internalname != null and internalname != ''">
+				AND a.internalname = #{internalname}
+			</if>
+		</where>
+	</select>
+
+	<select id="findListView" resultMap="listMap">
+		SELECT
+		a.id AS "a.id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.officialtype AS "officialType.id",
+		a.internalno AS "internalno",
+		a.internalname AS "internalname",
+		a.publishtime AS "publishtime",
+		u.name AS "publishperson",
+		so.name AS "publishdepart",
+		a.appendix AS "appendix",
+		a.proc_ins_id AS "procInsId",
+		officialType.typename AS "officialType.typename",
+		r.readed AS "readed",
+		r.read_time AS "read_time",
+		su.id AS "su.id",
+		su.name AS "su.name"
+		FROM
+		(
+		select * from internalofficial io
+		<where> io.del_flag = #{official.DEL_FLAG_NORMAL}
+		</where>
+		limit #{start},#{pageSize}
+		) a
+		<include refid="internalOfficialJoins"/>
+		LEFT JOIN sys_user u ON u.id = a.publishperson
+		LEFT JOIN internalofficial_record r ON r.official_id = a.id
+		LEFT JOIN sys_user su ON r.userId = su.id
+		LEFT JOIN sys_office so ON a.publishdepart = so.id
+		<if test="official.isSelf == true">
+			LEFT JOIN act_hi_procinst ahp ON a.proc_ins_id = ahp.id_
+		</if>
+		<where>
+			<if test="official.isSelf == true">
+				AND r.userId = #{official.currentUser.id}
+			</if>
+			<if test="official.internalname != null and official.internalname != ''">
+				AND a.internalname = #{official.internalname}
+			</if>
+			<if test="official.isSelf == true">
+				AND end_act_id_ is not null
+			</if>
+		</where>
+		<choose>
+			<when test="official.page !=null and official.page.orderBy != null and official.page.orderBy != ''">
+				ORDER BY ${official.page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findList" resultMap="listMap">
+		SELECT
+			a.id AS "a.id",
+			a.remarks AS "remarks",
+			a.del_flag AS "delFlag",
+			a.officialtype AS "officialType.id",
+			a.internalno AS "internalno",
+			a.internalname AS "internalname",
+			a.publishtime AS "publishtime",
+			u.name AS "publishperson",
+			so.name AS "publishdepart",
+			a.appendix AS "appendix",
+			a.proc_ins_id AS "procInsId",
+			officialType.typename AS "officialType.typename",
+			r.readed AS "readed",
+			r.read_time AS "read_time",
+			su.id AS "su.id",
+			su.name AS "su.name"
+		FROM
+		(
+			select * from internalofficial io
+			<where> io.del_flag = #{DEL_FLAG_NORMAL} ${dataScope}
+			</where>
+			limit #{page.pageNo},#{page.pageSize}
+		) a
+		<include refid="internalOfficialJoins"/>
+		LEFT JOIN sys_user u ON u.id = a.publishperson
+		LEFT JOIN internalofficial_record r ON r.official_id = a.id
+		LEFT JOIN sys_user su ON r.userId = su.id
+		LEFT JOIN sys_office so ON a.publishdepart = so.id
+		<if test="isSelf == true">
+			LEFT JOIN act_hi_procinst ahp ON a.proc_ins_id = ahp.id_
+		</if>
+		<where>
+			<if test="isSelf == true">
+				AND r.userId = #{currentUser.id}
+			</if>
+			<if test="internalname != null and internalname != ''">
+				AND a.internalname = #{internalname}
+			</if>
+			<if test="isSelf == true">
+				AND end_act_id_ is not null
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="InternalOfficial" >
+		SELECT 
+			<include refid="internalOfficialColumns"/>
+		FROM internalofficial a
+		<include refid="internalOfficialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO internalofficial(
+			id,
+			remarks,
+			del_flag,
+			officialtype,
+			internalno,
+			internalname,
+			publishtime,
+			publishperson,
+			publishdepart,
+			appendix,
+			proc_ins_id
+		) VALUES (
+			#{id},
+			#{remarks},
+			#{delFlag},
+			#{officialType.id},
+			#{internalno},
+			#{internalname},
+			#{publishtime},
+			#{publishperson},
+			#{publishdepart},
+			#{appendix},
+			#{procInsId}
+		);
+	</insert>
+
+	<insert id="insertRecords">
+		INSERT INTO internalofficial_record(id,del_flag,readed,read_time,official_id,userid)
+		VALUES
+		<foreach collection="targets" item="target" separator=",">
+			(#{target.id},#{target.delFlag},#{target.readed},#{target.readTime},#{id},#{target.userId.id})
+		</foreach>
+	</insert>
+	
+	<update id="update">
+		UPDATE internalofficial SET 	
+			remarks = #{remarks},
+			officialtype = #{officialType.id},
+			internalno = #{internalno},
+			internalname = #{internalname},
+			publishtime = #{publishtime},
+			publishperson = #{publishperson},
+			publishdepart = #{publishdepart},
+			appendix = #{appendix},
+			proc_ins_id = #{procInsId}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM internalofficial
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE internalofficial SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="InternalOfficial" statementType="STATEMENT">
+		select * FROM internalofficial  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

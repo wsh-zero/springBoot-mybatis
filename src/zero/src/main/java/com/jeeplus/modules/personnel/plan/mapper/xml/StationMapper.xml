@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.plan.mapper.StationMapper">
+    
+	<sql id="stationColumns">
+		a.id AS "id",
+		a.station_number AS "gradeNumber",
+		a.name AS "name",
+		a.job_type AS "jobType.id",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.number AS "number",
+		a.duty AS "duty",
+		a.skill AS "skill",
+		a.process AS "process",
+		jobType.job_type AS "jobType.jobType"
+	</sql>
+	
+	<sql id="stationJoins">
+		
+		LEFT JOIN job_category jobType ON jobType.id = a.job_type
+	</sql>
+	<!--查询编号最大数字-->
+	<select id="getMaxNumber" resultType="java.lang.Integer">
+		select nullif(max(distinct number),0) maxcode from station
+	</select>
+
+
+
+
+	<select id="find" resultType="Station" >
+		SELECT
+		<include refid="stationColumns"/>
+		FROM station a
+		<include refid="stationJoins"/>
+		WHERE
+		<if test="name !=null and name!='' ">
+			a.name = #{name}
+		</if>
+		<if test="jobType != null and jobType.id !=null and jobType.id!='' ">
+			a.job_type = #{jobType.id}
+		</if>
+		<if test="gradeNumber !=null and gradeNumber!='' ">
+			a.station_number = #{gradeNumber}
+		</if>
+		and a.del_flag = 0
+	</select>
+
+	<select id="count" resultType="int" >
+		SELECT
+		count(*)
+		FROM station a
+		<include refid="stationJoins"/>
+		WHERE
+		<if test="name !=null and name!='' ">
+			a.name = #{name}
+		</if>
+		<if test="jobType != null and jobType.id !=null and jobType.id!='' ">
+			a.job_type = #{jobType.id}
+		</if>
+		<if test="gradeNumber !=null and gradeNumber!='' ">
+			a.station_number = #{gradeNumber}
+		</if>
+		and a.del_flag = 0
+	</select>
+	<select id="get" resultType="Station" >
+		SELECT 
+			<include refid="stationColumns"/>
+		FROM station a
+		<include refid="stationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Station" >
+		SELECT 
+			<include refid="stationColumns"/>
+		FROM station a
+		<include refid="stationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="jobType != null and jobType.id != null and jobType.id != ''">
+				AND a.job_type = #{jobType.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Station" >
+		SELECT 
+			<include refid="stationColumns"/>
+		FROM station a
+		<include refid="stationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO station(
+			id,
+			station_number,
+			name,
+			job_type,
+			remarks,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			duty,
+			skill,
+			process,
+			number
+		) VALUES (
+			#{id},
+			#{gradeNumber},
+			#{name},
+			#{jobType.id},
+			#{remarks},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{duty},
+			#{skill},
+			#{process},
+			#{number}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE station SET 	
+			station_number = #{gradeNumber},
+			name = #{name},
+			job_type = #{jobType.id},
+			remarks = #{remarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			duty = #{duty},
+			skill = #{skill},
+			process = #{process},
+			number = #{number}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM station
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE station SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Station" statementType="STATEMENT">
+		select * FROM station  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

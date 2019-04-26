@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.salary.mapper.PaySlipMapper">
+    
+	<sql id="paySlipColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.del_flag AS "delFlag",
+		a.name AS "name.id",
+		a.release_time AS "releaseTime",
+		a.status AS "status",
+		a.pre_wage AS "preWage",
+		a.social_security AS "socialSecurity",
+		a.accumulation AS "accumulation",
+		a.title_bonus AS "titleBonus",
+		a.grade_bonus AS "gradeBonus",
+		a.quality_bonus AS "qualityBonus",
+		a.education_bonus AS "educationBonus",
+		a.display_bonus AS "displayBonus",
+		a.punish AS "punish",
+		a.tax AS "tax",
+		a.attendance AS "attendance",
+		a.wage AS "wage",
+		a.ach_point AS "achPoint",
+		a.ach_bonus AS "achBonus",
+		a.total AS "total",
+		a.update_date AS "updateDate",
+		name.name AS "name.name"
+	</sql>
+	
+	<sql id="paySlipJoins">
+		LEFT JOIN staff name ON name.id = a.name
+	</sql>
+	
+    
+	<select id="get" resultType="PaySlip" >
+		SELECT 
+			<include refid="paySlipColumns"/>
+		FROM pay_slip a
+		<include refid="paySlipJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PaySlip" >
+		SELECT 
+			<include refid="paySlipColumns"/>
+		FROM pay_slip a
+		<include refid="paySlipJoins"/>
+		<!-- 我的工资条 -->
+		<where>
+			<if test="isSelf">
+				a.name = #{currentUser.staff.id} and
+			</if>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="name != null and name.id != null and name.id != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name.id}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name.id}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name.id},'%')</if>
+			</if>
+			<if test="depart != null and depart.id != null and depart.id != ''">
+				AND a.depart = #{depart.id}
+			</if>
+			<if test="releaseTime != null and releaseTime != ''">
+				AND a.release_time = #{releaseTime}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PaySlip" >
+		SELECT 
+			<include refid="paySlipColumns"/>
+		FROM pay_slip a
+		<include refid="paySlipJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pay_slip(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			del_flag,
+			name,
+			release_time,
+			status,
+			pre_wage,
+			social_security,
+			accumulation,
+			title_bonus,
+			grade_bonus,
+			quality_bonus,
+			education_bonus,
+			display_bonus,
+			punish,
+			tax,
+			attendance,
+			wage,
+			ach_point,
+			ach_bonus,
+			total,
+			update_date
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{delFlag},
+			#{name.id},
+			#{releaseTime},
+			#{status},
+			#{preWage},
+			#{socialSecurity},
+			#{accumulation},
+			#{titleBonus},
+			#{gradeBonus},
+			#{qualityBonus},
+			#{educationBonus},
+			#{displayBonus},
+			#{punish},
+			#{tax},
+			#{attendance},
+			#{wage},
+			#{achPoint},
+			#{achBonus},
+			#{total},
+			#{updateDate}
+		)
+	</insert>
+	<insert id="add">
+		INSERT INTO pay_slip(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			del_flag,
+			name,
+			release_time,
+			status,
+			pre_wage,
+			social_security,
+			accumulation,
+			title_bonus,
+			grade_bonus,
+			quality_bonus,
+			education_bonus,
+			display_bonus,
+			punish,
+			tax,
+			attendance,
+			wage,
+			ach_point,
+			ach_bonus,
+			total,
+			update_date
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{delFlag},
+			#{name.id},
+			#{releaseTime},
+			#{status},
+			#{preWage},
+			#{socialSecurity},
+			#{accumulation},
+			#{titleBonus},
+			#{gradeBonus},
+			#{qualityBonus},
+			#{educationBonus},
+			#{displayBonus},
+			#{punish},
+			#{tax},
+			#{attendance},
+			#{wage},
+			#{achPoint},
+			#{achBonus},
+			#{total},
+			#{updateDate}
+		)
+	</insert>
+	<update id="update">
+		UPDATE pay_slip SET 	
+			update_by = #{updateBy.id},
+			name = #{name.id},
+			release_time = #{releaseTime},
+			status = #{status},
+			pre_wage = #{preWage},
+			social_security = #{socialSecurity},
+			accumulation = #{accumulation},
+			title_bonus = #{titleBonus},
+			grade_bonus = #{gradeBonus},
+			quality_bonus = #{qualityBonus},
+			education_bonus = #{educationBonus},
+			display_bonus = #{displayBonus},
+			punish = #{punish},
+			tax = #{tax},
+			attendance = #{attendance},
+			wage = #{wage},
+			ach_point = #{achPoint},
+			ach_bonus = #{achBonus},
+			total = #{total},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM pay_slip
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE pay_slip SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="PaySlip" statementType="STATEMENT">
+		select * FROM pay_slip  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

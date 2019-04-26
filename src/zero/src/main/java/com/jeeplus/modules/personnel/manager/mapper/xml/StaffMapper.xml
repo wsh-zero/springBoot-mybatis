@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.manager.mapper.StaffMapper">
+    
+	<sql id="staffColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.code AS "code",
+		a.company AS "company.id",
+		a.depart AS "depart.id",
+		a.sex AS "sex",
+		a.station AS "station.id",
+		a.leader AS "leader.id",
+		a.birth_date AS "birthDate",
+		a.id_card AS "idCard",
+		a.marriage AS "marriage",
+		a.education AS "education.id",
+		a.rank AS "rank.id",
+		a.status AS "status.id",
+		a.staff_type AS "staffType.id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.contact_type AS "contactType",
+		a.entry_date AS "entryDate",
+		a.remarks AS "remarks",
+		a.number AS "number",
+		a.nation AS "nation",
+		a.graduation AS "graduation",
+		a.major AS "major",
+		a.register AS "register.id",
+		a.native_place AS "nativePlace.id",
+		a.detail_place AS "detailPlace",
+		a.graduation_time AS "graduationTime",
+		a.social_security AS "socialSecurity",
+		a.political AS "political",
+
+				
+				
+		company.name AS "company.name",
+				
+		depart.name AS "depart.name",
+				
+				
+		station.name AS "station.name",
+				
+		leader.name AS "leader.name",
+				
+				
+				
+				
+		education.educate AS "education.educate",
+				
+		rank.rank_name AS "rank.rankName",
+				
+		status.status AS "status.status",
+				
+		staffType.type AS "staffType.type",
+
+		register.name AS "register.name",
+
+		nativePlace.name AS "nativePlace.name"
+	</sql>
+	
+	<sql id="staffJoins">
+		
+		LEFT JOIN sys_office company ON company.id = a.company
+		LEFT JOIN sys_office depart ON depart.id = a.depart
+		LEFT JOIN station station ON station.id = a.station
+		LEFT JOIN staff leader ON leader.id = a.leader
+		LEFT JOIN education education ON education.id = a.education
+		LEFT JOIN rank rank ON rank.id = a.rank
+		LEFT JOIN staff_status status ON status.id = a.status
+		LEFT JOIN staff_type staffType ON staffType.id = a.staff_type
+		LEFT JOIN sys_area register ON register.id = a.register
+		LEFT JOIN sys_area nativePlace ON nativePlace.id = a.native_place
+		LEFT JOIN sys_user user ON user.staff = a.id
+	</sql>
+
+
+	<select id="findLeader" resultType="Staff" >
+		SELECT
+		<include refid="staffColumns"/>
+		FROM staff a
+		<include refid="staffJoins"/>
+		where
+		<if test="code !=null and code!='' ">
+			a.code = #{code}
+		</if>
+		and a.del_flag = 0
+
+	</select>
+
+	<select id="getDepartByRank" resultType="String" >
+		SELECT
+		distinct (a.depart)
+		FROM staff a
+		where
+		<if test="rank !=null and rank!='' ">
+			a.rank = #{rank}
+		</if>
+		and a.del_flag = 0
+
+	</select>
+
+	<select id="getStaffByStation" resultType="Staff" >
+		SELECT
+		<include refid="staffColumns"/>
+		FROM staff a
+		<include refid="staffJoins"/>
+		where
+		<if test="station !=null and station!='' ">
+			station.name = #{station}
+		</if>
+		and a.del_flag = 0
+
+	</select>
+
+	<select id="getStaff" resultType="Staff" >
+		SELECT
+		<include refid="staffColumns"/>
+		FROM staff a
+		<include refid="staffJoins"/>
+		WHERE a.del_flag = 0
+	</select>
+
+	<select id="find" resultType="Staff" >
+		SELECT
+		<include refid="staffColumns"/>
+		FROM staff a
+		<include refid="staffJoins"/>
+		<where>
+		<if test="code !=null and code!='' ">
+			a.code = #{code}
+		</if>
+		<if test="contactType !=null and contactType!='' ">
+			a.contact_type = #{contactType}
+		</if>
+		<if test="idCard !=null and idCard!='' ">
+			a.id_card = #{idCard}
+		</if>
+		<if test="socialSecurity !=null and socialSecurity!='' ">
+			a.social_security = #{socialSecurity}
+		</if>
+		</where>
+	</select>
+
+	<select id="count" resultType="int" >
+		SELECT
+		count(*)
+		FROM staff a
+		<include refid="staffJoins"/>
+		<where>
+		<if test="code !=null and code!='' ">
+			a.code = #{code}
+		</if>
+		<if test="contactType !=null and contactType!='' ">
+			a.contact_type = #{contactType}
+		</if>
+		<if test="idCard !=null and idCard!='' ">
+			a.id_card = #{idCard}
+		</if>
+		<if test="marriage !=null and marriage!='' ">
+			a.marriage = #{marriage.id}
+		</if>
+		<if test="education !=null and education!='' ">
+			a.education = #{education.id}
+		</if>
+		<if test="rank !=null and rank!='' ">
+			a.rank = #{rank.id}
+		</if>
+		<if test="status !=null and status!='' ">
+			a.status = #{status.id}
+		</if>
+		<if test="staffType !=null and staffType!='' ">
+		    a.staff_type = #{staffType.id}
+	    </if>
+		<if test="socialSecurity !=null and socialSecurity!='' ">
+			a.social_security = #{socialSecurity}
+		</if>
+		</where>
+	</select>
+
+	<!--查询编号最大数字-->
+	<select id="getMaxcode" resultType="java.lang.Integer">
+		select nullif(max(distinct number),0) maxcode from staff
+	</select>
+    
+	<select id="get" resultType="Staff" >
+		SELECT 
+			<include refid="staffColumns"/>
+		FROM staff a
+		<include refid="staffJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Staff" >
+		SELECT 
+			<include refid="staffColumns"/>
+		FROM staff a
+		<include refid="staffJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="idCard != null and idCard != ''">
+				AND a.id_card = #{idCard}
+			</if>
+			<if test="depart != null and depart.id != null and depart.id != ''">
+				AND a.depart = #{depart.id}
+			</if>
+			<if test="station != null and station.id != null and station.id != ''">
+				AND a.station = #{station.id}
+			</if>
+			<if test="education != null and education.id != null and education.id != ''">
+				AND a.education = #{education.id}
+			</if>
+			<if test="rank != null and rank.id != null and rank.id != ''">
+				AND a.rank = #{rank.id}
+			</if>
+			<if test="status != null and status.id != null and status.id != ''">
+				AND a.status = #{status.id}
+			</if>
+			<if test="major != null and major != ''">
+				AND a.major LIKE
+				<if test="dbName == 'oracle'">'%'||#{major}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{major}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{major},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Staff" >
+		SELECT 
+			<include refid="staffColumns"/>
+		FROM staff a
+		<include refid="staffJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO staff(
+			id,
+			name,
+			code,
+			company,
+			depart,
+			sex,
+			station,
+			leader,
+			birth_date,
+			id_card,
+			marriage,
+			education,
+			rank,
+			status,
+			staff_type,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			contact_type,
+			entry_date,
+			remarks,
+			number,
+			nation,
+			graduation,
+			major,
+			register,
+			native_place,
+			detail_place,
+			graduation_time,
+			social_security,
+			political
+		) VALUES (
+			#{id},
+			#{name},
+			#{code},
+			#{company.id},
+			#{depart.id},
+			#{sex},
+			#{station.id},
+			#{leader.id},
+			#{birthDate},
+			#{idCard},
+			#{marriage},
+			#{education.id},
+			#{rank.id},
+			#{status.id},
+			#{staffType.id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{contactType},
+			#{entryDate},
+			#{remarks},
+			#{number},
+			#{nation},
+			#{graduation},
+			#{major},
+			#{register.id},
+			#{nativePlace.id},
+			#{detailPlace},
+			#{graduationTime},
+			#{socialSecurity},
+			#{political}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE staff SET 	
+			name = #{name},
+			code = #{code},
+			company = #{company.id},
+			depart = #{depart.id},
+			sex = #{sex},
+			station = #{station.id},
+			leader = #{leader.id},
+			birth_date = #{birthDate},
+			id_card = #{idCard},
+			marriage = #{marriage},
+			education = #{education.id},
+			rank = #{rank.id},
+			status = #{status.id},
+			staff_type = #{staffType.id},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			contact_type = #{contactType},
+			entry_date = #{entryDate},
+			remarks = #{remarks},
+			number = #{number},
+			nation = #{nation},
+			graduation = #{graduation},
+			major = #{major},
+			register = #{register.id},
+			native_place = #{nativePlace.id},
+			detail_place = #{detailPlace},
+			graduation_time = #{graduationTime},
+			social_security = #{socialSecurity},
+			political = #{political}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM staff
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE staff SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Staff" statementType="STATEMENT">
+		select * FROM staff  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

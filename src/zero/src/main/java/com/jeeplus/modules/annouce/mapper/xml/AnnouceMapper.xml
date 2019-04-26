@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.annouce.mapper.AnnouceMapper">
+    
+	<sql id="annouceColumns">
+		a.id AS "id",
+		a.title AS "title",
+		a.content AS "content",
+		a.appendix AS "appendix",
+		a.status AS "status",
+		a.starttime AS "startTime",
+		a.endtime AS "endTime",
+		a.receiveperson AS "receivePerson",
+		a.publishperson AS "publishPerson",
+		a.publishtime AS "publishTime",
+		a.number AS "number",
+		a.type AS "type"
+	</sql>
+	
+	<sql id="annouceJoins">
+		
+		LEFT JOIN sys_user receivePerson ON receivePerson.id = a.receiveperson
+	</sql>
+
+
+	<sql id="oaNotifyJoins">
+		<!-- 查询已读和未读条数 -->
+		LEFT JOIN (
+		SELECT r.annouceid,
+		sum(case when r.read_flag = '1' then 1 else 0 end) read_num,
+		sum(case when r.read_flag != '1' then 1 else 0 end) un_read_num
+		FROM annouce_record r GROUP BY r.annouceid
+		) b ON b.annouceid = a.id
+	</sql>
+
+	<select id="get" resultType="Annouce">
+		SELECT
+		a.id AS "id",
+		a.title AS "title",
+		a.content AS "content",
+		a.appendix AS "appendix",
+		a.status AS "status",
+		a.starttime AS "startTime",
+		a.endtime AS "endTime",
+		a.receiveperson AS "receivePerson",
+		a.publishperson AS "publishPerson",
+		a.publishtime AS "publishTime",
+		a.type AS "type",
+		b.read_num as "readNum",
+		b.un_read_num as "unReadNum"
+		FROM annouce a
+		<include refid="oaNotifyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findByUserId"  resultType="Annouce">
+		select a.id AS "id"
+		 from annouce a where a.publishperson=#{userid}
+	</select>
+
+	<select id="selectRecvList" resultType="Annouce">
+
+		SELECT
+			a.id AS "id",
+			a.title AS "title",
+			a.content AS "content",
+			a.appendix AS "appendix",
+			a.status AS "status",
+			a.starttime AS "startTime",
+			a.endtime AS "endTime",
+			a.receiveperson AS "receivePerson",
+			u.name AS "publishPerson",
+			a.publishtime AS "publishTime",
+			a.number AS "number",
+			a.type AS "type",
+			read_flag as readState
+		FROM annouce a
+		LEFT JOIN sys_user u on a.publishperson = u.id
+		LEFT OUTER JOIN annouce_record r on a.id = r.annouceid
+        <where>
+			${param1.dataScope} and a.title like concat('%%',#{param1.title},'%%') and r.user_id = #{param2} and status = 1</where>
+		ORDER BY read_flag asc, a.publishtime desc LIMIT #{param3},#{param4}
+	</select>
+
+	<select id="selectRecvListCount" resultType="Integer">
+
+		SELECT
+			count(a.id)
+		FROM annouce a
+		LEFT JOIN sys_user u on a.publishperson = u.id
+		LEFT OUTER JOIN annouce_record r on a.id = r.annouceid
+        <where>
+			${param1.dataScope} and a.title like concat('%%',#{param1.title},'%%') and r.user_id = #{param2} and status = 1</where>
+	</select>
+
+	<select id="findList" resultType="Annouce">
+
+		SELECT
+			a.id AS "id",
+			a.title AS "title",
+			a.content AS "content",
+			a.appendix AS "appendix",
+			a.status AS "status",
+			a.starttime AS "startTime",
+			a.endtime AS "endTime",
+			a.receiveperson AS "receivePerson",
+			a.publishperson AS "publishPerson",
+			a.publishtime AS "publishTime",
+			a.number AS "number",
+			a.type AS "type",
+			concat(r.readed,'/',r.unread) as readState
+		FROM annouce a
+		LEFT JOIN sys_user u on a.publishperson = u.id
+		LEFT JOIN (
+			SELECT
+				count(read_flag = 1 or null) readed,
+				count(read_flag = 0 or null) unread,
+				annouceid
+			FROM annouce_record
+			GROUP BY annouceid
+		) r on a.id = r.annouceid
+        <where> ${dataScope} and a.publishperson = #{currentUser.id} AND a.title like concat('%%',#{title},'%%')</where>
+		ORDER BY a.publishtime desc
+	</select>
+
+	<select id="findList22" resultType="Annouce" >
+		SELECT
+		a.id AS "id",
+		a.title AS "title",
+		a.content AS "content",
+		a.appendix AS "appendix",
+		a.status AS "status",
+		a.starttime AS "startTime",
+		a.endtime AS "endTime",
+		a.receiveperson AS "receivePerson",
+		a.publishperson AS "publishPerson",
+		a.publishtime AS "publishTime",
+		a.number AS "number",
+		a.type AS "type",
+		b.read_num as "readNum",
+		b.un_read_num as "unReadNum",
+		r.read_flag AS readFlag
+		FROM annouce a
+		/*LEFT JOIN sys_user receivePerson ON receivePerson.id = a.receiveperson*/
+		LEFT JOIN (
+		SELECT r.annouceid,
+		sum(case when r.read_flag = '1' then 1 else 0 end) read_num,
+		sum(case when r.read_flag != '1' then 1 else 0 end) un_read_num
+		FROM annouce_record r GROUP BY r.annouceid
+		) b ON b.annouceid = a.id
+		<!-- 我的通知 -->
+		<if test="isSelf==false">
+			<if test="publishPerson!=null and publishPerson!=''">
+				join sys_user u on u.id=#{currentUser.id}
+				JOIN annouce_record r ON r.annouceid = a.id
+				and r.user_id!=#{currentUser.id}
+				 AND a.publishperson = #{publishPerson}
+				<if test="readFlag != null and readFlag != ''">
+					AND r.read_flag = #{readFlag}
+				</if>
+			</if>
+			<if test="publishPerson==null or publishPerson==''">
+				join sys_user u on u.id=#{currentUser.id}
+				JOIN annouce_record r ON r.annouceid = a.id
+				and r.user_id!={currentUser.id}
+				AND a.publishperson = !#{publishPerson}
+				<if test="readFlag != null and readFlag != ''">
+				AND r.read_flag = #{readFlag}
+			</if>
+			</if>
+		</if>
+		<if test="isSelf==true">
+			<if test="publishPerson==null or publishPerson==''">
+				join sys_user u on u.id=#{currentUser.id}
+				JOIN annouce_record r ON r.annouceid = a.id
+				and r.user_id=#{currentUser.id}
+				and a.status='1'
+				<if test="readFlag != null and readFlag != ''">
+					AND r.read_flag = #{readFlag}
+				</if>
+			</if>
+		</if>
+		<!--<if test="publishPerson!=null and publishPerson!=''">
+			JOIN annouce_record r ON r.annouceid = a.id AND a.publishperson = #{publishPerson}
+			<if test="readFlag != null and readFlag != ''">
+				AND r.read_flag = #{readFlag}
+			</if>
+		</if>
+		<if test="publishPerson==null or publishPerson==''">
+			JOIN annouce_record r ON r.annouceid = a.id AND r.user_id = #{currentUser.id}
+			<if test="readFlag != null and readFlag != ''">
+				AND r.read_flag = #{readFlag}
+			</if>
+		</if>-->
+		<where>
+			${dataScope}
+			<if test="title != null and title != ''">
+			AND a.title = #{title}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Annouce" >
+		SELECT 
+			<include refid="annouceColumns"/>
+		FROM annouce a
+		<include refid="annouceJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO annouce(
+			id,
+			title,
+			content,
+			appendix,
+			status,
+			starttime,
+			endtime,
+			receiveperson,
+			publishperson,
+			publishtime,
+			number,
+			type
+		) VALUES (
+			#{id},
+			#{title},
+			#{content},
+			#{appendix},
+			#{status},
+			#{startTime},
+			#{endTime},
+			#{receivePerson},
+			#{publishPerson},
+			#{publishTime},
+			#{number},
+			#{type}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE annouce SET 	
+			title = #{title},
+			content = #{content},
+			appendix = #{appendix},
+			status = #{status},
+			starttime = #{startTime},
+			endtime = #{endTime},
+			receiveperson = #{receivePerson},
+			publishperson = #{publishPerson},
+			publishtime = #{publishTime},
+			type = #{type}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM annouce
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE annouce SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Annouce" statementType="STATEMENT">
+		select * FROM annouce  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

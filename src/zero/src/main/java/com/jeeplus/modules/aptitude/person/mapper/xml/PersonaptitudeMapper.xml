@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.aptitude.person.mapper.PersonaptitudeMapper">
+    
+	<sql id="personaptitudeColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.certificate AS "certificate",
+		a.aptitudename AS "aptitudename.id",
+		a.grade AS "grade",
+		a.aptitudeno AS "aptitudeno",
+		a.issueunit AS "issueunit",
+		a.issuetime AS "issuetime",
+		a.expiretime AS "expiretime",
+		a.validtime AS "validtime",
+		a.scanning AS "scanning",
+				
+				
+				
+				
+				
+				
+				
+				
+		aptitudename.aptitudename AS "aptitudename.aptitudename"
+	</sql>
+	
+	<sql id="personaptitudeJoins">
+		
+		LEFT JOIN aptitudeparam aptitudename ON aptitudename.id = a.aptitudename
+	</sql>
+	
+    
+	<select id="get" resultType="Personaptitude" >
+		SELECT 
+			<include refid="personaptitudeColumns"/>
+		FROM personaptitude a
+		<include refid="personaptitudeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Personaptitude" >
+		SELECT 
+			<include refid="personaptitudeColumns"/>
+		FROM personaptitude a
+		<include refid="personaptitudeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="certificate != null and certificate != ''">
+				AND a.certificate = #{certificate}
+			</if>
+			<if test="aptitudename != null and aptitudename.id != null and aptitudename.id != ''">
+				AND a.aptitudename = #{aptitudename.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Personaptitude" >
+		SELECT 
+			<include refid="personaptitudeColumns"/>
+		FROM personaptitude a
+		<include refid="personaptitudeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO personaptitude(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			certificate,
+			aptitudename,
+			grade,
+			aptitudeno,
+			issueunit,
+			issuetime,
+			expiretime,
+			validtime,
+			scanning
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{certificate},
+			#{aptitudename.id},
+			#{grade},
+			#{aptitudeno},
+			#{issueunit},
+			#{issuetime},
+			#{expiretime},
+			#{validtime},
+			#{scanning}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE personaptitude SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			certificate = #{certificate},
+			aptitudename = #{aptitudename.id},
+			grade = #{grade},
+			aptitudeno = #{aptitudeno},
+			issueunit = #{issueunit},
+			issuetime = #{issuetime},
+			expiretime = #{expiretime},
+			validtime = #{validtime},
+			scanning = #{scanning}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM personaptitude
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE personaptitude SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Personaptitude" statementType="STATEMENT">
+		select * FROM personaptitude  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

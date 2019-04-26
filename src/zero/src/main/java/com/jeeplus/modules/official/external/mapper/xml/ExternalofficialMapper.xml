@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.official.external.mapper.ExternalofficialMapper">
+    
+	<sql id="externalofficialColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.externo AS "externo",
+		a.extername AS "extername",
+		a.publishtime AS "publishtime",
+		a.publishperson AS "publishperson",
+		a.publishdepart AS "publishdepart",
+		a.appendix AS "appendix",
+		a.receive AS "receive",
+		a.proc_ins_id AS "procInsId",
+		publishdepart.name AS "publishDepartName"
+
+	</sql>
+	
+	<sql id="externalofficialJoins">
+		
+		LEFT JOIN sys_office publishdepart ON publishdepart.id = a.publishdepart
+	</sql>
+	
+    
+	<select id="get" resultType="Externalofficial" >
+		SELECT 
+			<include refid="externalofficialColumns"/>
+		FROM externalofficial a
+		<include refid="externalofficialJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Externalofficial" >
+		SELECT 
+			<include refid="externalofficialColumns"/>
+		FROM externalofficial a
+		<include refid="externalofficialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="extername != null and extername != ''">
+				AND a.extername = #{extername}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Externalofficial" >
+		SELECT 
+			<include refid="externalofficialColumns"/>
+		FROM externalofficial a
+		<include refid="externalofficialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO externalofficial(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			externo,
+			extername,
+			publishtime,
+			publishperson,
+			publishdepart,
+			appendix,
+			receive,
+			proc_ins_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{externo},
+			#{extername},
+			#{publishtime},
+			#{publishperson},
+			#{publishdepart},
+			#{appendix},
+			#{receive},
+			#{procInsId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE externalofficial SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			externo = #{externo},
+			extername = #{extername},
+			publishtime = #{publishtime},
+			publishperson = #{publishperson},
+			publishdepart = #{publishdepart},
+			appendix = #{appendix},
+			receive = #{receive},
+			proc_ins_id = #{procInsId}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM externalofficial
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE externalofficial SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Externalofficial" statementType="STATEMENT">
+		select * FROM externalofficial  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.kotlin.mapper.AchieveJudgeDetailsMapper">
+
+    <resultMap id="achieveJudgeDetailsResult" type="AchieveJudgeDetails">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="sort" column="sort"/>
+        <result property="parentIds" column="parentIds"/>
+        <result property="achieveJudgeId" column="achieveJudgeId"/>
+        <result property="achieveA" column="achieveA"/>
+        <result property="achieveB" column="achieveB"/>
+        <result property="achieveC" column="achieveC"/>
+        <result property="achieveD" column="achieveD"/>
+        <association property="hasChildren" column="id" select="hasChildren"/>
+    </resultMap>
+
+    <sql id="achieveJudgeDetailsColumns">
+		a.id AS "id",
+		a.achieve_judge_id AS "achieveJudgeId",
+		a.name AS "name",
+		a.sort AS "sort",
+		a.parent_id AS "parent.id",
+		a.parent_ids AS "parentIds",
+		a.achieve_a AS "achieveA",
+		a.achieve_b AS "achieveB",
+		a.achieve_c AS "achieveC",
+		a.achieve_d AS "achieveD"
+	</sql>
+
+
+    <sql id="achieveJudgeDetailsJoins">
+
+    </sql>
+
+
+    <select id="get" resultType="AchieveJudgeDetails">
+        SELECT
+        <include refid="achieveJudgeDetailsColumns"/>
+        FROM achieve_judge_details a
+        <include refid="achieveJudgeDetailsJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="AchieveJudgeDetails">
+        SELECT
+        <include refid="achieveJudgeDetailsColumns"/>
+        FROM achieve_judge_details a
+        <include refid="achieveJudgeDetailsJoins"/>
+        <where>
+
+            ${dataScope}
+            <if test="parent != null and parent.id != null and parent.id != ''">
+                AND a.parent_id = #{parent.id}
+            </if>
+            <if test="achieveJudgeId != null and achieveJudgeId != ''">
+                AND a.achieve_judge_id = #{achieveJudgeId}
+            </if>
+            <if test="parentIds != null and parentIds != ''">
+                AND a.parent_ids LIKE
+                <if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+            </if>
+        </where>
+        ORDER BY a.sort ASC
+    </select>
+
+    <select id="findAllList" resultType="AchieveJudgeDetails">
+        SELECT
+        <include refid="achieveJudgeDetailsColumns"/>
+        FROM achieve_judge_details a
+        <include refid="achieveJudgeDetailsJoins"/>
+        <where>
+
+            ${dataScope}
+        </where>
+        ORDER BY a.sort ASC
+    </select>
+
+    <select id="getChildren" parameterType="String" resultMap="achieveJudgeDetailsResult">
+        select * from achieve_judge_details where parent_id = #{id} and achieve_judge_id=#{achieveJudgeId} ORDER BY sort
+    </select>
+    <select id="getChildren2" parameterType="String" resultMap="achieveJudgeDetailsResult">
+        select * from achieve_judge_details where parent_id = #{parentId} and achieve_judge_id=#{achieveJudgeId} ORDER BY sort
+    </select>
+
+    <select id="hasChildren" parameterType="String" resultType="Boolean">
+        select case when exists(select 1 from achieve_judge_details where parent_id = #{id}) then 1 else 0 end ${dual}
+    </select>
+
+    <select id="findByParentIdsLike" resultType="AchieveJudgeDetails">
+        SELECT
+        a.id,
+        a.parent_id AS "parent.id",
+        a.parent_ids
+        FROM achieve_judge_details a
+        <include refid="achieveJudgeDetailsJoins"/>
+        <where>
+
+            AND a.parent_ids LIKE #{parentIds}
+        </where>
+        ORDER BY a.sort ASC
+    </select>
+
+    <insert id="insert">
+		INSERT INTO achieve_judge_details(
+			id,
+			achieve_judge_id,
+			name,
+			sort,
+			parent_id,
+			parent_ids,
+			achieve_a,
+			achieve_b,
+			achieve_c,
+			achieve_d
+		) VALUES (
+			#{id},
+			#{achieveJudgeId},
+			#{name},
+			#{sort},
+			#{parent.id},
+			#{parentIds},
+			#{achieveA},
+			#{achieveB},
+			#{achieveC},
+			#{achieveD}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE achieve_judge_details SET 	
+			achieve_judge_id = #{achieveJudgeId},
+			name = #{name},
+			sort = #{sort},
+			parent_id = #{parent.id},
+			parent_ids = #{parentIds},
+			achieve_a = #{achieveA},
+			achieve_b = #{achieveB},
+			achieve_c = #{achieveC},
+			achieve_d = #{achieveD}
+		WHERE id = #{id}
+	</update>
+
+    <update id="updateParentIds">
+		UPDATE achieve_judge_details SET 
+			parent_id = #{parent.id}, 
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+
+    <!--物理删除-->
+    <update id="delete">
+        DELETE FROM achieve_judge_details
+        WHERE id = #{id} OR parent_ids LIKE
+        <if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
+        <if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
+        <if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+    </update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE achieve_judge_details SET
+        del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id} OR parent_ids LIKE
+        <if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
+        <if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
+        <if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+    </update>
+
+    <delete id="deleteByAchieveJudgeId">
+		delete from achieve_judge_details where achieve_judge_id=#{achieveJudgeId}
+	</delete>
+
+    <select id="getIdAndNameByAchieveJudgeId" resultType="MapDto">
+		SELECT id as `key` ,name as `value`  FROM  achieve_judge_details where  achieve_judge_id=#{achieveJudgeId}
+	</select>
+    <select id="isExistAchieveJudgeId" resultType="Boolean">
+		SELECT count(1) FROM  achieve_judge_details where  achieve_judge_id=#{achieveJudgeId}
+	</select>
+    <resultMap id="achieveJudgeDetailsResult1" type="AchieveJudgeDetails">
+        <result property="achieveA" column="achieveA"/>
+        <result property="achieveB" column="achieveB"/>
+        <result property="achieveC" column="achieveC"/>
+        <result property="achieveD" column="achieveD"/>
+        <association property="hasChildren" column="id" select="hasChildren"/>
+    </resultMap>
+    <select id="getAchieveJudgeDetailsByAchieveJudgeId" resultMap="achieveJudgeDetailsResult1">
+        SELECT
+		a.achieve_a AS "achieveA",
+		a.achieve_b AS "achieveB",
+		a.achieve_c AS "achieveC",
+		a.achieve_d AS "achieveD"
+        FROM achieve_judge_details a where a.achieve_judge_id=#{achieveJudgeId}
+    </select>
+
+
+    <resultMap id="achieveJudgeDetails1VOResult" type="AchieveJudgeDetails1VO">
+        <result property="name" column="name"/>
+        <result property="score" column="score"/>
+        <result property="achieveA" column="achieve_a"/>
+        <result property="achieveB" column="achieve_b"/>
+        <result property="achieveC" column="achieve_c"/>
+        <result property="achieveD" column="achieve_d"/>
+    </resultMap>
+    <select id="getAchieveJudgeDetails1" resultMap="achieveJudgeDetails1VOResult">
+		SELECT ajd.name,ard.score,ajd.achieve_a,ajd.achieve_b,ajd.achieve_c,ajd.achieve_d
+		FROM achieve_rule_details ard,achieve_judge_details ajd
+        WHERE ard.achieve_judge_details_id=ajd.id AND ard.achieve_rule_id=#{achieveRuleId}
+	</select>
+    <resultMap id="achieveJudgeDetails2VOResult" type="AchieveJudgeDetails2VO">
+        <result property="type" column="type"/>
+        <result property="taskContent" column="task_content"/>
+        <result property="planSuccAmount" column="plan_succ_amount"/>
+        <result property="planSuccTime" column="plan_succ_time"/>
+        <result property="score" column="score"/>
+        <result property="achieveA" column="achieve_a"/>
+        <result property="achieveB" column="achieve_b"/>
+        <result property="achieveC" column="achieve_c"/>
+        <result property="achieveD" column="achieve_d"/>
+    </resultMap>
+    <select id="getAchieveJudgeDetails2" resultMap="achieveJudgeDetails2VOResult">
+		SELECT ard.type,ard.task_content,ard.plan_succ_amount,ard.plan_succ_time,ard.score,ajd.achieve_a,ajd.achieve_b,ajd.achieve_c,ajd.achieve_d
+        FROM achieve_rule ar LEFT JOIN achieve_judge_details ajd on ar.achieve_judge_id=ajd.achieve_judge_id
+        LEFT JOIN achieve_rule_details ard ON ar.id=ard.achieve_rule_id
+        where ard.achieve_rule_id=#{achieveRuleId}
+	</select>
+
+</mapper>

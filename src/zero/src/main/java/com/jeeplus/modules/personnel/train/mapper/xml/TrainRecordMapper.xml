@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.train.mapper.TrainRecordMapper">
+
+    <sql id="trainRecordColumns">
+        a.ID AS "id",
+        a.TRAIN_ID AS "oaNotify.id",
+        a.USER_ID AS "user.id",
+        a.READ_FLAG AS "readFlag",
+        a.READ_DATE AS "readDate",
+        a.qualify_flag AS "qualifyFlag",
+        u.name AS "user.name",
+        o.name AS "user.office.name"
+    </sql>
+
+    <sql id="trainRecordJoins">
+        JOIN sys_user u ON u.id = a.user_id
+        JOIN sys_office o ON o.id = u.office_id
+    </sql>
+
+    <select id="get" resultType="trainRecord">
+        SELECT
+        <include refid="trainRecordColumns"/>
+        FROM train_record a
+        <include refid="trainRecordJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="trainRecord">
+        SELECT
+        <include refid="trainRecordColumns"/>
+        FROM train_record a
+        <include refid="trainRecordJoins"/>
+        WHERE 1=1
+        <if test="train != null and train.id != null and train.id != ''">
+            AND train_id = #{train.id}
+        </if>
+        ORDER BY a.read_flag ASC
+    </select>
+
+    <select id="getTrainStaff" resultType="trainRecord">
+        SELECT
+        <include refid="trainRecordColumns"/>
+        FROM train_record a
+        <include refid="trainRecordJoins"/>
+        WHERE 1=1
+        AND train_id = #{train.id}
+        <choose>
+        <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+            ORDER BY ${page.orderBy}
+        </when>
+        <otherwise>
+        ORDER BY a.read_flag ASC
+        </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="TrainRecord">
+        SELECT
+        <include refid="trainRecordColumns"/>
+        FROM train_record a
+        <include refid="trainRecordJoins"/>
+        WHERE 1=1
+        ORDER BY a.read_flag ASC
+    </select>
+
+    <insert id="insert">
+        INSERT INTO train_record(
+        ID,
+        TRAIN_ID,
+        USER_ID,
+        READ_FLAG,
+        qualify_flag,
+        READ_DATE
+        ) VALUES (
+        #{id},
+        #{train.id},
+        #{user.id},
+        #{readFlag},
+        #{qualifyFlag},
+        #{readDate}
+        )
+    </insert>
+
+    <insert id="insertAll" parameterType="List">
+        INSERT INTO train_record(
+        ID,
+        TRAIN_ID,
+        USER_ID,
+        READ_FLAG,
+        qualify_flag,
+        READ_DATE
+        )
+        <foreach collection="list" item="e" separator=" UNION ALL ">
+            SELECT
+            #{e.id},
+            #{e.train.id},
+            #{e.user.id},
+            #{e.readFlag},
+            #{e.qualifyFlag},
+            #{e.readDate}
+            ${dual}
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE train_record SET
+        READ_FLAG = #{readFlag},
+        READ_DATE = #{readDate}
+        WHERE TRAIN_ID = #{train.id}
+        AND USER_ID = #{user.id}
+    </update>
+
+    <update id="staffSave">
+        UPDATE train_record SET
+        qualify_flag = #{qualifyFlag}
+        WHERE id = #{id}
+
+    </update>
+
+    <delete id="delete">
+        DELETE FROM train_record
+        WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteByTrainId">
+        DELETE FROM train_record
+        WHERE train_id = #{trainId}
+    </delete>
+
+</mapper>

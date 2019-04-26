@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.gallant.mapper.GallantapplicationMapper">
+    
+	<sql id="gallantapplicationColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.proc_ins_id AS "procInsId",
+		a.appno AS "appno",
+		a.company AS "company",
+		a.department AS "department",
+		a.postname AS "postname",
+		a.postnum AS "postnum",
+		a.completenum AS "completenum",
+		a.postdetail AS "postdetail",
+		a.operator AS "operator",
+		a.operatime AS "operatime",
+		a.type AS "type",
+		a.status AS "status",
+		a.gallantstatus AS "gallantstatus"
+	</sql>
+	
+	<sql id="gallantapplicationJoins">
+		
+	</sql>
+	
+    
+	<select id="get" resultType="Gallantapplication" >
+		SELECT 
+			<include refid="gallantapplicationColumns"/>
+		FROM gallant_application a
+		<include refid="gallantapplicationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Gallantapplication" >
+		SELECT 
+			<include refid="gallantapplicationColumns"/>
+		FROM gallant_application a
+		<include refid="gallantapplicationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="appno != null and appno != ''">
+				AND a.appno = #{appno}
+			</if>
+			<if test="postname != null and postname != ''">
+				AND a.postname = #{postname}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Gallantapplication" >
+		SELECT 
+			<include refid="gallantapplicationColumns"/>
+		FROM gallant_application a
+		<include refid="gallantapplicationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO gallant_application(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			proc_ins_id,
+			appno,
+			company,
+			department,
+			postname,
+			postnum,
+			completenum,
+			postdetail,
+			operator,
+			operatime,
+			type,
+			status,
+			gallantstatus
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{procInsId},
+			#{appno},
+			#{company},
+			#{department},
+			#{postname},
+			#{postnum},
+			#{completenum},
+			#{postdetail},
+			#{operator},
+			#{operatime},
+			#{type},
+			#{status},
+			#{gallantstatus}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE gallant_application SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			proc_ins_id = #{procInsId},
+			appno = #{appno},
+			company = #{company},
+			department = #{department},
+			postname = #{postname},
+			postnum = #{postnum},
+			completenum = #{completenum},
+			postdetail = #{postdetail},
+			operator = #{operator},
+			operatime = #{operatime},
+			type = #{type},
+			status = #{status},
+			gallantstatus = #{gallantstatus}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM gallant_application
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE gallant_application SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Gallantapplication" statementType="STATEMENT">
+		select * FROM gallant_application  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

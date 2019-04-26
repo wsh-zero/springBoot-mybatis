@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.aptitude.param.mapper.AptitudeparamMapper">
+    
+	<sql id="aptitudeparamColumns">
+		a.id AS "id",
+		a.del_flag AS "delFlag",
+		a.aptitudename AS "aptitudename",
+		a.grade AS "grade"
+	</sql>
+	
+	<sql id="aptitudeparamJoins">
+		
+	</sql>
+	
+    
+	<select id="get" resultType="Aptitudeparam" >
+		SELECT 
+			<include refid="aptitudeparamColumns"/>
+		FROM aptitudeparam a
+		<include refid="aptitudeparamJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Aptitudeparam" >
+		SELECT 
+			<include refid="aptitudeparamColumns"/>
+		FROM aptitudeparam a
+		<include refid="aptitudeparamJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="aptitudename != null and aptitudename != ''">
+				AND a.aptitudename = #{aptitudename}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Aptitudeparam" >
+		SELECT 
+			<include refid="aptitudeparamColumns"/>
+		FROM aptitudeparam a
+		<include refid="aptitudeparamJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO aptitudeparam(
+			id,
+			del_flag,
+			aptitudename,
+			grade
+		) VALUES (
+			#{id},
+			#{delFlag},
+			#{aptitudename},
+			#{grade}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE aptitudeparam SET 	
+			aptitudename = #{aptitudename},
+			grade = #{grade}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM aptitudeparam
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE aptitudeparam SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Aptitudeparam" statementType="STATEMENT">
+		select * FROM aptitudeparam  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

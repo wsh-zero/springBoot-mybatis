@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.official.internalrecord.mapper.InternalOfficalRecordMapper">
+    
+	<sql id="internalOfficalRecordColumns">
+		a.id AS "id",
+		a.del_flag AS "delFlag",
+		a.readed AS "readed",
+		a.read_time AS "readTime",
+		a.official_id AS "officalId",
+		u.id AS "userId.id",
+		u.name AS "userId.name"
+	</sql>
+	
+	<sql id="internalOfficalRecordJoins">
+		LEFT JOIN sys_user u ON a.userid = u.id
+	</sql>
+
+	<select id="get" resultType="InternalOfficalRecord" >
+		SELECT 
+			<include refid="internalOfficalRecordColumns"/>
+		FROM internalofficial_record a
+		<include refid="internalOfficalRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="InternalOfficalRecord" >
+		SELECT 
+			<include refid="internalOfficalRecordColumns"/>
+		FROM internalofficial_record a
+		<include refid="internalOfficalRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="InternalOfficalRecord" >
+		SELECT 
+			<include refid="internalOfficalRecordColumns"/>
+		FROM internalofficial_record a
+		<include refid="internalOfficalRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO internalofficial_record(
+			id,
+			del_flag,
+			readed,
+			read_time,
+			official_id,
+			userid
+		) VALUES (
+			#{id},
+			#{delFlag},
+			#{readed},
+			#{readTime},
+			#{officalId},
+			#{userId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE internalofficial_record SET 	
+			readed = #{readed},
+			read_time = #{readTime},
+			official_id = #{officalId},
+			userid = #{userId}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM internalofficial_record
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE internalofficial_record SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="InternalOfficalRecord" statementType="STATEMENT">
+		select * FROM internalofficial_record  where ${propertyName} = '${value}'
+	</select>
+
+	<update id="updateReaded">
+		update internalofficial_record set readed=#{readed},read_time=#{date} where official_id=#{id} and userid=#{user}
+	</update>
+</mapper>

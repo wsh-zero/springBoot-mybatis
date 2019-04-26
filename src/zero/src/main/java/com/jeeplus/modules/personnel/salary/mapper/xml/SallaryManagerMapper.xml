@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.salary.mapper.SallaryManagerMapper">
+    
+	<sql id="sallaryManagerColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.del_flag AS "delFlag",
+		a.name AS "name.id",
+		a.pre_wage AS "preWage",
+		a.social_security AS "socialSecurity",
+		a.accumulation AS "accumulation",
+		a.title AS "title.id",
+		a.grade AS "grade.id",
+		a.quality_bonus AS "qualityBonus",
+		a.display_bonus AS "displayBonus",
+		a.education_bonus AS "educationBonus",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		name.name AS "name.name",
+		title.name AS "title.name",
+		grade.grade AS "grade.grade"
+
+	</sql>
+	
+	<sql id="sallaryManagerJoins">
+		LEFT JOIN staff name ON name.id = a.name
+		LEFT JOIN title_bonus title ON title.id = a.title
+		LEFT JOIN grade_bonus grade ON grade.id = a.grade
+	</sql>
+
+	<select id="find" resultType="SallaryManager" >
+		SELECT
+		<include refid="sallaryManagerColumns"/>
+		FROM sallary_manager a
+		<include refid="sallaryManagerJoins"/>
+		WHERE
+		<if test="name != null and name.id != null and name.id != ''">
+			a.name = #{name.id}
+		</if>
+		and a.del_flag = 0
+	</select>
+	<select id="count" resultType="int" >
+		SELECT
+		count(*)
+		FROM sallary_manager a
+		<include refid="sallaryManagerJoins"/>
+		WHERE
+		<if test="name != null and name.id != null and name.id != ''">
+			a.name = #{name.id}
+		</if>
+		and a.del_flag = 0
+	</select>
+    
+	<select id="get" resultType="SallaryManager" >
+		SELECT 
+			<include refid="sallaryManagerColumns"/>
+		FROM sallary_manager a
+		<include refid="sallaryManagerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SallaryManager" >
+		SELECT 
+			<include refid="sallaryManagerColumns"/>
+		FROM sallary_manager a
+		<include refid="sallaryManagerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="name != null and name.id != null and name.id != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name.id}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name.id}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name.id},'%')</if>
+			</if>
+			<if test="depart != null and depart.id != null and depart.id != ''">
+				AND name.depart = #{depart.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SallaryManager" >
+		SELECT 
+			<include refid="sallaryManagerColumns"/>
+		FROM sallary_manager a
+		<include refid="sallaryManagerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sallary_manager(
+			id,
+			create_by,
+			create_date,
+			del_flag,
+			name,
+			pre_wage,
+			social_security,
+			accumulation,
+			title,
+			grade,
+			quality_bonus,
+			display_bonus,
+			education_bonus,
+			update_by,
+			update_date
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{delFlag},
+			#{name.id},
+			#{preWage},
+			#{socialSecurity},
+			#{accumulation},
+			#{title.id},
+			#{grade.id},
+			#{qualityBonus},
+			#{displayBonus},
+			#{educationBonus},
+			#{updateBy.id},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sallary_manager SET
+			name = #{name.id},
+			pre_wage = #{preWage},
+			social_security = #{socialSecurity},
+			accumulation = #{accumulation},
+			title = #{title.id},
+			grade = #{grade.id},
+			quality_bonus = #{qualityBonus},
+			display_bonus = #{displayBonus},
+			education_bonus = #{educationBonus},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM sallary_manager
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sallary_manager SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="SallaryManager" statementType="STATEMENT">
+		select * FROM sallary_manager  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.personnel.plan.mapper.ComSystemMapper">
+    
+	<sql id="comSystemColumns">
+		a.id AS "id",
+		a.sys_code AS "sysCode",
+		a.sys_name AS "sysName",
+		a.sys_content AS "sysContent",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="comSystemJoins">
+		
+	</sql>
+	<select id="find" resultType="Org" >
+		SELECT
+		<include refid="comSystemColumns"/>
+		FROM com_system a
+		<include refid="comSystemJoins"/>
+		WHERE
+		<if test="sysCode !=null and sysCode!='' ">
+			a.sys_code = #{sysCode}
+		</if>
+		<if test="sysName !=null and sysName!='' ">
+			a.sys_name = #{sysName}
+		</if>
+		and a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
+	<select id="count" resultType="int" >
+		SELECT
+		count(*)
+		FROM com_system a
+		<include refid="comSystemJoins"/>
+		WHERE
+		<if test="sysCode !=null and sysCode!='' ">
+			a.sys_code = #{sysCode}
+		</if>
+		<if test="sysName !=null and sysName!='' ">
+			a.sys_name = #{sysName}
+		</if>
+		and a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+    
+	<select id="get" resultType="ComSystem" >
+		SELECT 
+			<include refid="comSystemColumns"/>
+		FROM com_system a
+		<include refid="comSystemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ComSystem" >
+		SELECT 
+			<include refid="comSystemColumns"/>
+		FROM com_system a
+		<include refid="comSystemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="sysName != null and sysName != ''">
+				AND a.sys_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sysName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sysName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sysName},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ComSystem" >
+		SELECT 
+			<include refid="comSystemColumns"/>
+		FROM com_system a
+		<include refid="comSystemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO com_system(
+			id,
+			sys_code,
+			sys_name,
+			sys_content,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{sysCode},
+			#{sysName},
+			#{sysContent},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE com_system SET 	
+			sys_code = #{sysCode},
+			sys_name = #{sysName},
+			sys_content = #{sysContent},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM com_system
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE com_system SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="ComSystem" statementType="STATEMENT">
+		select * FROM com_system  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

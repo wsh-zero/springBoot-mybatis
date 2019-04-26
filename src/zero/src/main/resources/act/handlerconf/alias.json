@@ -1,0 +1,20 @@
+{
+  "alias": [
+    {
+      "class": "com.jeeplus.common.taskhandler.handler.PostTaskHandler",
+      "name": "post"
+    },
+    {
+      "class": "com.jeeplus.common.taskhandler.handler.LeaderTaskHandler",
+      "name": "leader"
+    },
+    {
+      "class": "com.jeeplus.common.taskhandler.handler.SimpleNameTaskHandler",
+      "name": "simple"
+    },
+    {
+      "class": "com.jeeplus.common.taskhandler.handler.OrgaTaskHandler",
+      "name": "orga"
+    }
+  ]
+}

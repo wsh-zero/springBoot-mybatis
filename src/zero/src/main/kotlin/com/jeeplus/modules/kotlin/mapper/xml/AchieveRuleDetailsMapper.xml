@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.kotlin.mapper.AchieveRuleDetailsMapper">
+
+    <resultMap id="achieveRuleDetailsResult" type="AchieveRuleDetails">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="sort" column="sort"/>
+        <result property="parentIds" column="parentIds"/>
+        <result property="achieveRuleId" column="achieveRuleId"/>
+        <result property="score" column="score"/>
+        <result property="achieveJudgeDetailsId" column="achieveJudgeDetailsId"/>
+        <result property="type" column="type"/>
+        <result property="taskContent" column="taskContent"/>
+        <result property="planSuccAmount" column="planSuccAmount"/>
+        <result property="planSuccTime" column="planSuccTime"/>
+        <association property="hasChildren" column="id" select="hasChildren"/>
+    </resultMap>
+
+    <sql id="achieveRuleDetailsColumns">
+		a.id AS "id",
+		a.achieve_rule_id AS "achieveRuleId",
+		a.score AS "score",
+		a.achieve_judge_details_id AS "achieveJudgeDetailsId",
+		a.type AS "type",
+		a.task_content AS "taskContent",
+		a.plan_succ_amount AS "planSuccAmount",
+		a.plan_succ_time AS "planSuccTime",
+		a.name AS "name",
+		a.sort AS "sort",
+		a.parent_id AS "parent.id",
+		a.parent_ids AS "parentIds"
+	</sql>
+
+
+    <sql id="achieveRuleDetailsJoins">
+
+    </sql>
+
+
+    <select id="get" resultType="AchieveRuleDetails">
+        SELECT
+        <include refid="achieveRuleDetailsColumns"/>
+        FROM achieve_rule_details a
+        <include refid="achieveRuleDetailsJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="AchieveRuleDetails">
+        SELECT
+        <include refid="achieveRuleDetailsColumns"/>
+        FROM achieve_rule_details a
+        <include refid="achieveRuleDetailsJoins"/>
+        <where>
+
+            ${dataScope}
+            <if test="parent != null and parent.id != null and parent.id != ''">
+                AND a.parent_id = #{parent.id}
+            </if>
+            <if test="parentIds != null and parentIds != ''">
+                AND a.parent_ids LIKE
+                <if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+            </if>
+        </where>
+        ORDER BY a.sort ASC
+    </select>
+
+    <select id="findAllList" resultType="AchieveRuleDetails">
+        SELECT
+        <include refid="achieveRuleDetailsColumns"/>
+        FROM achieve_rule_details a
+        <include refid="achieveRuleDetailsJoins"/>
+        <where>
+
+            ${dataScope}
+        </where>
+        ORDER BY a.sort ASC
+    </select>
+
+    <select id="getChildren" parameterType="String" resultMap="achieveRuleDetailsResult">
+        select * from achieve_rule_details where parent_id = #{id} ORDER BY sort
+    </select>
+    <select id="getChildren2" parameterType="String" resultMap="achieveRuleDetailsResult">
+        select * from achieve_rule_details where parent_id = #{parentId} and achieve_rule_id=#{achieveRuleId} ORDER BY sort
+    </select>
+
+    <select id="hasChildren" parameterType="String" resultType="Boolean">
+        select case when exists(select 1 from achieve_rule_details where parent_id = #{id}) then 1 else 0 end ${dual}
+    </select>
+
+    <select id="findByParentIdsLike" resultType="AchieveRuleDetails">
+        SELECT
+        a.id,
+        a.parent_id AS "parent.id",
+        a.parent_ids
+        FROM achieve_rule_details a
+        <include refid="achieveRuleDetailsJoins"/>
+        <where>
+
+            AND a.parent_ids LIKE #{parentIds}
+        </where>
+        ORDER BY a.sort ASC
+    </select>
+
+    <insert id="insert">
+		INSERT INTO achieve_rule_details(
+			id,
+			achieve_rule_id,
+			score,
+			achieve_judge_details_id,
+			type,
+			task_content,
+			plan_succ_amount,
+			plan_succ_time,
+			name,
+			sort,
+			parent_id,
+			parent_ids
+		) VALUES (
+			#{id},
+			#{achieveRuleId},
+			#{score},
+			#{achieveJudgeDetailsId},
+			#{type},
+			#{taskContent},
+			#{planSuccAmount},
+			#{planSuccTime},
+			#{name},
+			#{sort},
+			#{parent.id},
+			#{parentIds}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE achieve_rule_details SET 	
+			achieve_rule_id = #{achieveRuleId},
+			score = #{score},
+			achieve_judge_details_id = #{achieveJudgeDetailsId},
+			type = #{type},
+			task_content = #{taskContent},
+			plan_succ_amount = #{planSuccAmount},
+			plan_succ_time = #{planSuccTime},
+			name = #{name},
+			sort = #{sort},
+			parent_id = #{parent.id},
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+
+    <update id="updateParentIds">
+		UPDATE achieve_rule_details SET 
+			parent_id = #{parent.id}, 
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+
+    <!--物理删除-->
+    <update id="delete">
+        DELETE FROM achieve_rule_details
+        WHERE id = #{id} OR parent_ids LIKE
+        <if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
+        <if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
+        <if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+    </update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE achieve_rule_details SET
+        del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id} OR parent_ids LIKE
+        <if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
+        <if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
+        <if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+    </update>
+
+
+    <update id="editScoreByAchieveRuleId">
+        UPDATE achieve_rule_details SET
+        score = #{score}
+        WHERE achieve_rule_id=#{achieveRuleId}
+        <choose>
+            <when test="type==1 || type==2">
+                and (`type`=1 or `type`=2)
+            </when>
+            <otherwise>
+                and `type`=#{type}
+            </otherwise>
+        </choose>
+    </update>
+
+    <select id="getAchieveRuleDetailsCountByAchieveRuleId" resultType="Integer">
+        SELECT count(1) FROM `achieve_rule_details` where achieve_rule_id=#{achieveRuleId}
+        <choose>
+            <when test="type==1 || type==2">
+                and (`type`=1 or `type`=2)
+            </when>
+            <otherwise>
+                and `type`=#{type}
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="isExistTypeByAchieveRuleId" resultType="Boolean">
+        SELECT count(1) FROM `achieve_rule_details` where achieve_rule_id=#{achieveRuleId} and `type`=#{type}
+    </select>
+
+</mapper>

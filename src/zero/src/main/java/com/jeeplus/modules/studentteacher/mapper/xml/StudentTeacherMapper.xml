@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.studentteacher.mapper.StudentTeacherMapper">
+    
+	<sql id="studentTeacherColumns">
+		a.id AS "id",
+		a.student_id AS "student.id",
+		a.teacher_id AS "teahcer.id",
+				
+		student.name AS "student.name",
+				
+		teahcer.name AS "teahcer.name"
+	</sql>
+	
+	<sql id="studentTeacherJoins">
+		
+		LEFT JOIN t_student student ON student.id = a.student_id
+		LEFT JOIN t_teacher teahcer ON teahcer.id = a.teacher_id
+	</sql>
+	
+    
+	<select id="get" resultType="StudentTeacher" >
+		SELECT 
+			<include refid="studentTeacherColumns"/>
+		FROM student_teacher a
+		<include refid="studentTeacherJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="StudentTeacher" >
+		SELECT 
+			<include refid="studentTeacherColumns"/>
+		FROM student_teacher a
+		<include refid="studentTeacherJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="StudentTeacher" >
+		SELECT 
+			<include refid="studentTeacherColumns"/>
+		FROM student_teacher a
+		<include refid="studentTeacherJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO student_teacher(
+			id,
+			student_id,
+			teacher_id
+		) VALUES (
+			#{id},
+			#{student.id},
+			#{teahcer.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE student_teacher SET 	
+			student_id = #{student.id},
+			teacher_id = #{teahcer.id}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM student_teacher
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE student_teacher SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="StudentTeacher" statementType="STATEMENT">
+		select * FROM student_teacher  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

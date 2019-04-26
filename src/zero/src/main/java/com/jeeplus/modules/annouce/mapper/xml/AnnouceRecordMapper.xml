@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.annouce.mapper.AnnouceRecordMapper">
+    
+	<sql id="annouceRecordColumns">
+		a.id AS "id",
+		a.annouceid AS "annouce.id",
+		a.user_id AS "user.id",
+		a.read_flag AS "readFlag",
+		a.read_date AS "readDate",
+		annouce.title AS "annouce.title",
+		user.name AS "user.name",
+		office.name AS "user.office.name"
+	</sql>
+	
+	<sql id="annouceRecordJoins">
+		 JOIN annouce annouce ON annouce.id = a.annouceid
+		 JOIN sys_user user ON user.id = a.user_id
+		 JOIN sys_office office ON office.id = user.office_id
+	</sql>
+	
+    
+	<select id="get" resultType="AnnouceRecord" >
+		SELECT 
+			<include refid="annouceRecordColumns"/>
+		FROM annouce_record a
+		<include refid="annouceRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AnnouceRecord" >
+		SELECT 
+			<include refid="annouceRecordColumns"/>
+		FROM annouce_record a
+		<include refid="annouceRecordJoins"/>
+		<where>
+			1=1
+		</where>
+		<if test="annouce != null and annouce.id != null and annouce.id != ''">
+			AND a.annouceid = #{annouce.id}
+		</if>
+		ORDER BY a.read_flag ASC
+	</select>
+	
+	<select id="findAllList" resultType="AnnouceRecord" >
+		SELECT 
+			<include refid="annouceRecordColumns"/>
+		FROM annouce_record a
+		<include refid="annouceRecordJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO annouce_record(
+			id,
+			annouceid,
+			user_id,
+			read_flag,
+			read_date
+		) VALUES (
+			#{id},
+			#{annouce.id},
+			#{user.id},
+			#{readFlag},
+			#{readDate}
+		)
+	</insert>
+
+	<insert id="insertAll" parameterType="List">
+		INSERT INTO annouce_record(
+		id,
+		annouceid,
+		user_id,
+		read_flag,
+		read_date
+		)
+		<foreach collection="list" item="e" separator=" UNION ALL ">
+			SELECT
+			#{e.id},
+			#{e.annouce.id},
+			#{e.user.id},
+			#{e.readFlag},
+			#{e.readDate}
+			${dual}
+		</foreach>
+	</insert>
+	
+	<update id="updateReadFlag">
+		UPDATE annouce_record SET
+			read_flag = #{readFlag},
+			read_date = #{readDate}
+		WHERE annouceid = #{annouce.id}
+		and user_id=#{user.id}
+			and read_flag!='1'
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM annouce_record
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE annouce_record SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="AnnouceRecord" statementType="STATEMENT">
+		select * FROM annouce_record  where ${propertyName} = '${value}'
+	</select>
+
+	<delete id="deleteByAnnouceId">
+		DELETE FROM  annouce_record
+		WHERE annouceid = #{annouceid}
+	</delete>
+	
+</mapper>
